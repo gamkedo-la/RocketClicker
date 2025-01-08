@@ -91,7 +91,7 @@ function setGameObjectProperty(
   } else if (property === "resolution") {
     (gameObject as any).setResolution(value);
   } else if (property === "wordWrapWidth") {
-    (gameObject as any).setWordWrapWidth(value);
+    (gameObject as any).setWordWrapWidth(value, true);
   } else {
     (gameObject as any)[property] = value;
   }

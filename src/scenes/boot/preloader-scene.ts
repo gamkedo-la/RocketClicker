@@ -1,7 +1,7 @@
 import { GAME_WIDTH } from "@game/consts";
 import { AbstractScene } from "..";
 import { RESOURCES } from "../../assets";
-import { SCENES } from "../consts";
+import { SCENES } from "../scenes";
 
 export const RESOURCES_INDEX = Object.keys(RESOURCES).reduce(
   (acc, key, index) => ({ ...acc, [key]: index }),

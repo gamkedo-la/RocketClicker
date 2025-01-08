@@ -5,9 +5,7 @@ import { GAME_HEIGHT, GAME_WIDTH } from "./consts";
 import PhaserGamebus from "./lib/gamebus";
 import { GameStateManager } from "./state/game-state";
 
-import { Boot } from "./scenes/boot/boot-scene";
-import { Preloader } from "./scenes/boot/preloader-scene";
-import { GameScene } from "./scenes/game/game-scene";
+import { SCENE_CLASSES } from "./scenes/scenes";
 
 const config: Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -36,8 +34,7 @@ const config: Types.Core.GameConfig = {
       },
     ],
   },
-  // TODO: Auto load scenes please.
-  scene: [Boot, Preloader, GameScene],
+  scene: Object.values(SCENE_CLASSES),
 };
 
 export default new Game(config);

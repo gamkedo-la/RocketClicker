@@ -1,12 +1,12 @@
 import { Pane } from "tweakpane";
 import { AbstractScene } from "..";
-import { SCENES } from "../consts";
+import { SCENES } from "../scenes";
 
 export const params = {
   fps: 0,
 };
 
-export class Debug extends AbstractScene {
+export class DebugScene extends AbstractScene {
   declare pane: Pane;
 
   constructor() {
@@ -14,7 +14,7 @@ export class Debug extends AbstractScene {
   }
 
   create() {
-    this.pane = new Pane({ expanded: false, title: "Debug" });
+    this.pane = new Pane({ expanded: true, title: "Debug" });
     this.pane.addBinding(params, "fps", {
       readonly: true,
       format: (v: number) => v.toFixed(0),
