@@ -1,6 +1,27 @@
 {
   "assetPack": {
-    "files": []
+    "files": [
+      {
+        "type": "binary",
+        "key": "comet-1",
+        "url": "assets/comet-1.glb"
+      },
+      {
+        "type": "binary",
+        "key": "comet-2",
+        "url": "assets/comet-2.glb"
+      },
+      {
+        "type": "binary",
+        "key": "martin",
+        "url": "assets/martin.glb"
+      },
+      {
+        "type": "image",
+        "key": "texture",
+        "url": "assets/texture.png"
+      }
+    ]
   },
   "meta": {
     "app": "Phaser Vite Plugin",
