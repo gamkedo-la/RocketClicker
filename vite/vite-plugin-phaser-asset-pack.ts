@@ -11,6 +11,7 @@ const supportedExtensions = [
   ".ogg",
   ".wav",
   ".json",
+  ".glb",
 ];
 
 interface StandardAssetInfo {
@@ -63,6 +64,10 @@ const assetTypes: Record<string, AssetTypeInfo> = {
   json: {
     extensions: [".json"],
     getInfo: (key, url): AssetInfo => ({ type: "json", key, url }),
+  },
+  binary: {
+    extensions: [".glb"],
+    getInfo: (key, url): AssetInfo => ({ type: "binary", key, url }),
   },
 };
 

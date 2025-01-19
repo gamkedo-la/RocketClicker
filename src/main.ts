@@ -7,11 +7,33 @@ import { GameStateManager } from "./state/game-state";
 
 import { SCENE_CLASSES } from "./scenes/scenes";
 
+if (import.meta.env.VITE_DEBUG) {
+}
+
+const contextCreationConfig = {
+  alpha: true,
+  depth: true,
+  antialias: true,
+  premultipliedAlpha: true,
+  stencil: true,
+  preserveDrawingBuffer: false,
+  failIfMajorPerformanceCaveat: false,
+  powerPreference: "default",
+};
+
+const myCustomCanvas = document.createElement("canvas");
+const myCustomContext = myCustomCanvas.getContext(
+  "webgl2",
+  contextCreationConfig
+);
+
 const config: Types.Core.GameConfig = {
-  type: Phaser.AUTO,
+  type: Phaser.WEBGL,
   width: GAME_WIDTH,
   height: GAME_HEIGHT,
   parent: "game-container",
+  canvas: myCustomCanvas,
+  context: myCustomContext as any,
   backgroundColor: "#3c9f9c",
   roundPixels: true,
   scale: {
