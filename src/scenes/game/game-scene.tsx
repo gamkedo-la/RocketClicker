@@ -1,5 +1,5 @@
 import { GameStatus } from "@game/state/game-state";
-import { computed, signal } from "@game/state/lib/signals";
+import { computed, effect, signal } from "@game/state/lib/signals";
 import { Signal } from "@game/state/lib/types";
 import { AbstractScene } from "..";
 import PhaserGamebus from "../../lib/gamebus";
@@ -87,20 +87,25 @@ function Button({
       />
       <text
         x={0}
-        y={5}
+        y={3}
         origin={{ x: 0.5, y: 0 }}
-        text={`${Object.values(building.building_cost)} ${Object.keys(
-          building.building_cost
-        )}`}
+        text={`${Object.values(building.building_cost)} ${
+          materials_names[
+            Object.keys(
+              building.building_cost
+            )[0] as keyof typeof materials_names
+          ]
+        }`}
         style={computed(() => ({
           color: canBuildBuilding.get() ? "#00ff00" : "#ff0000",
+          fontSize: "14px",
         }))}
       />
       <text
         x={0}
         y={20}
         origin={{ x: 0.5, y: 0 }}
-        text={`${Object.keys(building.input).join(", ")} -> ${Object.keys(
+        text={`${Object.keys(building.input).join(", ")} → ${Object.keys(
           building.output
         ).join(", ")}`}
         style={{ color: "#000000" }}
@@ -182,18 +187,44 @@ function Cell({
       <rectangle width={width} height={height} fillColor={0xffffff} />
       <text
         x={0}
-        y={computed(() => (building.get() ? -20 : 0))}
+        y={0}
         origin={0.5}
-        text={text}
+        text={computed(() => (building.get() ? "" : text))}
         style={{ color: "#000000" }}
       />
       <text
         x={0}
-        y={10}
+        y={-20}
         origin={0.5}
         text={computed(() => building.get()?.name ?? "")}
         wordWrapWidth={width}
         style={{ color: "#000000", align: "center" }}
+      />
+      <text
+        x={0}
+        y={25}
+        origin={0.5}
+        text={computed(() => {
+          if (building.get() === null) return "";
+          const inputs = Object.entries(building.get()?.input ?? {})
+            .map(
+              ([key, value]) =>
+                `[→ ${value.toLocaleString([], { maximumFractionDigits: 0 })} ${
+                  materials_names[key as keyof typeof materials_names]
+                }]`
+            )
+            .join("\n");
+          const outputs = Object.entries(building.get()?.output ?? {})
+            .map(
+              ([key, value]) =>
+                `[← ${value.toLocaleString([], { maximumFractionDigits: 0 })} ${
+                  materials_names[key as keyof typeof materials_names]
+                }]`
+            )
+            .join("\n");
+          return `${inputs}\n${outputs}`;
+        })}
+        style={{ color: "#000000", fontSize: "12px" }}
       />
     </container>
   );
@@ -210,22 +241,44 @@ function Material({
   name: keyof typeof materials;
   value: Signal<number>;
 }) {
+  let prev = 0;
+
+  const number_text: Phaser.GameObjects.Text = (
+    <text
+      x={10}
+      y={0}
+      origin={0}
+      text={computed(() =>
+        value.get().toLocaleString([], { maximumFractionDigits: 0 })
+      )}
+      style={{ color: "#000000" }}
+    />
+  );
+
+  effect(() => {
+    let curr = value.get();
+
+    // console.log(name, "prev", prev, "curr", curr);
+
+    if (prev < curr) {
+      number_text.setStyle({ color: "#00ff00" });
+    } else if (prev > curr) {
+      number_text.setStyle({ color: "#ff0000" });
+    }
+
+    prev = curr;
+  });
+
   return (
     <container x={x} y={y}>
       <text
         x={0}
         y={0}
         origin={{ x: 1, y: 0 }}
-        text={`${name}`}
+        text={`${materials_names[name]}`}
         style={{ color: "#000000" }}
       />
-      <text
-        x={10}
-        y={0}
-        origin={0}
-        text={computed(() => value.get().toString())}
-        style={{ color: "#000000" }}
-      />
+      {number_text}
     </container>
   );
 }
@@ -242,6 +295,18 @@ const materials = {
   PureMetals: "PureMetals",
 } as const;
 
+const materials_names = {
+  kWh: "kWh",
+  LH2: "LH2",
+  LOX: "LOX",
+  H2: "H2",
+  O2: "O2",
+  H2O: "H2O",
+  StarDust: "(SD)",
+  Metals: "(M)",
+  PureMetals: "(PM)",
+};
+
 const materials_generation_order = [
   materials.kWh,
   materials.StarDust,
@@ -253,6 +318,8 @@ const materials_generation_order = [
   materials.LOX,
   materials.LH2,
 ];
+
+const tick = signal(0);
 
 const material_storage: Record<keyof typeof materials, Signal<number>> = {
   kWh: signal(0),
@@ -428,6 +495,19 @@ export class GameScene extends AbstractScene {
     this.gameState.setGameStatus(GameStatus.RUNNING);
 
     this.add.existing(
+      <Stack x={10} y={10} spacing={10}>
+        <text
+          text={
+            "Selected Building            Star Dust = SD | Metals = M | Pure Metals = PM"
+          }
+        />
+        <text
+          text={computed(() => mouse_selected_building.get()?.name ?? "")}
+        />
+      </Stack>
+    );
+
+    this.add.existing(
       <Stack x={130} y={90} spacing={8}>
         {buildings.map((building) => (
           <Button building={building} />
@@ -455,68 +535,156 @@ export class GameScene extends AbstractScene {
         {Object.entries(materials).map(([key, value]) => (
           <Material
             name={key as keyof typeof materials}
-            value={computed(() =>
-              material_storage[key as keyof typeof materials]
-                .get()
-                .toFixed(0)
-                .toLocaleString()
-            )}
+            value={material_storage[key as keyof typeof materials]}
           />
         ))}
       </Stack>
     );
 
     this.add.existing(
-      <Stack x={10} y={10} spacing={10}>
-        <text text={"Selected Building"} />
+      <container
+        x={920}
+        y={500}
+        width={100}
+        height={100}
+        interactive
+        onPointerdown={(self) => {
+          material_storage[materials.StarDust].update(
+            (material) => material + 20
+          );
+          (self.first! as any).fillColor = 0xaaaaa00;
+        }}
+        onPointerup={(self) => {
+          (self.first! as any).fillColor = 0xffffaa;
+        }}
+        onPointerover={(self) => {
+          (self.first! as any).fillColor = 0xffffaa;
+        }}
+        onPointerout={(self) => {
+          (self.first! as any).fillColor = 0xffffff;
+        }}
+      >
+        <rectangle width={140} height={60} fillColor={0xffffff} />
         <text
-          text={computed(() => mouse_selected_building.get()?.name ?? "")}
+          x={0}
+          y={0}
+          origin={0.5}
+          text={"Mine StarDust\n(+20)"}
+          style={{ color: "#000000", align: "center" }}
         />
-      </Stack>
+      </container>
     );
 
     this.key_one.on("down", () => {
-      mouse_selected_building.set(buildings[0]);
+      if (hasResources(buildings[0], material_storage)) {
+        mouse_selected_building.set(buildings[0]);
+      }
     });
 
     this.key_two.on("down", () => {
-      mouse_selected_building.set(buildings[1]);
+      if (hasResources(buildings[1], material_storage)) {
+        mouse_selected_building.set(buildings[1]);
+      }
     });
 
     this.key_three.on("down", () => {
-      mouse_selected_building.set(buildings[2]);
+      if (hasResources(buildings[2], material_storage)) {
+        mouse_selected_building.set(buildings[2]);
+      }
     });
 
     this.key_four.on("down", () => {
-      mouse_selected_building.set(buildings[3]);
+      if (hasResources(buildings[3], material_storage)) {
+        mouse_selected_building.set(buildings[3]);
+      }
     });
 
     this.key_five.on("down", () => {
-      mouse_selected_building.set(buildings[4]);
+      if (hasResources(buildings[4], material_storage)) {
+        mouse_selected_building.set(buildings[4]);
+      }
     });
 
     this.key_six.on("down", () => {
-      mouse_selected_building.set(buildings[5]);
+      if (hasResources(buildings[5], material_storage)) {
+        mouse_selected_building.set(buildings[5]);
+      }
     });
 
     this.key_seven.on("down", () => {
-      mouse_selected_building.set(buildings[6]);
+      if (hasResources(buildings[6], material_storage)) {
+        mouse_selected_building.set(buildings[6]);
+      }
     });
 
     this.key_eight.on("down", () => {
-      mouse_selected_building.set(buildings[7]);
+      if (hasResources(buildings[7], material_storage)) {
+        mouse_selected_building.set(buildings[7]);
+      }
     });
 
     this.key_nine.on("down", () => {
-      mouse_selected_building.set(buildings[8]);
+      if (hasResources(buildings[8], material_storage)) {
+        mouse_selected_building.set(buildings[8]);
+      }
     });
 
     this.key_zero.on("down", () => {
-      mouse_selected_building.set(buildings[9]);
+      if (hasResources(buildings[9], material_storage)) {
+        mouse_selected_building.set(buildings[9]);
+      }
     });
 
     this.key_escape.on("down", () => {
       mouse_selected_building.set(null);
+    });
+
+    let timer = signal(0);
+
+    const timer_event = this.time.addEvent({
+      delay: 1000,
+      repeat: -1,
+      callback: () => {
+        timer.update((timer) => timer + 1);
+      },
+    });
+
+    let timer_text = this.add.existing(
+      <text
+        text={computed(() => {
+          const minutes = Math.floor(timer.get() / 60);
+          const seconds = timer.get() % 60;
+          return `${minutes.toString().padStart(2, "0")}:${seconds
+            .toString()
+            .padStart(2, "0")}`;
+        })}
+        origin={0.33}
+        x={this.cameras.main.width / 2}
+        y={75}
+        style={{ fontSize: "32px", align: "center" }}
+      />
+    );
+
+    let rocket_text = this.add.existing(
+      <text
+        text={`You need 140,000 LH2 and 30,000 LOX to launch the rocket`}
+        origin={0.5}
+        x={this.cameras.main.width / 2 + 20}
+        y={125}
+        style={{ align: "center" }}
+      />
+    );
+
+    effect(() => {
+      if (
+        material_storage[materials.LH2].get() > 140_000 &&
+        material_storage[materials.LOX].get() > 30_000
+      ) {
+        timer_event.remove();
+        timer_text.setStyle({ color: "#aaff00", fontSize: "48px" });
+        rocket_text.setStyle({ color: "#ffaa00", fontSize: "48px" });
+        rocket_text.setText("Rocket launched!");
+      }
     });
   }
 
@@ -529,6 +697,8 @@ export class GameScene extends AbstractScene {
     this.tickTimer += delta;
     if (this.tickTimer >= this.tickLength) {
       this.tickTimer = 0;
+
+      tick.update((tick) => tick + 1);
 
       material_storage[materials.kWh].set(0);
 
@@ -555,8 +725,6 @@ export class GameScene extends AbstractScene {
               (material) => Math.max(material - value, 0)
             );
           });
-
-          console.log(successRate);
 
           if (!successRate) return;
 
