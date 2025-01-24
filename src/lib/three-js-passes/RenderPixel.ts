@@ -1,9 +1,11 @@
 import * as THREE from "three";
-import { Vector2, WebGLRenderer, WebGLRenderTarget } from "three";
+import { WebGLRenderer, WebGLRenderTarget } from "three";
 import {
-  Pass,
   FullScreenQuad,
+  Pass,
 } from "three/examples/jsm/postprocessing/Pass.js";
+
+// Copy-paste from Three.js examples
 
 export default class RenderPixelatedPass extends Pass {
   fsQuad: FullScreenQuad;

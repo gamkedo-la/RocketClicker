@@ -50,7 +50,7 @@ export class Preloader extends AbstractScene {
         families: ["DotGothic16"],
       },
       active: () => {
-        return this.scene.start(SCENES.TEST);
+        return this.scene.start(SCENES.GAME);
       },
     });
 

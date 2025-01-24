@@ -13,6 +13,11 @@
       },
       {
         "type": "binary",
+        "key": "comet-3",
+        "url": "assets/comet-3.glb"
+      },
+      {
+        "type": "binary",
         "key": "martin",
         "url": "assets/martin.glb"
       },

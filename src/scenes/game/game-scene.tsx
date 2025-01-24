@@ -51,15 +51,16 @@ function Button({
       interactive
       onPointerover={(self) => {
         if (canBuildBuilding.get()) {
-          self.first!.fillColor = 0xffff00;
+          (self.first! as Phaser.GameObjects.Rectangle).fillColor = 0xffff00;
         }
       }}
       onPointerout={(self) => {
-        self.first!.fillColor = current_rectangle_color.get();
+        (self.first! as Phaser.GameObjects.Rectangle).fillColor =
+          current_rectangle_color.get();
       }}
       onPointerdown={(self) => {
         if (canBuildBuilding.get()) {
-          self.first!.fillColor = 0x00ff00;
+          (self.first! as Phaser.GameObjects.Rectangle).fillColor = 0x00ff00;
           if (mouse_selected_building.get()?.name !== building.name) {
             mouse_selected_building.set(building);
           } else {
@@ -68,7 +69,8 @@ function Button({
         }
       }}
       onPointerup={(self) => {
-        self.first!.fillColor = current_rectangle_color.get();
+        (self.first! as Phaser.GameObjects.Rectangle).fillColor =
+          current_rectangle_color.get();
       }}
     >
       <rectangle
@@ -125,7 +127,7 @@ function Cell({
   y?: number;
   text: string;
   id: number;
-  building: Signal<Building | null>;
+  building: Signal<Building | null> | null;
 }) {
   const width = 100;
   const height = 100;
@@ -168,20 +170,20 @@ function Cell({
           );
           grid_buildings.get(id)!.set(mouse_selected_building.get());
           mouse_selected_building.set(null);
-          self.first!.fillColor = 0xaaaaff;
+          (self.first! as Phaser.GameObjects.Rectangle).fillColor = 0xaaaaff;
         }
 
         lastClick = pointer.time;
       }}
       onPointerup={(self) => {
-        self.first!.fillColor = 0xdddddd;
+        (self.first! as Phaser.GameObjects.Rectangle).fillColor = 0xdddddd;
       }}
       onPointerover={(self) => {
-        self.first!.fillColor =
+        (self.first! as Phaser.GameObjects.Rectangle).fillColor =
           mouse_selected_building.get() !== null ? 0xaaffaa : 0xdddddd;
       }}
       onPointerout={(self) => {
-        self.first!.fillColor = 0xffffff;
+        (self.first! as Phaser.GameObjects.Rectangle).fillColor = 0xffffff;
       }}
     >
       <rectangle width={width} height={height} fillColor={0xffffff} />
@@ -450,6 +452,8 @@ export class GameScene extends AbstractScene {
   create() {
     this.bus = this.gamebus.getBus();
 
+    this.scene.run(SCENES.THREE_COMET);
+
     this.camera = this.cameras.main;
 
     this.key_one = this.input.keyboard!.addKey(
@@ -487,10 +491,6 @@ export class GameScene extends AbstractScene {
     );
 
     this.registerSystems();
-
-    if (import.meta.env.VITE_DEBUG) {
-      this.scene.run(SCENES.DEBUG);
-    }
 
     this.gameState.setGameStatus(GameStatus.RUNNING);
 
@@ -532,7 +532,7 @@ export class GameScene extends AbstractScene {
 
     this.add.existing(
       <Stack x={920} y={80} spacing={23}>
-        {Object.entries(materials).map(([key, value]) => (
+        {Object.entries(materials).map(([key, _]) => (
           <Material
             name={key as keyof typeof materials}
             value={material_storage[key as keyof typeof materials]}
@@ -693,7 +693,7 @@ export class GameScene extends AbstractScene {
   tickLength = 1000;
   tickTimer = 0;
 
-  update(time: number, delta: number) {
+  update(_time: number, delta: number) {
     this.tickTimer += delta;
     if (this.tickTimer >= this.tickLength) {
       this.tickTimer = 0;
@@ -738,9 +738,5 @@ export class GameScene extends AbstractScene {
     }
   }
 
-  shutdown() {
-    if (import.meta.env.VITE_DEBUG) {
-      this.scene.stop(SCENES.DEBUG);
-    }
-  }
+  shutdown() {}
 }

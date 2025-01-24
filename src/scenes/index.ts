@@ -6,13 +6,13 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
 import { assert } from "@game/common/assert";
+
 import {
-  DotScreenShader,
   EffectComposer,
   RenderPixelatedPass,
-  ShaderPass
+  UnrealBloomPass,
 } from "three/examples/jsm/Addons.js";
-import PixelatePass from "./PixelatedPass";
+
 export abstract class AbstractScene extends Phaser.Scene {
   // Game plugins
   declare gameState: GameStateManager;
@@ -79,6 +79,7 @@ export abstract class AbstractScene extends Phaser.Scene {
       0.1,
       2000
     );
+
     camera.position.set(-1, 5, 4);
     camera.zoom = 4;
     camera.rotateOnAxis(new THREE.Vector3(0, 1, 1), Math.PI);
@@ -86,37 +87,36 @@ export abstract class AbstractScene extends Phaser.Scene {
 
     const composer = new EffectComposer(renderer);
 
-    const effect1 = new ShaderPass(DotScreenShader);
-    effect1.uniforms["scale"].value = 1;
-
-    const r = new RenderPixelatedPass(3, threeScene, camera);
+    //const effect1 = new ShaderPass(DotScreenShader);
+    //effect1.uniforms["scale"].value = 1;
     //composer.addPass(effect1);
-    composer.addPass(r);
-    composer.addPass(new PixelatePass(renderResolution));
-    r.depthEdgeStrength = 10;
-    r.normalEdgeStrength = 4;
 
-    // composer.addPass( new RenderPass( scene, camera ) )
+    ///composer.addPass(new PixelatePass(renderResolution));
+
     /*composer.addPass(
       new RenderPixelatedPass(renderResolution, threeScene, camera)
-    );
-    */
-    /*let bloomPass = new UnrealBloomPass(screenResolution, 0.4, 0.1, 0.9);
-    composer.addPass(bloomPass);*/
+    );*/
+
+    // composer.addPass( new RenderPass( scene, camera ) )
+
+    const r = new RenderPixelatedPass(3, threeScene, camera);
+    r.depthEdgeStrength = 100;
+    r.normalEdgeStrength = 3;
+    composer.addPass(r);
+
+    let bloomPass = new UnrealBloomPass(screenResolution, 0.4, 0.1, 0.9);
+    composer.addPass(bloomPass);
 
     const view: Phaser.GameObjects.Extern & { render: () => void } =
       this.add.extern() as any;
 
     view.render = () => {
       renderer.resetState();
-      /*const gl = renderer.getContext();
-      gl.depthMask(false);
-      gl.clear(gl.DEPTH_BUFFER_BIT);
-      gl.depthMask(true);
-      gl.enable(gl.DEPTH_TEST);
-      gl.cullFace(gl.FASTEST);*/
+
       //renderer.render(threeScene, camera);
       composer.render();
+
+      // Phaser 3.85 needs to reset
       renderer.resetState();
     };
 

@@ -3,7 +3,7 @@
   "description": "A Phaser 3 TypeScript gmae",
   "version": "0.0.1",
   "scripts": {
-    "dev": "vite --config vite/config.dev.mjs",
+    "dev": "vite --config vite/config.dev.mjs --host",
     "staging": "vite --config vite/config.dev.mjs --mode staging",
     "build": "vite build --config vite/config.prod.mjs",
     "assets": "vite --config vite/config.assets.mjs"

@@ -5,6 +5,7 @@
 export const RESOURCES = {
   "comet-1": "comet-1",
   "comet-2": "comet-2",
+  "comet-3": "comet-3",
   "martin": "martin",
   "texture": "texture",
 } as const;

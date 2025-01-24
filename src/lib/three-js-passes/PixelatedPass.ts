@@ -5,6 +5,8 @@ import {
   FullScreenQuad,
 } from "three/examples/jsm/postprocessing/Pass.js";
 
+// Copy-paste from Three.js examples
+
 export default class PixelatePass extends Pass {
   fsQuad: FullScreenQuad;
   resolution: THREE.Vector2;
