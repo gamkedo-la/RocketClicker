@@ -19,6 +19,8 @@ export class ThreeCometScene extends AbstractScene {
   spotLight: THREE.SpotLight;
   threeCamera: THREE.OrthographicCamera;
   comet: THREE.Mesh;
+  board: THREE.Mesh;
+  board_pointer: THREE.Mesh;
 
   async create() {
     this.bus = this.gamebus.getBus();
@@ -91,6 +93,20 @@ export class ThreeCometScene extends AbstractScene {
             // Position the camera relative to the comet
             //this.threeCamera.position.set(0, 0, 0);
             //this.threeCamera.lookAt(this.comet.position);
+          }
+
+          if (node.name === "board") {
+            this.board = node as THREE.Mesh;
+            this.board.position.setX(0.04);
+            this.board.position.setY(0.04);
+            this.board.position.setZ(-0.05);
+            this.comet.add(this.board);
+
+            this.board_pointer = new THREE.Mesh(
+              new THREE.SphereGeometry(0.01, 32, 32),
+              new THREE.MeshBasicMaterial({ color: 0xff0000 })
+            );
+            this.comet.add(this.board_pointer);
           }
 
           if (node instanceof THREE.Mesh) {
@@ -217,6 +233,29 @@ export class ThreeCometScene extends AbstractScene {
   }
 
   update(time: number, delta: number) {
+    if (this.board) {
+      // Get normalized device coordinates (-1 to +1) for mouse position
+      const pointer = this.input.activePointer;
+      const x = (pointer.x * 2) / this.game.scale.width - 1;
+      const y = -((pointer.y * 2) / this.game.scale.height) + 1;
+
+      // Setup raycaster
+      const raycaster = new THREE.Raycaster();
+      raycaster.setFromCamera(new THREE.Vector2(x, y), this.threeCamera);
+
+      // Check for intersection with board
+      const intersects = raycaster.intersectObject(this.board);
+
+      if (intersects.length > 0) {
+        const intersection = intersects[0];
+        // Convert world coordinates to local coordinates relative to comet
+        const worldPoint = intersection.point;
+        const localPoint = this.comet.worldToLocal(worldPoint.clone());
+
+        this.board_pointer.position.copy(localPoint);
+      }
+    }
+
     if (this.comet) {
       // Create a pivot point at origin (0,0,0)
       const pivot = new THREE.Vector3(0, 0, 0);

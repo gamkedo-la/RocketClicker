@@ -515,7 +515,7 @@ export class GameScene extends AbstractScene {
       </Stack>
     );
 
-    this.add.existing(
+    const grid_container = (
       <Stack x={300} y={200} spacing={10}>
         {grid.map((row, y) => (
           <Stack spacing={10} direction="horizontal">
