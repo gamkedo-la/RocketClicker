@@ -1,12 +1,12 @@
-# Five minutes
+# The Spinnning Comet Escape
 
-A meteor base-building game
+A spinning comet base-building and escaping game
 
 ## Requirements
 
 [Node.js](https://nodejs.org) will be required to start and run the project.
 
-If you are interested in editing/building the assets, you will need `Aseprite`, `Tiled` or `Blockbench`.
+If you are interested in editing/building the assets, you will need `Blockbench`.
 
 ## Available Commands
 
