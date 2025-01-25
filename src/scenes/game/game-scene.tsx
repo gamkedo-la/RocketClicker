@@ -110,7 +110,7 @@ function Button({
         text={`${Object.keys(building.input).join(", ")} → ${Object.keys(
           building.output
         ).join(", ")}`}
-        style={{ color: "#000000" }}
+        style={{ color: "#ffffff" }}
       />
     </container>
   );
@@ -226,7 +226,7 @@ function Cell({
             .join("\n");
           return `${inputs}\n${outputs}`;
         })}
-        style={{ color: "#000000", fontSize: "12px" }}
+        style={{ color: "#ffffff", fontSize: "12px" }}
       />
     </container>
   );
