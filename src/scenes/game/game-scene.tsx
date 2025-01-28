@@ -285,6 +285,31 @@ function Material({
   );
 }
 
+function showFloatingChange(
+   scene: Phaser.Scene,
+   x: number,
+   y: number,
+   value: number,
+   color: string = '#00ff00'
+) {
+   const formattedValue = value >= 0 ? `+${value}` : value.toString();
+   const text = scene.add.text(x, y, formattedValue, {
+       fontSize: '32px',
+       color: color,
+       fontStyle: 'bold'
+   });
+   text.setOrigin(0.5);
+
+   scene.tweens.add({
+       targets: text,
+       y: y - 120,
+       alpha: { from: 1, to: 0 },
+       duration: 3000,
+       ease: 'Cubic.easeOut',
+       onComplete: () => text.destroy()
+   });
+}
+
 const materials = {
   kWh: "kWh",
   LH2: "LH2",
@@ -549,11 +574,16 @@ export class GameScene extends AbstractScene {
         height={100}
         interactive
         onPointerdown={(self) => {
+          console.log("Stardust mining button clicked!");
+          console.log("Before:", material_storage[materials.StarDust].get());
           material_storage[materials.StarDust].update(
             (material) => material + 20
           );
+          console.log("After:", material_storage[materials.StarDust].get());
+          showFloatingChange(this, self.x, self.y, 20);
           (self.first! as any).fillColor = 0xaaaaa00;
         }}
+
         onPointerup={(self) => {
           (self.first! as any).fillColor = 0xffffaa;
         }}
