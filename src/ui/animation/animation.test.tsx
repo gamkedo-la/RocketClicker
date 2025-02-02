@@ -122,6 +122,52 @@ describe("AnimationEngine", () => {
     expect(x.get()).toBe(200);
   });
 
+  it("should handle all controls overshoots", () => {
+    const a = signal(0);
+    const b = signal(0);
+    const c = signal(0);
+    const d = signal(0);
+    const e = signal(0);
+    const f = signal(0);
+
+    const engine: AnimationPlan = (
+      <animation>
+        <sequence>
+          <parallel>
+            <tween signal={a} from={0} to={10} duration={1000} />
+            <tween signal={b} from={0} to={20} duration={2000} />
+            <tween signal={c} from={0} to={30} duration={3000} />
+            <tween signal={d} from={0} to={40} duration={4000} />
+            <tween signal={e} from={0} to={50} duration={5000} />
+          </parallel>
+          <repeat times={2}>
+            <tween signal={e} to={1000} duration={1000} />
+            <tween signal={f} to={1000} duration={1000} />
+          </repeat>
+          <tween signal={a} to={200} duration={1000} />
+          <tween signal={b} to={300} duration={1000} />
+          <tween signal={c} to={400} duration={1000} />
+          <tween signal={d} to={500} duration={1000} />
+          <tween signal={e} to={600} duration={1000} />
+          <wait duration={1000} />
+          <repeat times={2}>
+            <tween signal={a} to={1000} duration={1000} />
+          </repeat>
+        </sequence>
+      </animation>
+    );
+
+    engine.update(100000); // Overshoot all
+
+    expect(engine.clock).toBe(100000);
+    expect(a.get()).toBe(1000);
+    expect(b.get()).toBe(300);
+    expect(c.get()).toBe(400);
+    expect(d.get()).toBe(500);
+    expect(e.get()).toBe(600);
+    expect(f.get()).toBe(1000);
+  });
+
   it("should handle parallel animations", () => {
     const x = signal(0);
     const y = signal(0);

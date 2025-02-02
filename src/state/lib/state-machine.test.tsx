@@ -167,6 +167,44 @@ describe("FiniteStateMachine", () => {
     expect(fsm.lastEvent.get()).toBe("NEXT");
   });
 
+  it("should handle onEvent observers", () => {
+    const onEventNext = vi.fn();
+
+    const fsm: FiniteStateMachine<"A" | "B", "NEXT"> = (
+      <stateMachine initialState="A">
+        <state id="A">
+          <transition event="NEXT" target="B" />
+        </state>
+        <state id="B">
+          <transition event="NEXT" target="C" />
+        </state>
+        <state id="C" />
+      </stateMachine>
+    );
+
+    <stateObserver fsm={fsm}>
+      <onEvent event="NEXT" run={onEventNext} />
+    </stateObserver>;
+
+    fsm.transition("NEXT");
+    expect(onEventNext).toHaveBeenCalledWith({
+      previous: "A",
+      current: "B",
+      event: "NEXT",
+      type: "event",
+      fsm,
+    });
+
+    fsm.transition("NEXT");
+    expect(onEventNext).toHaveBeenCalledWith({
+      previous: "B",
+      current: "C",
+      event: "NEXT",
+      type: "event",
+      fsm,
+    });
+  });
+
   it("should handle onTransition observers", () => {
     const onTransitionAB = vi.fn();
     const onTransitionBC = vi.fn();
