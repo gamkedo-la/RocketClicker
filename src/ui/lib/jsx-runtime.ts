@@ -8,6 +8,8 @@ import {
   stateObserverIntrinsicElements,
   setupStateObserverElement,
 } from "../../state/lib/state-observer";
+import { setupAnimationElement } from "../animation/animation-timed";
+import { animationIntrinsicElements } from "../animation/animation-timed";
 import { setupGameObject } from "./phaser-jsx";
 
 /*
@@ -59,6 +61,16 @@ export function jsx(
       >[keyof JSX.StateObserverElements<StateId, EventId>]
     );
   }
+
+  if (
+    animationIntrinsicElements.includes(type as keyof JSX.AnimationElements)
+  ) {
+    return setupAnimationElement(
+      type as keyof JSX.AnimationElements,
+      props as JSX.AnimationElements[keyof JSX.AnimationElements]
+    );
+  }
+
   return setupGameObject(type, props);
 }
 
