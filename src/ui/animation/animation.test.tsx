@@ -522,7 +522,7 @@ describe("AnimationEngine", () => {
     expect(parallelSteps).toEqual(["y", "x"]); // X sequence completes
   });
 
-  it.only("should handle steps in repeated blocks", () => {
+  it("should handle steps in repeated blocks", () => {
     const stepsCalled: number[] = [];
     const x = signal(0);
 

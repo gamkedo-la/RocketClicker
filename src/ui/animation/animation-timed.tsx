@@ -360,22 +360,16 @@ export class AnimationPlan {
           );
         }
 
-        // Update iteration state
+        // TODO: this is probably wrong, as it should be a loop that runs until the current iteration is reached
         if (currentIteration !== step.currentIteration) {
           step.currentIteration = currentIteration;
           step.iterationCurrentStep = 0;
           step.iterationStepClock = 0;
 
           step.children.forEach((child) => {
-            if (child.type === "step" && !child.triggered) {
-              child.run({
-                progress: 1,
-                previousProgress: 0,
-                direction: "forward",
-              });
-            }
-            this.initializeStepState(child);
+            this.runStep(child, 1, 0);
           });
+          this.initializeStepState(step.children[0]);
         }
 
         // Process current iteration
