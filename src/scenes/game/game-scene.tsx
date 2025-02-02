@@ -676,6 +676,11 @@ export class GameScene extends AbstractScene {
     
     this.key_p.on("down", () => {
       this.paused = !this.paused;
+      if (this.paused) {
+        this.scene.pause(SCENES.THREE_COMET);
+      } else {
+        this.scene.run(SCENES.THREE_COMET);
+      }
       console.log(this.paused + " Is the Pause state");
     });
 
