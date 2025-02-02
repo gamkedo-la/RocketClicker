@@ -461,7 +461,7 @@ export class GameScene extends AbstractScene {
   constructor() {
     super(SCENES.GAME);
   }
-  paused: false;
+  paused: boolean;
   key_one!: Phaser.Input.Keyboard.Key;
   key_two!: Phaser.Input.Keyboard.Key;
   key_three!: Phaser.Input.Keyboard.Key;
