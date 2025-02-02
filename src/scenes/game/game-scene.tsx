@@ -461,7 +461,7 @@ export class GameScene extends AbstractScene {
   constructor() {
     super(SCENES.GAME);
   }
-
+  paused: false;
   key_one!: Phaser.Input.Keyboard.Key;
   key_two!: Phaser.Input.Keyboard.Key;
   key_three!: Phaser.Input.Keyboard.Key;
@@ -673,8 +673,10 @@ export class GameScene extends AbstractScene {
       mouse_selected_building.set(null);
     });
 
+    
     this.key_p.on("down", () => {
-      console.log("PAUSE PRESSED");
+      this.paused = !this.paused;
+      console.log(this.paused + " Is the Pause state");
     });
 
     let timer = signal(0);
@@ -683,6 +685,9 @@ export class GameScene extends AbstractScene {
       delay: 1000,
       repeat: -1,
       callback: () => {
+        if(this.paused){
+          return;
+        }
         timer.update((timer) => timer + 1);
       },
     });
