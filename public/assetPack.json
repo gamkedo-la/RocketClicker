@@ -2,6 +2,111 @@
   "assetPack": {
     "files": [
       {
+        "type": "audio",
+        "key": "build-H2compressor",
+        "url": "assets/build-H2compressor.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "build-O2compressor",
+        "url": "assets/build-O2compressor.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "build-chemicalplant",
+        "url": "assets/build-chemicalplant.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "build-condenser",
+        "url": "assets/build-condenser.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "build-duster",
+        "url": "assets/build-duster.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "build-electrolysis",
+        "url": "assets/build-electrolysis.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "build-fuelcell",
+        "url": "assets/build-fuelcell.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "build-generator",
+        "url": "assets/build-generator.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "build-miner",
+        "url": "assets/build-miner.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "build-solarpanel",
+        "url": "assets/build-solarpanel.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "sfx-alert",
+        "url": "assets/sfx-alert.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "sfx-click",
+        "url": "assets/sfx-click.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "sfx-electricity",
+        "url": "assets/sfx-electricity.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "sfx-gas-burst",
+        "url": "assets/sfx-gas-burst.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "sfx-gui-clip",
+        "url": "assets/sfx-gui-clip.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "sfx-gui-confirm",
+        "url": "assets/sfx-gui-confirm.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "sfx-gui-deny",
+        "url": "assets/sfx-gui-deny.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "sfx-gui-window-opens",
+        "url": "assets/sfx-gui-window-opens.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "sfx-mine-stardust",
+        "url": "assets/sfx-mine-stardust.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "sfx-pick-up",
+        "url": "assets/sfx-pick-up.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "sfx-put-down",
+        "url": "assets/sfx-put-down.mp3"
+      },
+      {
         "type": "binary",
         "key": "comet-1",
         "url": "assets/comet-1.glb"
