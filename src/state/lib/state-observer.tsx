@@ -5,10 +5,44 @@ import { EventId, FiniteStateMachine, StateId } from "./state-machine";
 declare global {
   namespace JSX {
     interface StateObserverElements<S extends StateId, E extends EventId> {
+      /**
+       * Creates a state observer.
+       *
+       * @param fsm - The finite state machine to observe
+       */
       stateObserver: StateObserverElement<S, E>;
+
+      /**
+       * Runs a function when the state is entered.
+       *
+       * @param state - The state to enter
+       * @param run - The function to run when the state is entered
+       */
       onEnter: OnEnterElement<S, E>;
+
+      /**
+       * Runs a function when the state is exited.
+       *
+       * @param state - The state to exit
+       * @param run - The function to run when the state is exited
+       */
       onExit: OnExitElement<S, E>;
+
+      /**
+       * Runs a function when an event is triggered.
+       *
+       * @param event - The event to trigger
+       * @param run - The function to run when the event is triggered
+       */
       onEvent: OnEventElement<S, E>;
+
+      /**
+       * Runs a function when a transition is triggered.
+       *
+       * @param from - The state to transition from
+       * @param to - The state to transition to
+       * @param run - The function to run when the transition is triggered
+       */
       onTransition: OnTransitionElement<S, E>;
     }
 

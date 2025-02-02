@@ -13,11 +13,52 @@ declare global {
   namespace JSX {
     interface AnimationElements {
       animation: AnimationElement;
+
+      /**
+       * Runs the children in order.
+       *
+       * The duration of the sequence is the sum of the durations of the children.
+       */
       sequence: SequenceElement;
+
+      /**
+       * Runs the children in parallel.
+       *
+       * The duration of the parallel is the duration of the longest child.
+       */
       parallel: ParallelElement;
+
+      /**
+       * Repeats the children a certain number of times.
+       *
+       * *Be warned* <repeat> doesn't handle small duration animations (<50ms) with large timesteps (>100ms) very well
+       *
+       * @param times - The number of times to repeat the children, if not provided, it will repeat indefinitely. If set to -1, it will repeat indefinitely.
+       */
       repeat: RepeatElement;
+
+      /**
+       * Waits for a certain duration.
+       *
+       * @param duration - The duration to wait
+       */
       wait: WaitElement;
+
+      /**
+       * Runs a function when the animation is triggered. It doesn't have a duration.
+       *
+       * @param run - The function to run when the animation is triggered
+       */
       step: StepElement;
+
+      /**
+       * Tweens a signal from a value to another value over a certain duration.
+       *
+       * @param signal - The signal to tween
+       * @param from - The starting value, if not provided, the signal's current value will be used
+       * @param to - The ending value
+       * @param duration - The duration of the tween
+       */
       tween: TweenElement<any>;
     }
 

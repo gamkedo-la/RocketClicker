@@ -14,8 +14,26 @@ declare global {
       | (new (props: any) => ElementClass);
 
     interface StateMachineElements {
+      /**
+       * Creates a finite state machine.
+       *
+       * @param initialState - The initial state of the state machine
+       */
       stateMachine: StateMachineElement;
+
+      /**
+       * Creates a state.
+       *
+       * @param id - The id of the state
+       */
       state: StateElement;
+
+      /**
+       * Creates a transition.
+       *
+       * @param event - The event of the transition
+       * @param target - The target state of the transition
+       */
       transition: TransitionElement;
     }
 
@@ -76,6 +94,13 @@ export function setupStateMachineElement(
 
 // TODO: At some point there was something to keep track of available events, but I removed and I don't know if it's needed
 // private availableEvents: Signal<E[]>;
+
+/**
+ * A finite state machine.
+ *
+ * @param S - The type of the state id
+ * @param E - The type of the event id
+ */
 export class FiniteStateMachine<S extends StateId, E extends EventId> {
   private states: Map<S, StateConfig<S, E>>;
   private currentState: Signal<S>;
