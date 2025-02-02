@@ -473,6 +473,7 @@ export class GameScene extends AbstractScene {
   key_nine!: Phaser.Input.Keyboard.Key;
   key_zero!: Phaser.Input.Keyboard.Key;
   key_escape!: Phaser.Input.Keyboard.Key;
+  key_p!: Phaser.Input.Keyboard.Key;
 
   create() {
     this.bus = this.gamebus.getBus();
@@ -513,6 +514,9 @@ export class GameScene extends AbstractScene {
     );
     this.key_escape = this.input.keyboard!.addKey(
       Phaser.Input.Keyboard.KeyCodes.ESC
+    );
+    this.key_p = this.input.keyboard!.addKey(
+      Phaser.Input.Keyboard.KeyCodes.P
     );
 
     this.registerSystems();
@@ -667,6 +671,10 @@ export class GameScene extends AbstractScene {
 
     this.key_escape.on("down", () => {
       mouse_selected_building.set(null);
+    });
+
+    this.key_p.on("down", () => {
+      console.log("PAUSE PRESSED");
     });
 
     let timer = signal(0);
