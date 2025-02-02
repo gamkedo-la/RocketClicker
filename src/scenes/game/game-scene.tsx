@@ -578,6 +578,9 @@ export class GameScene extends AbstractScene {
         height={100}
         interactive
         onPointerdown={(self) => {
+          if (this.paused) {
+            return;
+          }
           console.log("Stardust mining button clicked!");
           console.log("Before:", material_storage[materials.StarDust].get());
           material_storage[materials.StarDust].update(
