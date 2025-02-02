@@ -742,6 +742,9 @@ export class GameScene extends AbstractScene {
   tickTimer = 0;
 
   update(_time: number, delta: number) {
+    if (this.paused) {
+      return;
+    }
     this.tickTimer += delta;
     if (this.tickTimer >= this.tickLength) {
       this.tickTimer = 0;
