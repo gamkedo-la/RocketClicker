@@ -1,3 +1,13 @@
+import {
+  EventId,
+  setupStateMachineElement,
+  StateId,
+  stateMachineIntrinsicElements,
+} from "../../state/lib/state-machine";
+import {
+  stateObserverIntrinsicElements,
+  setupStateObserverElement,
+} from "../../state/lib/state-observer";
 import { setupGameObject } from "./phaser-jsx";
 
 /*
@@ -13,7 +23,7 @@ export function jsx(
   type: string | Function,
   props: Record<string, any>,
   key: string
-): Phaser.GameObjects.GameObject {
+) {
   if (key) {
     throw new Error(
       "Key argument is not supported, we are not using this part on the JSX runtime"
@@ -25,6 +35,30 @@ export function jsx(
     return type(props);
   }
 
+  if (
+    stateMachineIntrinsicElements.includes(
+      type as keyof JSX.StateMachineElements
+    )
+  ) {
+    return setupStateMachineElement(
+      type as keyof JSX.StateMachineElements,
+      props as JSX.StateMachineElements[keyof JSX.StateMachineElements]
+    );
+  }
+
+  if (
+    stateObserverIntrinsicElements.includes(
+      type as keyof JSX.StateObserverElements<StateId, EventId>
+    )
+  ) {
+    return setupStateObserverElement(
+      type as keyof JSX.StateObserverElements<StateId, EventId>,
+      props as JSX.StateObserverElements<
+        StateId,
+        EventId
+      >[keyof JSX.StateObserverElements<StateId, EventId>]
+    );
+  }
   return setupGameObject(type, props);
 }
 
