@@ -13,6 +13,33 @@ import {
   TextElement,
 } from "./types";
 
+export const JsxElementsRegistry = {
+  elements: new Map<
+    Phaser.GameObjects.GameObject,
+    Phaser.GameObjects.GameObject | null
+  >(),
+
+  register(
+    element: Phaser.GameObjects.GameObject,
+    parent: Phaser.GameObjects.GameObject | null = null
+  ) {
+    this.elements.set(element, parent);
+    element.on("destroy", () => this.unregister(element));
+  },
+
+  unregister(element: Phaser.GameObjects.GameObject) {
+    this.elements.delete(element);
+  },
+
+  getChildren(
+    parent: Phaser.GameObjects.GameObject | null
+  ): Phaser.GameObjects.GameObject[] {
+    return Array.from(this.elements.entries())
+      .filter(([child, p]) => child.parentContainer === parent)
+      .map(([child]) => child);
+  },
+};
+
 function setGameObjectProperty(
   gameObject: Phaser.GameObjects.GameObject,
   property: string,
@@ -279,7 +306,7 @@ export function setupGameObject<T extends Phaser.GameObjects.GameObject>(
       const children = (
         Array.isArray(containerProps.children)
           ? containerProps.children.flat(2)
-          : containerProps.children
+          : [containerProps.children]
       ) as Phaser.GameObjects.GameObject[];
 
       const container = scene.make.container(
@@ -305,6 +332,15 @@ export function setupGameObject<T extends Phaser.GameObjects.GameObject>(
           ? containerProps.height.get()
           : containerProps.height
       );
+
+      if (import.meta.env.DEV) {
+        // Register container children
+        children.forEach((child) => {
+          if (!JsxElementsRegistry.elements.has(child)) {
+            JsxElementsRegistry.register(child, container);
+          }
+        });
+      }
 
       gameObject = container as unknown as T;
       break;
@@ -334,6 +370,12 @@ export function setupGameObject<T extends Phaser.GameObjects.GameObject>(
 
   if (props.ref) {
     props.ref(gameObject);
+  }
+
+  if (import.meta.env.DEV) {
+    // Register the game object with its parent (if any)
+    const parent = gameObject.parentContainer || null;
+    JsxElementsRegistry.register(gameObject, parent);
   }
 
   return gameObject;
