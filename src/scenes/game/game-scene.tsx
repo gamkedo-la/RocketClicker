@@ -8,6 +8,14 @@ import { SCENES } from "../scenes";
 
 let i = 0;
 
+// background varies from black to white, when it moves
+const UI_TEXT_STYLE = {
+   color: '#ffffff',
+   stroke: '#000000',
+   strokeThickness: 3,
+   align: 'center'
+};
+
 function hasResources(
   building: Building,
   material_storage: Record<string, Signal<number>>
@@ -192,7 +200,7 @@ function Cell({
         y={0}
         origin={0.5}
         text={computed(() => (building.get() ? "" : text))}
-        style={{ color: "#000000" }}
+        style={UI_TEXT_STYLE}
       />
       <text
         x={0}
@@ -200,7 +208,7 @@ function Cell({
         origin={0.5}
         text={computed(() => building.get()?.name ?? "")}
         wordWrapWidth={width}
-        style={{ color: "#000000", align: "center" }}
+        style={UI_TEXT_STYLE}
       />
       <text
         x={0}
@@ -278,7 +286,7 @@ function Material({
         y={0}
         origin={{ x: 1, y: 0 }}
         text={`${materials_names[name]}`}
-        style={{ color: "#000000" }}
+        style={UI_TEXT_STYLE}
       />
       {number_text}
     </container>
@@ -529,9 +537,11 @@ export class GameScene extends AbstractScene {
           text={
             "Selected Building            Star Dust = SD | Metals = M | Pure Metals = PM"
           }
+          style={UI_TEXT_STYLE}
         />
         <text
           text={computed(() => mouse_selected_building.get()?.name ?? "")}
+          style={UI_TEXT_STYLE}
         />
       </Stack>
     );
@@ -712,7 +722,7 @@ export class GameScene extends AbstractScene {
         origin={0.33}
         x={this.cameras.main.width / 2}
         y={75}
-        style={{ fontSize: "32px", align: "center" }}
+        style={{ ...UI_TEXT_STYLE, align: "center" }}
       />
     );
 
