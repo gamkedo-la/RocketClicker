@@ -5,6 +5,7 @@ import { AbstractScene } from "..";
 import PhaserGamebus from "../../lib/gamebus";
 import { Stack } from "../../ui/components/Stack";
 import { SCENES } from "../scenes";
+import SoundSystem from "../../systems/SoundSystem.ts";
 
 let i = 0;
 
@@ -484,6 +485,7 @@ export class GameScene extends AbstractScene {
   key_escape!: Phaser.Input.Keyboard.Key;
   key_p!: Phaser.Input.Keyboard.Key;
   key_m!: Phaser.Input.Keyboard.Key;
+  soundSystem!: SoundSystem;
 
   create() {
     this.bus = this.gamebus.getBus();
@@ -759,7 +761,13 @@ export class GameScene extends AbstractScene {
     });
   }
 
-  registerSystems() {}
+  registerSystems() {
+    console.log("registering systems");
+    this.soundSystem = new SoundSystem();
+    this.soundSystem.create(/*this*/);
+    // TODO: add to an array of systems
+    // this.allSystems.push(
+  }
 
   tickLength = 1000;
   tickTimer = 0;
