@@ -470,6 +470,7 @@ export class GameScene extends AbstractScene {
     super(SCENES.GAME);
   }
   paused: boolean;
+  muted: boolean;
   key_one!: Phaser.Input.Keyboard.Key;
   key_two!: Phaser.Input.Keyboard.Key;
   key_three!: Phaser.Input.Keyboard.Key;
@@ -482,6 +483,7 @@ export class GameScene extends AbstractScene {
   key_zero!: Phaser.Input.Keyboard.Key;
   key_escape!: Phaser.Input.Keyboard.Key;
   key_p!: Phaser.Input.Keyboard.Key;
+  key_m!: Phaser.Input.Keyboard.Key;
 
   create() {
     this.bus = this.gamebus.getBus();
@@ -525,6 +527,9 @@ export class GameScene extends AbstractScene {
     );
     this.key_p = this.input.keyboard!.addKey(
       Phaser.Input.Keyboard.KeyCodes.P
+    );
+    this.key_m = this.input.keyboard!.addKey(
+      Phaser.Input.Keyboard.KeyCodes.M
     );
 
     this.registerSystems();
@@ -695,6 +700,11 @@ export class GameScene extends AbstractScene {
         this.scene.run(SCENES.THREE_COMET);
       }
       console.log(this.paused + " Is the Pause state");
+    });
+
+    this.key_m.on("down", () => {
+      this.muted = !this.muted;
+      console.log(this.muted?"sound has been muted":"sound has been un-muted");
     });
 
     let timer = signal(0);
