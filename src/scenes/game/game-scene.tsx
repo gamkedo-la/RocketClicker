@@ -61,6 +61,8 @@ function Button({
       onPointerover={(self) => {
         if (canBuildBuilding.get()) {
           (self.first! as Phaser.GameObjects.Rectangle).fillColor = 0xffff00;
+          // needs a scene reference
+          // this.soundSystem.play("sfx-click");
         }
       }}
       onPointerout={(self) => {
@@ -190,6 +192,8 @@ function Cell({
       onPointerover={(self) => {
         (self.first! as Phaser.GameObjects.Rectangle).fillColor =
           mouse_selected_building.get() !== null ? 0xaaffaa : 0xdddddd;
+          // needs a scene reference
+          // this.soundSystem.play("sfx-click");
       }}
       onPointerout={(self) => {
         (self.first! as Phaser.GameObjects.Rectangle).fillColor = 0xffffff;
@@ -606,6 +610,8 @@ export class GameScene extends AbstractScene {
           console.log("After:", material_storage[materials.StarDust].get());
           showFloatingChange(this, self.x, self.y, 20);
           (self.first! as any).fillColor = 0xaaaaa00;
+          // needs a scene reference
+          // this.soundSystem.play("sfx-mine-stardust");
         }}
 
         onPointerup={(self) => {
@@ -613,6 +619,8 @@ export class GameScene extends AbstractScene {
         }}
         onPointerover={(self) => {
           (self.first! as any).fillColor = 0xffffaa;
+          // needs a scene reference
+          // this.soundSystem.play("sfx-click");
         }}
         onPointerout={(self) => {
           (self.first! as any).fillColor = 0xffffff;
@@ -632,65 +640,96 @@ export class GameScene extends AbstractScene {
     this.key_one.on("down", () => {
       if (hasResources(buildings[0], material_storage)) {
         mouse_selected_building.set(buildings[0]);
+        this.soundSystem.play("build-generator");
+      } else {
+        this.soundSystem.play("sfx-gui-deny");
       }
     });
 
     this.key_two.on("down", () => {
       if (hasResources(buildings[1], material_storage)) {
         mouse_selected_building.set(buildings[1]);
+        this.soundSystem.play("build-solarpanel");
+      } else {
+        this.soundSystem.play("sfx-gui-deny");
       }
     });
 
     this.key_three.on("down", () => {
       if (hasResources(buildings[2], material_storage)) {
         mouse_selected_building.set(buildings[2]);
+        this.soundSystem.play("build-fuelcell");
+      } else {
+        this.soundSystem.play("sfx-gui-deny");
       }
     });
 
     this.key_four.on("down", () => {
       if (hasResources(buildings[3], material_storage)) {
         mouse_selected_building.set(buildings[3]);
+        this.soundSystem.play("build-duster");
+      } else {
+        this.soundSystem.play("sfx-gui-deny");
       }
     });
 
     this.key_five.on("down", () => {
       if (hasResources(buildings[4], material_storage)) {
         mouse_selected_building.set(buildings[4]);
+        this.soundSystem.play("build-miner");
+      } else {
+        this.soundSystem.play("sfx-gui-deny");
       }
     });
 
     this.key_six.on("down", () => {
       if (hasResources(buildings[5], material_storage)) {
         mouse_selected_building.set(buildings[5]);
+        this.soundSystem.play("build-chemicalplant");
+      } else {
+        this.soundSystem.play("sfx-gui-deny");
       }
     });
 
     this.key_seven.on("down", () => {
       if (hasResources(buildings[6], material_storage)) {
         mouse_selected_building.set(buildings[6]);
+        this.soundSystem.play("build-condenserl");
+      } else {
+        this.soundSystem.play("sfx-gui-deny");
       }
     });
 
     this.key_eight.on("down", () => {
       if (hasResources(buildings[7], material_storage)) {
         mouse_selected_building.set(buildings[7]);
+        this.soundSystem.play("build-electrolysis");
+      } else {
+        this.soundSystem.play("sfx-gui-deny");
       }
     });
 
     this.key_nine.on("down", () => {
       if (hasResources(buildings[8], material_storage)) {
         mouse_selected_building.set(buildings[8]);
+        this.soundSystem.play("build-H2compressor");
+      } else {
+        this.soundSystem.play("sfx-gui-deny");
       }
     });
 
     this.key_zero.on("down", () => {
       if (hasResources(buildings[9], material_storage)) {
         mouse_selected_building.set(buildings[9]);
+        this.soundSystem.play("build-O2compressor");
+      } else {
+        this.soundSystem.play("sfx-gui-deny");
       }
     });
 
     this.key_escape.on("down", () => {
       mouse_selected_building.set(null);
+      this.soundSystem.play("sfx-gui-confirm");
     });
 
     
@@ -706,7 +745,7 @@ export class GameScene extends AbstractScene {
 
     this.key_m.on("down", () => {
       this.muted = !this.muted;
-      console.log(this.muted?"sound has been muted":"sound has been un-muted");
+      this.soundSystem.setSoundMute(this.muted);
     });
 
     let timer = signal(0);
@@ -763,10 +802,7 @@ export class GameScene extends AbstractScene {
 
   registerSystems() {
     console.log("registering systems");
-    this.soundSystem = new SoundSystem();
-    this.soundSystem.create(/*this*/);
-    // TODO: add to an array of systems
-    // this.allSystems.push(
+    this.soundSystem = new SoundSystem(this);
   }
 
   tickLength = 1000;
