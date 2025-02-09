@@ -737,6 +737,7 @@ export class GameScene extends AbstractScene {
       this.paused = !this.paused;
       if (this.paused) {
         this.scene.pause(SCENES.THREE_COMET);
+        this.scene.launch(SCENES.UI_PAUSE);
       } else {
         this.scene.run(SCENES.THREE_COMET);
       }

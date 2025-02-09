@@ -2,6 +2,7 @@ import { Boot } from "./boot/boot-scene";
 import { Preloader } from "./boot/preloader-scene";
 import { GameScene } from "./game/game-scene";
 import { ThreeCometScene } from "./three/three-comet-scene";
+import { PauseScene } from "./transition/pause-scene";
 
 export const SCENES = {
   BOOT: "Boot",
@@ -10,6 +11,7 @@ export const SCENES = {
   THREE_COMET: "ThreeComet",
 
   GAME: "Game",
+  UI_PAUSE: "UI-Pause",
 };
 
 export type SceneKeys = keyof typeof SCENES;
@@ -20,4 +22,5 @@ export const SCENE_CLASSES: Record<SceneKeys, typeof Phaser.Scene> = {
   PRELOADER: Preloader,
   THREE_COMET: ThreeCometScene,
   GAME: GameScene,
+  PAUSE: PauseScene,
 };
