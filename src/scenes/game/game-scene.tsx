@@ -11,10 +11,10 @@ let i = 0;
 
 // background varies from black to white, when it moves
 const UI_TEXT_STYLE = {
-   color: '#ffffff',
-   stroke: '#000000',
-   strokeThickness: 3,
-   align: 'center'
+  color: "#ffffff",
+  stroke: "#000000",
+  strokeThickness: 3,
+  align: "center",
 };
 
 function hasResources(
@@ -192,8 +192,8 @@ function Cell({
       onPointerover={(self) => {
         (self.first! as Phaser.GameObjects.Rectangle).fillColor =
           mouse_selected_building.get() !== null ? 0xaaffaa : 0xdddddd;
-          // needs a scene reference
-          // this.soundSystem.play("sfx-click");
+        // needs a scene reference
+        // this.soundSystem.play("sfx-click");
       }}
       onPointerout={(self) => {
         (self.first! as Phaser.GameObjects.Rectangle).fillColor = 0xffffff;
@@ -299,31 +299,31 @@ function Material({
 }
 
 function showFloatingChange(
-   scene: Phaser.Scene,
-   x: number,
-   y: number,
-   value: number,
-   color: string = '#00ff00'
+  scene: Phaser.Scene,
+  x: number,
+  y: number,
+  value: number,
+  color: string = "#00ff00"
 ) {
-   const formattedValue = value >= 0 ? `+${value}` : value.toString();
-   const text = scene.add.text(x, y, formattedValue, {
-       fontSize: '32px',
-       color: color,
-       fontStyle: 'bold'
-   });
-   text.setOrigin(0.5);
+  const formattedValue = value >= 0 ? `+${value}` : value.toString();
+  const text = scene.add.text(x, y, formattedValue, {
+    fontSize: "32px",
+    color: color,
+    fontStyle: "bold",
+  });
+  text.setOrigin(0.5);
 
-   scene.tweens.add({
-       targets: text,
-       y: y - 120,
-       alpha: { from: 1, to: 0 },
-       duration: 3000,
-       ease: 'Cubic.easeOut',
-       onComplete: () => text.destroy()
-   });
+  scene.tweens.add({
+    targets: text,
+    y: y - 120,
+    alpha: { from: 1, to: 0 },
+    duration: 3000,
+    ease: "Cubic.easeOut",
+    onComplete: () => text.destroy(),
+  });
 }
 
-const materials = {
+export const materials = {
   kWh: "kWh",
   LH2: "LH2",
   LOX: "LOX",
@@ -335,7 +335,7 @@ const materials = {
   PureMetals: "PureMetals",
 } as const;
 
-const materials_names = {
+export const materials_names = {
   kWh: "kWh",
   LH2: "LH2",
   LOX: "LOX",
@@ -361,7 +361,10 @@ const materials_generation_order = [
 
 const tick = signal(0);
 
-const material_storage: Record<keyof typeof materials, Signal<number>> = {
+export const material_storage: Record<
+  keyof typeof materials,
+  Signal<number>
+> = {
   kWh: signal(0),
   LH2: signal(0),
   LOX: signal(0),
@@ -531,12 +534,8 @@ export class GameScene extends AbstractScene {
     this.key_escape = this.input.keyboard!.addKey(
       Phaser.Input.Keyboard.KeyCodes.ESC
     );
-    this.key_p = this.input.keyboard!.addKey(
-      Phaser.Input.Keyboard.KeyCodes.P
-    );
-    this.key_m = this.input.keyboard!.addKey(
-      Phaser.Input.Keyboard.KeyCodes.M
-    );
+    this.key_p = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.P);
+    this.key_m = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.M);
 
     this.registerSystems();
 
@@ -613,7 +612,6 @@ export class GameScene extends AbstractScene {
           // needs a scene reference
           // this.soundSystem.play("sfx-mine-stardust");
         }}
-
         onPointerup={(self) => {
           (self.first! as any).fillColor = 0xffffaa;
         }}
@@ -732,7 +730,6 @@ export class GameScene extends AbstractScene {
       this.soundSystem.play("sfx-gui-confirm");
     });
 
-    
     this.key_p.on("down", () => {
       this.paused = !this.paused;
       if (this.paused) {
@@ -755,7 +752,7 @@ export class GameScene extends AbstractScene {
       delay: 1000,
       repeat: -1,
       callback: () => {
-        if(this.paused){
+        if (this.paused) {
           return;
         }
         timer.update((timer) => timer + 1);
