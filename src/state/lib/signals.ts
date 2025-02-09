@@ -217,7 +217,7 @@ export function effect(fn: Effect, displayName: string = ""): Cleanup {
   return () => signal.dispose();
 }
 
-export function isSignal(value: any): boolean {
+export function isSignal(value: any): value is Signal<any> {
   return value instanceof SignalImpl;
 }
 
