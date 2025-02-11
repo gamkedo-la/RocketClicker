@@ -3,13 +3,20 @@
  */
 
 import { isSignal } from "@game/state/lib/signals";
-import { ALIGN_ITEMS, DIRECTION, FlexProps, JUSTIFY } from "./AbstractFlex";
+import {
+  ALIGN_ITEMS,
+  DIRECTION,
+  FlexElement,
+  FlexProperties,
+  FlexProps,
+  JUSTIFY,
+} from "./AbstractFlex";
 import { FlexColumn } from "./FlexColumn";
 import { FlexRow } from "./FlexRow";
 import { FlexWrapped } from "./FlexWrapped";
 
 // TODO: test/fix/adapt stretching on the align axis
-// TODO: implement the grow/shrink properties from flex-grow/flex-shrink
+// TODO: implement the shrink properties from flex-shrink
 // TODO: allow containers/other objects to be stretched
 
 export function Flex({
@@ -26,9 +33,9 @@ export function Flex({
   wrapped = false,
   ...props
 }: FlexProps): FlexRow | FlexColumn | FlexWrapped {
-  const children = Array.isArray(props.children)
-    ? props.children
-    : [props.children];
+  const children = (
+    Array.isArray(props.children) ? props.children : [props.children]
+  ).filter((child) => child !== undefined) as FlexElement[];
 
   const config = {
     x,
@@ -63,11 +70,11 @@ export function Flex({
   }
 
   if (wrapped) {
-    flex = new FlexWrapped(config);
+    flex = new FlexWrapped(config as FlexProperties);
   } else if (direction === DIRECTION.ROW) {
-    flex = new FlexRow(config);
+    flex = new FlexRow(config as FlexProperties);
   } else {
-    flex = new FlexColumn(config);
+    flex = new FlexColumn(config as FlexProperties);
   }
 
   if (isSignal(x)) {

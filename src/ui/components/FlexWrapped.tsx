@@ -1,14 +1,14 @@
 import {
   AbstractFlex,
-  FlexElement,
-  FlexProps,
-  DIRECTION,
   ALIGN_ITEMS,
+  DIRECTION,
+  FlexElement,
+  FlexProperties,
   JUSTIFY,
   Justify,
 } from "./AbstractFlex";
-import { FlexRow } from "./FlexRow";
 import { FlexColumn } from "./FlexColumn";
+import { FlexRow } from "./FlexRow";
 
 /**
  * Alignment values for the flex column
@@ -35,7 +35,7 @@ export class FlexWrapped extends AbstractFlex {
   private currentLine: AbstractFlex;
   private isRowLayout: boolean;
 
-  constructor(config: FlexProps) {
+  constructor(config: FlexProperties) {
     super(config);
     this.direction = config.direction ?? DIRECTION.ROW;
     this.isRowLayout = this.direction === DIRECTION.ROW;
@@ -89,15 +89,19 @@ export class FlexWrapped extends AbstractFlex {
         });
   }
 
-  add(child: FlexElement, flexGrow?: number, flexShrink?: number): FlexElement {
+  add(child: FlexElement, flexGrow?: number): FlexElement {
     this.children.push(child);
+
+    if (flexGrow && flexGrow > 0) {
+      console.warn("flexGrow with wrapped flexes wass not tested");
+    }
 
     if (!this.fitsInCurrentLine(child)) {
       this.currentLine = this.createNewLine();
       this.linesContainer.add(this.currentLine);
     }
 
-    const flex = this.currentLine.add(child, flexGrow, flexShrink);
+    const flex = this.currentLine.add(child, flexGrow);
     this.linesContainer.trashLayout();
 
     return flex;

@@ -26,6 +26,8 @@ export type Justify = (typeof JUSTIFY)[keyof typeof JUSTIFY];
 export type Direction = (typeof DIRECTION)[keyof typeof DIRECTION];
 
 export interface FlexElement {
+  _flexWidth: number;
+  _flexHeight: number;
   setWidth: any;
   setHeight: any;
   x: number;
@@ -54,9 +56,17 @@ export interface FlexProps {
   align?: AlignmentItems;
   justify?: Justify;
   direction?: Direction;
-  children: FlexElement | FlexElement[];
+  children?: FlexElement | FlexElement[];
   alignContent?: Justify;
   wrapped?: boolean;
+}
+
+export interface FlexProperties extends FlexProps {
+  children: FlexElement | FlexElement[];
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
 }
 
 export abstract class AbstractFlex implements FlexElement {
@@ -64,8 +74,9 @@ export abstract class AbstractFlex implements FlexElement {
   y: number;
   width: number;
   height: number;
-  minWidth: number;
-  minHeight: number;
+
+  _flexWidth: number;
+  _flexHeight: number;
 
   padding: number;
   margin: number;
@@ -80,6 +91,7 @@ export abstract class AbstractFlex implements FlexElement {
 
   basis: number;
   flexGrow: number;
+  minFlexGrow: number;
   flexShrink: number;
 
   protected origin: Phaser.Math.Vector2;
@@ -98,14 +110,14 @@ export abstract class AbstractFlex implements FlexElement {
   isFlex: boolean;
   flexParent: AbstractFlex | null;
 
-  constructor(config: FlexProps) {
+  constructor(config: FlexProperties) {
     this.origin = new Phaser.Math.Vector2(0, 0);
     this.x = config.x ?? 0;
     this.y = config.y ?? 0;
     this.width = config.width ?? 1;
     this.height = config.height ?? 0;
-    this.minWidth = config.width ?? 0;
-    this.minHeight = config.height ?? 0;
+    this._flexWidth = config.width ?? 0;
+    this._flexHeight = config.height ?? 0;
     this.padding = config.padding ?? 10;
     this.margin = config.margin ?? 4;
     this.align = config.align ?? ALIGN_ITEMS.CENTER;
@@ -118,8 +130,10 @@ export abstract class AbstractFlex implements FlexElement {
     this.scrollFactor = new Phaser.Math.Vector2(0, 0);
 
     this.axisSizeSum = 0;
+    this.minFlexGrow = 0;
     this.growSum = 0;
-    this.shrinkSum = 0;
+    // TODO: shrinkSum
+    // this.shrinkSum = 0;
 
     this.widths = [];
     this.heights = [];
@@ -145,31 +159,28 @@ export abstract class AbstractFlex implements FlexElement {
 
   add(
     child: FlexElement,
-    flexGrow: number = 0,
-    flexShrink: number = 1
+    flexGrow: number = 0
+    // TODO: flexShrink
+    // flexShrink: number = 1
   ): FlexElement {
     if (child.setOrigin) {
       child.setOrigin(0, 0);
       child.setScrollFactor(0, 0);
     }
 
-    if (child instanceof AbstractFlex) {
-      child.flexGrow = flexGrow;
-      child.flexShrink = flexShrink;
-      child.flexParent = this;
-    } else {
-      // no????
-      // I mean, yes, because this was build on the assumption only other flexes should be changing dimensions
-      // Because it can't handle something without children.
-      child.flexGrow = 0;
-      child.flexShrink = 1;
-    }
+    child.flexGrow = flexGrow;
+    // TODO: flexShrink
+    // child.flexShrink = flexShrink;
 
     child.basis = this.direction === DIRECTION.ROW ? child.width : child.height;
 
     this.axisSizeSum += child.basis;
     this.growSum += child.flexGrow;
-    this.shrinkSum += child.flexShrink * child.basis;
+    this.minFlexGrow += child.flexGrow ? child.basis : 0;
+    // this.shrinkSum += child.flexShrink * child.basis;
+
+    child._flexWidth = child.width;
+    child._flexHeight = child.height;
 
     this.widths.push(child.width);
     this.heights.push(child.height);
@@ -199,7 +210,8 @@ export abstract class AbstractFlex implements FlexElement {
 
       this.axisSizeSum += child.basis;
       this.growSum += child.flexGrow;
-      this.shrinkSum += child.flexShrink * child.basis;
+      this.minFlexGrow += child.flexGrow ? child.basis : 0;
+      //this.shrinkSum += child.flexShrink * child.basis;
 
       this.widths.push(child.width);
       this.heights.push(child.height);
@@ -282,13 +294,13 @@ export abstract class AbstractFlex implements FlexElement {
 
   setWidth(width: number): void {
     this.width = width;
-    this.minWidth = width;
+    this._flexWidth = width;
     this.layout();
   }
 
   setHeight(height: number): void {
     this.height = height;
-    this.minHeight = height;
+    this._flexHeight = height;
     this.layout();
   }
 

@@ -4,7 +4,7 @@ import {
   AlignmentItems,
   DIRECTION,
   FlexElement,
-  FlexProps,
+  FlexProperties,
   JUSTIFY,
   Justify,
 } from "./AbstractFlex";
@@ -30,17 +30,18 @@ const ALIGNMENT = {
 type Alignment = (typeof ALIGNMENT)[keyof typeof ALIGNMENT];
 
 export class FlexColumn extends AbstractFlex {
-  constructor(config: FlexProps) {
+  constructor(config: FlexProperties) {
     super(config);
     this.direction = DIRECTION.COLUMN;
   }
 
   add(
     child: FlexElement,
-    flexGrow: number = 0,
-    flexShrink: number = 1
+    flexGrow: number = 0
+    // TODO: flexShrink
+    //flexShrink: number = 1
   ): FlexElement {
-    super.add(child, flexGrow, flexShrink);
+    super.add(child, flexGrow);
 
     this.width = Math.max(this.width, child.width + this.padding * 2);
     this.height = Math.max(
@@ -106,7 +107,7 @@ export class FlexColumn extends AbstractFlex {
   }
 
   getFreeSpace(): number {
-    return this.innerBounds.height - this.getAxisTotalSizeSum();
+    return this.innerBounds.height - this.axisSizeSum;
   }
 
   getAxisTotalSizeSum(): number {
@@ -125,55 +126,67 @@ export class FlexColumn extends AbstractFlex {
 
   updateAxis(align: Alignment): void {
     let freeSpace = this.getFreeSpace();
+    let considerGrow = false;
 
-    if ((this.growSum && freeSpace >= 0) || freeSpace < 0) {
-      // TODO: handle this
+    if (this.growSum && freeSpace > this.minFlexGrow) {
+      considerGrow = true;
+      align = ALIGNMENT.TOP;
+      // Undo the added margin from getAxisTotalSizeSum
+      freeSpace -= this.margin * (this.children.length - 1);
     }
 
     let position = 0;
-    let padding = 0;
+    let axisPadding = 0;
 
     switch (align) {
       case ALIGNMENT.TOP: {
         position = this.innerBounds.top;
-        padding = this.margin;
+        axisPadding = this.margin;
         break;
       }
       case ALIGNMENT.CENTER: {
         position =
           this.innerBounds.top +
           (this.innerBounds.height / 2 - this.getAxisTotalSizeSum() / 2);
-        padding = this.margin;
+        axisPadding = this.margin;
         break;
       }
       case ALIGNMENT.BOTTOM: {
         position = this.innerBounds.bottom - this.getAxisTotalSizeSum();
-        padding = this.margin;
+        axisPadding = this.margin;
         break;
       }
       case ALIGNMENT.SPACE_BETWEEN: {
         position = this.innerBounds.top;
-        padding = freeSpace / (this.children.length - 1);
+        axisPadding = freeSpace / (this.children.length - 1);
         break;
       }
       case ALIGNMENT.SPACE_AROUND: {
-        padding = freeSpace / this.children.length;
-        position = this.innerBounds.top + padding / 2;
+        axisPadding = freeSpace / this.children.length;
+        position = this.innerBounds.top + axisPadding / 2;
         break;
       }
       case ALIGNMENT.SPACE_EVENLY: {
-        padding = freeSpace / (this.children.length + 1);
-        position = this.innerBounds.top + padding;
+        axisPadding = freeSpace / (this.children.length + 1);
+        position = this.innerBounds.top + axisPadding;
         break;
       }
     }
 
     this.children.forEach((item) => {
+      if (considerGrow && item.flexGrow) {
+        item.height = item.basis + (item.flexGrow / this.growSum) * freeSpace;
+      } else {
+        if (item.height !== item._flexHeight) {
+          item.height = item._flexHeight;
+        }
+      }
+
       if (item.setOrigin) {
         item.setOrigin(0, 0);
       }
       item.setY(position);
-      position += item.height + padding;
+      position += item.height + axisPadding;
     });
   }
 
@@ -219,8 +232,8 @@ export class FlexColumn extends AbstractFlex {
   trashLayout(): void {
     super.trashLayout();
 
-    this.width = this.minWidth;
-    this.height = this.minHeight;
+    this.width = this._flexWidth;
+    this.height = this._flexHeight;
 
     let axisSizeSum = this.getAxisTotalSizeSum();
 
