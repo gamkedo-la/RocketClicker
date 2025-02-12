@@ -30,6 +30,7 @@ export function Flex({
   justify = JUSTIFY.FLEX_START,
   direction = DIRECTION.ROW,
   alignContent = JUSTIFY.CENTER,
+  backgroundElement = undefined,
   wrapped = false,
   ...props
 }: FlexProps): FlexRow | FlexColumn | FlexWrapped {
@@ -49,6 +50,7 @@ export function Flex({
     direction,
     alignContent,
     children,
+    backgroundElement,
   };
 
   let flex: FlexRow | FlexColumn | FlexWrapped;

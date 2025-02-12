@@ -1,4 +1,5 @@
 import { SignalValue } from "@game/state/lib/types";
+import { TransformablePhaserGameObject } from "../lib/types";
 
 export const ALIGN_ITEMS = {
   CENTER: "center",
@@ -32,13 +33,13 @@ export interface FlexElement {
   setHeight: any;
   x: number;
   y: number;
-  isFlex: boolean;
-  flexParent: AbstractFlex | null;
   basis: number;
   width: number;
   height: number;
   flexGrow: number;
   flexShrink: number;
+
+  backgroundElement: TransformablePhaserGameObject | null;
 
   setY: (y: number) => void;
   setX: (x: number) => void;
@@ -57,6 +58,7 @@ export interface FlexProps {
   justify?: Justify;
   direction?: Direction;
   children?: FlexElement | FlexElement[];
+  backgroundElement?: TransformablePhaserGameObject;
   alignContent?: Justify;
   wrapped?: boolean;
 }
@@ -88,6 +90,7 @@ export abstract class AbstractFlex implements FlexElement {
   alignContent?: Justify;
 
   children: FlexElement[];
+  backgroundElement: TransformablePhaserGameObject | null;
 
   basis: number;
   flexGrow: number;
@@ -106,9 +109,6 @@ export abstract class AbstractFlex implements FlexElement {
 
   protected widths: number[];
   protected heights: number[];
-
-  isFlex: boolean;
-  flexParent: AbstractFlex | null;
 
   constructor(config: FlexProperties) {
     this.origin = new Phaser.Math.Vector2(0, 0);
@@ -139,15 +139,19 @@ export abstract class AbstractFlex implements FlexElement {
     this.heights = [];
 
     this.outerBounds = new Phaser.Geom.Rectangle(this.x, this.y, 0, 0);
+
+    if (config.backgroundElement) {
+      this.backgroundElement = config.backgroundElement;
+      this.backgroundElement.setOrigin(0, 0);
+      this.backgroundElement.setScrollFactor(0, 0);
+    }
+
     this.innerBounds = new Phaser.Geom.Rectangle(
       this.x + this.padding,
       this.y + this.padding,
       0,
       0
     );
-
-    this.isFlex = true;
-    this.flexParent = null;
 
     return this;
   }
@@ -230,6 +234,17 @@ export abstract class AbstractFlex implements FlexElement {
       this.outerBounds.left + this.padding,
       this.outerBounds.top + this.padding
     );
+
+    if (this.backgroundElement) {
+      this.backgroundElement.setPosition(
+        this.innerBounds.left,
+        this.innerBounds.top
+      );
+      this.backgroundElement.setSize(
+        this.innerBounds.width,
+        this.innerBounds.height
+      );
+    }
   }
 
   getDebug(
@@ -307,14 +322,20 @@ export abstract class AbstractFlex implements FlexElement {
   setScrollFactor(x: number, y: number): void {
     this.scrollFactor.set(x, y);
     // TODO: handle proper scroll factor
+    console.warn("setScrollFactor not implemented");
   }
 
   setOrigin(x: number, y: number): void {
     this.origin.set(x, y);
     // TODO: handle proper origin
+    console.warn("setOrigin not implemented");
   }
 
   addToScene(scene: Phaser.Scene = window.currentScene) {
+    if (this.backgroundElement && !this.backgroundElement.displayList) {
+      scene.add.existing(this.backgroundElement);
+    }
+
     this.children.forEach((child) => {
       if (child instanceof AbstractFlex) {
         child.addToScene(scene);
