@@ -19,6 +19,14 @@ declare global {
   }
 }
 
+export type TransformablePhaserGameObject = Phaser.GameObjects.GameObject & {
+  width: number;
+  height: number;
+  setSize: (width: number, height: number) => void;
+} & Phaser.GameObjects.Components.Transform &
+  Phaser.GameObjects.Components.ScrollFactor &
+  Phaser.GameObjects.Components.Origin;
+
 export type ContainerElement =
   PhaserGameObjectProps<Phaser.GameObjects.Container>;
 

@@ -306,7 +306,9 @@ export function setupGameObject<T extends Phaser.GameObjects.GameObject>(
       const children = (
         Array.isArray(containerProps.children)
           ? containerProps.children.flat(2)
-          : [containerProps.children]
+          : containerProps.children
+          ? [containerProps.children]
+          : []
       ) as Phaser.GameObjects.GameObject[];
 
       const container = scene.make.container(
@@ -327,10 +329,10 @@ export function setupGameObject<T extends Phaser.GameObjects.GameObject>(
       container.setSize(
         containerProps.width instanceof SignalImpl
           ? containerProps.width.get()
-          : containerProps.width,
+          : containerProps.width || 0,
         containerProps.height instanceof SignalImpl
           ? containerProps.height.get()
-          : containerProps.height
+          : containerProps.height || 0
       );
 
       if (import.meta.env.DEV) {

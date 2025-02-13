@@ -185,7 +185,12 @@ export class FlexRow extends AbstractFlex {
       if (item.setOrigin) {
         item.setOrigin(0, 0);
       }
-      item.setX(position);
+
+      if (this.containerElement) {
+        item.setX(position - this.containerElement.x);
+      } else {
+        item.setX(position);
+      }
 
       position += item.width + axisPadding;
     });
@@ -226,7 +231,11 @@ export class FlexRow extends AbstractFlex {
       if (item.setOrigin) {
         item.setOrigin(0, 0);
       }
-      item.setY(position - item.height * scale);
+      if (this.containerElement) {
+        item.setY(position - item.height * scale - this.containerElement.y);
+      } else {
+        item.setY(position - item.height * scale);
+      }
     });
   }
 

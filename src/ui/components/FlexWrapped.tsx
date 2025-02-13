@@ -28,8 +28,6 @@ const ALIGNMENT = {
   SPACE_EVENLY: "space-evenly",
 } as const;
 
-type Alignment = (typeof ALIGNMENT)[keyof typeof ALIGNMENT];
-
 export class FlexWrapped extends AbstractFlex {
   private linesContainer: AbstractFlex;
   private currentLine: AbstractFlex;

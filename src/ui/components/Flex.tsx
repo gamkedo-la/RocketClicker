@@ -30,6 +30,7 @@ export function Flex({
   justify = JUSTIFY.FLEX_START,
   direction = DIRECTION.ROW,
   alignContent = JUSTIFY.CENTER,
+  containerElement = undefined,
   backgroundElement = undefined,
   wrapped = false,
   ...props
@@ -50,6 +51,7 @@ export function Flex({
     direction,
     alignContent,
     children,
+    containerElement,
     backgroundElement,
   };
 

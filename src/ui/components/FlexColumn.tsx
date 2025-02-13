@@ -44,13 +44,13 @@ export class FlexColumn extends AbstractFlex {
     super.add(child, flexGrow);
 
     this.width = Math.max(this.width, child.width + this.padding * 2);
+
     this.height = Math.max(
       this.height,
       this.getAxisTotalSizeSum() + this.padding * 2
     );
 
     this.layout();
-
     return child;
   }
 
@@ -185,7 +185,13 @@ export class FlexColumn extends AbstractFlex {
       if (item.setOrigin) {
         item.setOrigin(0, 0);
       }
-      item.setY(position);
+
+      if (this.containerElement) {
+        item.setY(position - this.containerElement.y);
+      } else {
+        item.setY(position);
+      }
+
       position += item.height + axisPadding;
     });
   }
@@ -225,7 +231,11 @@ export class FlexColumn extends AbstractFlex {
       if (item.setOrigin) {
         item.setOrigin(0, 0);
       }
-      item.setX(position - item.width * scale);
+      if (this.containerElement) {
+        item.setX(position - item.width * scale - this.containerElement.x);
+      } else {
+        item.setX(position - item.width * scale);
+      }
     });
   }
 
