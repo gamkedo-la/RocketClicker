@@ -439,7 +439,7 @@ const buildings: Building[] = [
   },
 ];
 
-interface Building {
+export interface Building {
   name: string;
   building_cost: Record<string, number>;
 
@@ -796,6 +796,12 @@ export class GameScene extends AbstractScene {
         rocket_text.setText("Rocket launched!");
       }
     });
+
+    this.scene.run(SCENES.HUD);
+    // TODO: it seems that the external + threejs wrecks the scale math, so here is a hack
+    setTimeout(() => {
+      this.scale.refresh();
+    }, 100);
   }
 
   registerSystems() {
