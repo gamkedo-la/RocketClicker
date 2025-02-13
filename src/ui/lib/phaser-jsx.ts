@@ -211,9 +211,13 @@ export function setupGameObject<T extends Phaser.GameObjects.GameObject>(
       gameObject = scene.make.text(
         {
           x:
-            textProps.x instanceof SignalImpl ? textProps.x.get() : textProps.x,
+            textProps.x instanceof SignalImpl
+              ? textProps.x.get()
+              : textProps.x || 0,
           y:
-            textProps.y instanceof SignalImpl ? textProps.y.get() : textProps.y,
+            textProps.y instanceof SignalImpl
+              ? textProps.y.get()
+              : textProps.y || 0,
           text:
             textProps.text instanceof SignalImpl
               ? textProps.text.get()
@@ -234,10 +238,10 @@ export function setupGameObject<T extends Phaser.GameObjects.GameObject>(
         scene,
         rectangleProps.x instanceof SignalImpl
           ? rectangleProps.x.get()
-          : rectangleProps.x,
+          : rectangleProps.x || 0,
         rectangleProps.y instanceof SignalImpl
           ? rectangleProps.y.get()
-          : rectangleProps.y,
+          : rectangleProps.y || 0,
         rectangleProps.width instanceof SignalImpl
           ? rectangleProps.width.get()
           : rectangleProps.width,
