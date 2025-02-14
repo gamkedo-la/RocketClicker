@@ -5,8 +5,15 @@ import PhaserGamebus from "@game/lib/gamebus";
 import { GameStatus } from "@game/state/game-state";
 import SoundSystem from "@game/systems/SoundSystem";
 
+import { Building } from "@game/entities/buildings/types";
 import { AbstractScene } from "..";
 import { SCENES } from "../scenes";
+import {
+  MATERIALS,
+  MATERIALS_GENERATION_ORDER,
+  MATERIALS_NAMES,
+} from "@game/entities/materials/index";
+import { BUILDINGS } from "@game/entities/buildings/index";
 
 let i = 0;
 
@@ -23,7 +30,7 @@ function hasResources(
   material_storage: Record<string, Signal<number>>
 ) {
   return Object.entries(building.building_cost).every(([material, value]) => {
-    return material_storage[material as keyof typeof materials].get() >= value;
+    return material_storage[material as keyof typeof MATERIALS].get() >= value;
   });
 }
 
@@ -104,10 +111,10 @@ function Button({
         y={3}
         origin={{ x: 0.5, y: 0 }}
         text={`${Object.values(building.building_cost)} ${
-          materials_names[
+          MATERIALS_NAMES[
             Object.keys(
               building.building_cost
-            )[0] as keyof typeof materials_names
+            )[0] as keyof typeof MATERIALS_NAMES
           ]
         }`}
         style={computed(() => ({
@@ -175,7 +182,7 @@ function Cell({
           const building = mouse_selected_building.get()!;
           Object.entries(building.building_cost).forEach(
             ([material, value]) => {
-              material_storage[material as keyof typeof materials].update(
+              material_storage[material as keyof typeof MATERIALS].update(
                 (material) => material - value
               );
             }
@@ -226,7 +233,7 @@ function Cell({
             .map(
               ([key, value]) =>
                 `[→ ${value.toLocaleString([], { maximumFractionDigits: 0 })} ${
-                  materials_names[key as keyof typeof materials_names]
+                  MATERIALS_NAMES[key as keyof typeof MATERIALS_NAMES]
                 }]`
             )
             .join("\n");
@@ -234,7 +241,7 @@ function Cell({
             .map(
               ([key, value]) =>
                 `[← ${value.toLocaleString([], { maximumFractionDigits: 0 })} ${
-                  materials_names[key as keyof typeof materials_names]
+                  MATERIALS_NAMES[key as keyof typeof MATERIALS_NAMES]
                 }]`
             )
             .join("\n");
@@ -254,7 +261,7 @@ function Material({
 }: {
   x?: number;
   y?: number;
-  name: keyof typeof materials;
+  name: keyof typeof MATERIALS;
   value: Signal<number>;
 }) {
   let prev = 0;
@@ -291,7 +298,7 @@ function Material({
         x={0}
         y={0}
         origin={{ x: 1, y: 0 }}
-        text={`${materials_names[name]}`}
+        text={`${MATERIALS_NAMES[name]}`}
         style={UI_TEXT_STYLE}
       />
       {number_text}
@@ -324,46 +331,10 @@ function showFloatingChange(
   });
 }
 
-export const materials = {
-  kWh: "kWh",
-  LH2: "LH2",
-  LOX: "LOX",
-  H2: "H2",
-  O2: "O2",
-  H2O: "H2O",
-  StarDust: "StarDust",
-  Metals: "Metals",
-  PureMetals: "PureMetals",
-} as const;
-
-export const materials_names = {
-  kWh: "kWh",
-  LH2: "LH2",
-  LOX: "LOX",
-  H2: "H2",
-  O2: "O2",
-  H2O: "H2O",
-  StarDust: "(SD)",
-  Metals: "(M)",
-  PureMetals: "(PM)",
-};
-
-const materials_generation_order = [
-  materials.kWh,
-  materials.StarDust,
-  materials.Metals,
-  materials.PureMetals,
-  materials.H2O,
-  materials.H2,
-  materials.O2,
-  materials.LOX,
-  materials.LH2,
-];
-
 const tick = signal(0);
 
 export const material_storage: Record<
-  keyof typeof materials,
+  keyof typeof MATERIALS,
   Signal<number>
 > = {
   kWh: signal(0),
@@ -376,77 +347,6 @@ export const material_storage: Record<
   Metals: signal(0),
   StarDust: signal(100),
 };
-
-const buildings: Building[] = [
-  {
-    name: "Generator",
-    building_cost: { [materials.StarDust]: 50 },
-    input: { [materials.StarDust]: 50 },
-    output: { [materials.kWh]: 100 },
-  },
-  {
-    name: "Solar Panel",
-    building_cost: { [materials.Metals]: 1_000 },
-    input: {},
-    output: { [materials.kWh]: 5000 },
-  },
-  {
-    name: "Fuel Cell",
-    building_cost: { [materials.PureMetals]: 5_000 },
-    input: { [materials.O2]: 120, [materials.H2]: 120 },
-    output: { [materials.kWh]: 30_000, [materials.H2O]: 120 },
-  },
-  {
-    name: "Duster",
-    building_cost: { [materials.StarDust]: 100 },
-    input: { [materials.kWh]: 200 },
-    output: { [materials.StarDust]: 2_000 },
-  },
-  {
-    name: "Miner",
-    building_cost: { [materials.StarDust]: 1_000 },
-    input: { [materials.kWh]: 1_000 },
-    output: { [materials.Metals]: 1_000 },
-  },
-  {
-    name: "Chemical plant",
-    building_cost: { [materials.Metals]: 2_500 },
-    input: { [materials.kWh]: 8750, [materials.Metals]: 35_000 },
-    output: { [materials.PureMetals]: 3_500 },
-  },
-  {
-    name: "Condenser",
-    building_cost: { [materials.Metals]: 10_000 },
-    input: { [materials.kWh]: 2_000 },
-    output: { [materials.H2O]: 7_000 },
-  },
-  {
-    name: "Electrolysis",
-    building_cost: { [materials.Metals]: 50_000 },
-    input: { [materials.kWh]: 50_000, [materials.H2O]: 10_000 },
-    output: { [materials.O2]: 750, [materials.H2]: 1500 },
-  },
-  {
-    name: "H2 Compressor",
-    building_cost: { [materials.PureMetals]: 10_000 },
-    input: { [materials.kWh]: 2500, [materials.H2]: 350 },
-    output: { [materials.LH2]: 250 },
-  },
-  {
-    name: "O2 Compressor",
-    building_cost: { [materials.PureMetals]: 8_000 },
-    input: { [materials.kWh]: 200, [materials.O2]: 300 },
-    output: { [materials.LOX]: 200 },
-  },
-];
-
-export interface Building {
-  name: string;
-  building_cost: Record<string, number>;
-
-  input: Record<string, number>;
-  output: Record<string, number>;
-}
 
 const grid = [
   [0, 1, 2, 3, 4],
@@ -559,7 +459,7 @@ export class GameScene extends AbstractScene {
 
     this.add.existing(
       <Stack x={130} y={90} spacing={8}>
-        {buildings.map((building) => (
+        {BUILDINGS.map((building) => (
           <Button building={building} />
         ))}
       </Stack>
@@ -582,10 +482,10 @@ export class GameScene extends AbstractScene {
 
     this.add.existing(
       <Stack x={920} y={80} spacing={23}>
-        {Object.entries(materials).map(([key, _]) => (
+        {Object.entries(MATERIALS).map(([key, _]) => (
           <Material
-            name={key as keyof typeof materials}
-            value={material_storage[key as keyof typeof materials]}
+            name={key as keyof typeof MATERIALS}
+            value={material_storage[key as keyof typeof MATERIALS]}
           />
         ))}
       </Stack>
@@ -603,11 +503,11 @@ export class GameScene extends AbstractScene {
             return;
           }
           console.log("Stardust mining button clicked!");
-          console.log("Before:", material_storage[materials.StarDust].get());
-          material_storage[materials.StarDust].update(
+          console.log("Before:", material_storage[MATERIALS.StarDust].get());
+          material_storage[MATERIALS.StarDust].update(
             (material) => material + 20
           );
-          console.log("After:", material_storage[materials.StarDust].get());
+          console.log("After:", material_storage[MATERIALS.StarDust].get());
           showFloatingChange(this, self.x, self.y, 20);
           (self.first! as any).fillColor = 0xaaaaa00;
           // needs a scene reference
@@ -637,8 +537,8 @@ export class GameScene extends AbstractScene {
     );
 
     this.key_one.on("down", () => {
-      if (hasResources(buildings[0], material_storage)) {
-        mouse_selected_building.set(buildings[0]);
+      if (hasResources(BUILDINGS[0], material_storage)) {
+        mouse_selected_building.set(BUILDINGS[0]);
         this.soundSystem.play("build-generator");
       } else {
         this.soundSystem.play("sfx-gui-deny");
@@ -646,8 +546,8 @@ export class GameScene extends AbstractScene {
     });
 
     this.key_two.on("down", () => {
-      if (hasResources(buildings[1], material_storage)) {
-        mouse_selected_building.set(buildings[1]);
+      if (hasResources(BUILDINGS[1], material_storage)) {
+        mouse_selected_building.set(BUILDINGS[1]);
         this.soundSystem.play("build-solarpanel");
       } else {
         this.soundSystem.play("sfx-gui-deny");
@@ -655,8 +555,8 @@ export class GameScene extends AbstractScene {
     });
 
     this.key_three.on("down", () => {
-      if (hasResources(buildings[2], material_storage)) {
-        mouse_selected_building.set(buildings[2]);
+      if (hasResources(BUILDINGS[2], material_storage)) {
+        mouse_selected_building.set(BUILDINGS[2]);
         this.soundSystem.play("build-fuelcell");
       } else {
         this.soundSystem.play("sfx-gui-deny");
@@ -664,8 +564,8 @@ export class GameScene extends AbstractScene {
     });
 
     this.key_four.on("down", () => {
-      if (hasResources(buildings[3], material_storage)) {
-        mouse_selected_building.set(buildings[3]);
+      if (hasResources(BUILDINGS[3], material_storage)) {
+        mouse_selected_building.set(BUILDINGS[3]);
         this.soundSystem.play("build-duster");
       } else {
         this.soundSystem.play("sfx-gui-deny");
@@ -673,8 +573,8 @@ export class GameScene extends AbstractScene {
     });
 
     this.key_five.on("down", () => {
-      if (hasResources(buildings[4], material_storage)) {
-        mouse_selected_building.set(buildings[4]);
+      if (hasResources(BUILDINGS[4], material_storage)) {
+        mouse_selected_building.set(BUILDINGS[4]);
         this.soundSystem.play("build-miner");
       } else {
         this.soundSystem.play("sfx-gui-deny");
@@ -682,8 +582,8 @@ export class GameScene extends AbstractScene {
     });
 
     this.key_six.on("down", () => {
-      if (hasResources(buildings[5], material_storage)) {
-        mouse_selected_building.set(buildings[5]);
+      if (hasResources(BUILDINGS[5], material_storage)) {
+        mouse_selected_building.set(BUILDINGS[5]);
         this.soundSystem.play("build-chemicalplant");
       } else {
         this.soundSystem.play("sfx-gui-deny");
@@ -691,8 +591,8 @@ export class GameScene extends AbstractScene {
     });
 
     this.key_seven.on("down", () => {
-      if (hasResources(buildings[6], material_storage)) {
-        mouse_selected_building.set(buildings[6]);
+      if (hasResources(BUILDINGS[6], material_storage)) {
+        mouse_selected_building.set(BUILDINGS[6]);
         this.soundSystem.play("build-condenserl");
       } else {
         this.soundSystem.play("sfx-gui-deny");
@@ -700,8 +600,8 @@ export class GameScene extends AbstractScene {
     });
 
     this.key_eight.on("down", () => {
-      if (hasResources(buildings[7], material_storage)) {
-        mouse_selected_building.set(buildings[7]);
+      if (hasResources(BUILDINGS[7], material_storage)) {
+        mouse_selected_building.set(BUILDINGS[7]);
         this.soundSystem.play("build-electrolysis");
       } else {
         this.soundSystem.play("sfx-gui-deny");
@@ -709,8 +609,8 @@ export class GameScene extends AbstractScene {
     });
 
     this.key_nine.on("down", () => {
-      if (hasResources(buildings[8], material_storage)) {
-        mouse_selected_building.set(buildings[8]);
+      if (hasResources(BUILDINGS[8], material_storage)) {
+        mouse_selected_building.set(BUILDINGS[8]);
         this.soundSystem.play("build-H2compressor");
       } else {
         this.soundSystem.play("sfx-gui-deny");
@@ -718,8 +618,8 @@ export class GameScene extends AbstractScene {
     });
 
     this.key_zero.on("down", () => {
-      if (hasResources(buildings[9], material_storage)) {
-        mouse_selected_building.set(buildings[9]);
+      if (hasResources(BUILDINGS[9], material_storage)) {
+        mouse_selected_building.set(BUILDINGS[9]);
         this.soundSystem.play("build-O2compressor");
       } else {
         this.soundSystem.play("sfx-gui-deny");
@@ -788,8 +688,8 @@ export class GameScene extends AbstractScene {
 
     effect(() => {
       if (
-        material_storage[materials.LH2].get() > 140_000 &&
-        material_storage[materials.LOX].get() > 30_000
+        material_storage[MATERIALS.LH2].get() > 140_000 &&
+        material_storage[MATERIALS.LOX].get() > 30_000
       ) {
         timer_event.remove();
         timer_text.setStyle({ color: "#aaff00", fontSize: "48px" });
@@ -823,9 +723,9 @@ export class GameScene extends AbstractScene {
 
       tick.update((tick) => tick + 1);
 
-      material_storage[materials.kWh].set(0);
+      material_storage[MATERIALS.kWh].set(0);
 
-      materials_generation_order.forEach((material_order) => {
+      MATERIALS_GENERATION_ORDER.forEach((material_order) => {
         grid_buildings.forEach((buildingSignal) => {
           const building = buildingSignal.get();
 
@@ -834,7 +734,7 @@ export class GameScene extends AbstractScene {
           // TODO: Fuel cell is evaluating twice because it outputs twice
           if (
             building.output[material_order] === undefined ||
-            (material_order === materials.H2O && building.name === "Fuel Cell")
+            (material_order === MATERIALS.H2O && building.name === "Fuel Cell")
           )
             return;
 
@@ -842,9 +742,9 @@ export class GameScene extends AbstractScene {
           let successRate = 1;
           Object.entries(building.input).forEach(([input, value]) => {
             const material =
-              material_storage[input as keyof typeof materials].get();
+              material_storage[input as keyof typeof MATERIALS].get();
             successRate = Math.min(successRate || 1, material / value);
-            material_storage[input as keyof typeof materials].update(
+            material_storage[input as keyof typeof MATERIALS].update(
               (material) => Math.max(material - value, 0)
             );
           });
@@ -852,7 +752,7 @@ export class GameScene extends AbstractScene {
           if (!successRate) return;
 
           Object.entries(building.output).forEach(([output, value]) => {
-            material_storage[output as keyof typeof materials].update(
+            material_storage[output as keyof typeof MATERIALS].update(
               (material) => material + value * successRate
             );
           });
