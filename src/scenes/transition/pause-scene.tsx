@@ -14,6 +14,10 @@ export class PauseScene extends AbstractScene {
       Phaser.Input.Keyboard.KeyCodes.ESC
     );
     this.key_p = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.P);
+
+    const { width, height } = this.scale;
+
+    this.add.rectangle(0, 0, width, height, 0x000000, 0.6).setOrigin(0);
   }
 
   update() {
