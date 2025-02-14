@@ -1,5 +1,5 @@
-import { mutable } from "./lib/signals";
-import { MutableSignal } from "./lib/types";
+import { mutable } from "@game/core/signals/signals";
+import { MutableSignal } from "@game/core/signals/types";
 
 export const GameStatus = {
   LOADING: "loading",

@@ -1,17 +1,17 @@
-import { SignalImpl } from "@game/state/lib/signals";
-import { Signal } from "@game/state/lib/types";
+import { SignalImpl } from "@game/core/signals/signals";
+import { Signal } from "@game/core/signals/types";
 
 import {
-  cleanupSymbol,
   ContainerElement,
   ImageElement,
   NineSliceElement,
   PhaserGameObjectProps,
   RectangleElement,
-  SignalCleanup,
   SpriteElement,
   TextElement,
 } from "./types";
+
+import { cleanupSymbol, SignalCleanup } from "@game/core/signals/types";
 
 export const JsxElementsRegistry = {
   elements: new Map<

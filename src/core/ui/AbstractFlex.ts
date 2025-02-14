@@ -1,5 +1,5 @@
-import { SignalValue } from "@game/state/lib/types";
-import { TransformablePhaserGameObject } from "../lib/types";
+import { TransformablePhaserGameObject } from "@game/core/jsx/types";
+import { SignalValue } from "@game/core/signals/types";
 
 export const ALIGN_ITEMS = {
   CENTER: "center",

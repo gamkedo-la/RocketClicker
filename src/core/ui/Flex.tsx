@@ -2,7 +2,8 @@
  * Based off https://github.com/jjcapellan/phaser3-flex
  */
 
-import { isSignal } from "@game/state/lib/signals";
+import { isSignal } from "@game/core/signals/signals";
+
 import {
   ALIGN_ITEMS,
   DIRECTION,

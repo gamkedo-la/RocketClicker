@@ -1,4 +1,4 @@
-import { Flex } from "../../ui/components/Flex";
+import { Flex } from "@game/core/ui/Flex";
 
 export const LeftPanel = ({
   width,

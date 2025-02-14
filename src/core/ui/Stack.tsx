@@ -1,6 +1,6 @@
-import { getSignalValue } from "@game/state/lib/signals";
-import { Signal } from "@game/state/lib/types";
-import { PhaserGameObjectProps } from "@game/ui/lib/types";
+import { getSignalValue } from "@game/core/signals/signals";
+import { Signal } from "@game/core/signals/types";
+import { PhaserGameObjectProps } from "@game/core/jsx/types";
 
 type Alignment = "start" | "center" | "end";
 type Direction = "horizontal" | "vertical";
@@ -25,6 +25,9 @@ interface StackProps
   debug?: boolean;
 }
 
+/**
+ * @deprecated Use Flex instead
+ */
 export function Stack({
   direction = "vertical",
   spacing = 0,

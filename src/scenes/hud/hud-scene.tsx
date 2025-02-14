@@ -1,6 +1,7 @@
-import PhaserGamebus from "../../lib/gamebus";
-import { Flex } from "../../ui/components/Flex";
-import { FlexRow } from "../../ui/components/FlexRow";
+import { Flex } from "@game/core/ui/Flex";
+import { FlexRow } from "@game/core/ui/FlexRow";
+import PhaserGamebus from "@game/lib/gamebus";
+
 import { AbstractScene } from "../index";
 import { SCENES } from "../scenes";
 import { LeftPanel } from "./left-panel";

@@ -1,11 +1,11 @@
 import { Game, Types } from "phaser";
 
-import { GAME_HEIGHT, GAME_WIDTH } from "./consts";
+import { GAME_HEIGHT, GAME_WIDTH } from "@game/consts";
 
-import PhaserGamebus from "./lib/gamebus";
-import { GameStateManager } from "./state/game-state";
+import PhaserGamebus from "@game/lib/gamebus";
+import { GameStateManager } from "@game/state/game-state";
 
-import { SCENE_CLASSES } from "./scenes/scenes";
+import { SCENE_CLASSES } from "@game/scenes/scenes";
 
 if (import.meta.env.VITE_DEBUG) {
 }

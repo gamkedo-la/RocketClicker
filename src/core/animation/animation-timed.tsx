@@ -1,7 +1,7 @@
-import { assert } from "@game/common/assert";
-import { EaseMap } from "@game/lib/easing";
-import { Signal } from "@game/state/lib/types";
-import { makeArray } from "@game/common/arrays";
+import { makeArray } from "@game/core/common/arrays";
+import { assert } from "@game/core/common/assert";
+import { EaseMap } from "@game/core/common/easing";
+import { Signal } from "@game/core/signals/types";
 
 // IDEAS/TODO
 //

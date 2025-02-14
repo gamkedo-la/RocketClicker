@@ -1,16 +1,20 @@
 import {
+  animationIntrinsicElements,
+  setupAnimationElement,
+} from "@game/core/animation/animation-timed";
+
+import { setupGameObject } from "@game/core/jsx/phaser-jsx";
+
+import {
   EventId,
   setupStateMachineElement,
   StateId,
   stateMachineIntrinsicElements,
-} from "../../state/lib/state-machine";
+} from "@game/core/state-machine/state-machine";
 import {
-  stateObserverIntrinsicElements,
   setupStateObserverElement,
-} from "../../state/lib/state-observer";
-import { setupAnimationElement } from "../animation/animation-timed";
-import { animationIntrinsicElements } from "../animation/animation-timed";
-import { setupGameObject } from "./phaser-jsx";
+  stateObserverIntrinsicElements,
+} from "@game/core/state-machine/state-observer";
 
 /*
   JSX runtime

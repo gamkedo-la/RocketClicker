@@ -1,17 +1,16 @@
-import PhaserGamebus from "@game/lib/gamebus";
-import { GameStateManager } from "@game/state/game-state";
-import { SequenceEngine } from "../ui/animation/animation";
-
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-
-import { assert } from "@game/common/assert";
 
 import {
   EffectComposer,
   RenderPixelatedPass,
   UnrealBloomPass,
 } from "three/examples/jsm/Addons.js";
+
+import { SequenceEngine } from "@game/core/animation/animation";
+import { assert } from "@game/core/common/assert";
+import PhaserGamebus from "@game/lib/gamebus";
+import { GameStateManager } from "@game/state/game-state";
 
 export abstract class AbstractScene extends Phaser.Scene {
   // Game plugins

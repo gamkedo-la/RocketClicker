@@ -10,24 +10,6 @@ import {
 import { FlexColumn } from "./FlexColumn";
 import { FlexRow } from "./FlexRow";
 
-/**
- * Alignment values for the flex column
- *
- * This is meant not to be exported! We don't want to be confused with AlignItems
- */
-const ALIGNMENT = {
-  JUSTIFY: "justify",
-  STRETCH: "stretch",
-  TOP: "top",
-  RIGHT: "right",
-  BOTTOM: "bottom",
-  LEFT: "left",
-  CENTER: "center",
-  SPACE_BETWEEN: "space-between",
-  SPACE_AROUND: "space-around",
-  SPACE_EVENLY: "space-evenly",
-} as const;
-
 export class FlexWrapped extends AbstractFlex {
   private linesContainer: AbstractFlex;
   private currentLine: AbstractFlex;

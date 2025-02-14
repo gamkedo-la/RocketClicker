@@ -1,12 +1,11 @@
 import {
   Cleanup,
   Effect,
-  EqualityFn,
   MutableSignal,
   Signal,
   SignalValue,
   Subscriber,
-} from "./types";
+} from "@game/core/signals/types";
 
 /**
  * Signal implementation

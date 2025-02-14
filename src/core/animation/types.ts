@@ -1,6 +1,7 @@
-import { Signal } from "@game/state/lib/types";
+import { EaseMap } from "@game/core/common/easing";
+import { Signal } from "@game/core/signals/types";
+
 import { createParticleEffect } from "./animation";
-import { EaseMap } from "@game/lib/easing";
 
 // Core animation signal with transition tracking
 export type TransitionSignal<T> = Signal<T> & {

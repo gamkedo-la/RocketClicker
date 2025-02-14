@@ -1,4 +1,5 @@
 import { Scene } from "phaser";
+
 import { SCENES } from "../scenes";
 import { DebugPanel, DebugParameters } from "../game/debug-panel";
 

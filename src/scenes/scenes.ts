@@ -1,7 +1,7 @@
 import { Boot } from "./boot/boot-scene";
 import { Preloader } from "./boot/preloader-scene";
 import { GameScene } from "./game/game-scene";
-import { HudScene } from "./hud/hud-scene.tsx";
+import { HudScene } from "./hud/hud-scene";
 import { ThreeCometScene } from "./three/three-comet-scene";
 import { PauseScene } from "./transition/pause-scene";
 

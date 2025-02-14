@@ -1,4 +1,4 @@
-import { SignalValue, Signal } from "@game/state/lib/types";
+import { SignalValue, Signal } from "@game/core/signals/types";
 
 declare global {
   interface Window {
@@ -150,10 +150,4 @@ export interface PhaserGameObjectProps<
 
   bind?: Record<string, Signal<any>>;
   ref?: (gameObject: T) => void;
-}
-
-export const cleanupSymbol = Symbol("cleanup");
-
-export interface SignalCleanup {
-  [cleanupSymbol]: Array<() => void>;
 }

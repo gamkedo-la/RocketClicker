@@ -1,12 +1,5 @@
-
-import { TEXT_STYLE } from "@game/consts";
-import { Stack } from "../../ui/components/Stack";
-import { RESOURCES } from "../../assets";
 import { AbstractScene } from "..";
-import { GameStateManager } from "./state/game-state";
 import { SCENES } from "../scenes";
-import { Game, Types } from "phaser";
-
 
 export class PauseScene extends AbstractScene {
   constructor() {

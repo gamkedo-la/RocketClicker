@@ -1,5 +1,6 @@
-import { makeArray } from "@game/common/arrays";
-import { assert } from "@game/common/assert";
+import { makeArray } from "@game/core/common/arrays";
+import { assert } from "@game/core/common/assert";
+
 import { EventId, FiniteStateMachine, StateId } from "./state-machine";
 
 declare global {
@@ -51,12 +52,12 @@ declare global {
   }
 }
 
-interface StateObserverElement<S extends StateId, E extends EventId> {
+export interface StateObserverElement<S extends StateId, E extends EventId> {
   fsm: FiniteStateMachine<S, E>;
   children?: StateObserverAction<S, E>[];
 }
 
-interface StateObserverContext<S extends StateId, E extends EventId> {
+export interface StateObserverContext<S extends StateId, E extends EventId> {
   fsm: FiniteStateMachine<S, E>;
   type: "enter" | "exit" | "event" | "transition";
   previous: S;

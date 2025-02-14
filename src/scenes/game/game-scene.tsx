@@ -1,11 +1,12 @@
+import { computed, effect, signal } from "@game/core/signals/signals";
+import { Signal } from "@game/core/signals/types";
+import { Stack } from "@game/core/ui/Stack";
+import PhaserGamebus from "@game/lib/gamebus";
 import { GameStatus } from "@game/state/game-state";
-import { computed, effect, signal } from "@game/state/lib/signals";
-import { Signal } from "@game/state/lib/types";
+import SoundSystem from "@game/systems/SoundSystem";
+
 import { AbstractScene } from "..";
-import PhaserGamebus from "../../lib/gamebus";
-import { Stack } from "../../ui/components/Stack";
 import { SCENES } from "../scenes";
-import SoundSystem from "../../systems/SoundSystem.ts";
 
 let i = 0;
 

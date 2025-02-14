@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
-import { signal } from "./signals";
-import { FiniteStateMachine } from "./state-machine";
+
+import { signal } from "@game/core/signals/signals";
+import { FiniteStateMachine } from "@game/core/state-machine/state-machine";
 
 describe("FiniteStateMachine", () => {
   it("should transition between states with valid event", () => {

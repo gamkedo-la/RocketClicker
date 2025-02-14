@@ -25,3 +25,9 @@ export interface MutableSignal<T> extends Signal<T> {
    */
   mutate(fn: (value: T) => boolean): void;
 }
+
+export const cleanupSymbol = Symbol("cleanup");
+
+export interface SignalCleanup {
+  [cleanupSymbol]: Array<() => void>;
+}

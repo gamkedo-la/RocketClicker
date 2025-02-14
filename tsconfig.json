@@ -19,7 +19,7 @@
     "noFallthroughCasesInSwitch": true,
     /* JSX */
     "jsx": "preserve",
-    "jsxImportSource": "@game/ui/lib",
+    "jsxImportSource": "@game/core/jsx",
     "paths": {
       "@game/*": ["./src/*.ts"]
     }

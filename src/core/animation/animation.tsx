@@ -1,4 +1,4 @@
-import { signal } from "@game/state/lib/signals";
+import { signal } from "@game/core/signals/signals";
 
 import {
   ParallelProps,
@@ -281,5 +281,6 @@ export {
   SequenceEngine,
   Step,
   Transition,
-  Wait,
+  Wait
 };
+

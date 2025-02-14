@@ -1,7 +1,7 @@
-import { assert } from "@game/common/assert";
-import { signal } from "./signals";
-import { Signal } from "./types";
-import { makeArray } from "@game/common/arrays";
+import { makeArray } from "@game/core/common/arrays";
+import { assert } from "@game/core/common/assert";
+import { signal } from "@game/core/signals/signals";
+import { Signal } from "@game/core/signals/types";
 
 declare global {
   namespace JSX {

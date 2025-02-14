@@ -1,7 +1,6 @@
-import { describe, it, expect } from "vitest";
+import { signal } from "@game/core/signals/signals";
+import { describe, expect, it, vi } from "vitest";
 import { AnimationPlan, linear } from "./animation-timed";
-import { signal } from "@game/state/lib/signals";
-import { vi } from "vitest";
 
 describe("interpolate", () => {
   it.each([

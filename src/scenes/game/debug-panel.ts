@@ -1,5 +1,5 @@
 import { Pane } from "tweakpane";
-import { JsxElementsRegistry } from "../../ui/lib/phaser-jsx";
+import { JsxElementsRegistry } from "@game/core/jsx/phaser-jsx";
 
 export const DebugParameters: any = {
   fps: 0,
