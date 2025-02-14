@@ -1,6 +1,12 @@
 import { AbstractScene } from "..";
 import { SCENES } from "../scenes";
 
+
+export const PAUSE_TEXT_STYLE = {
+  fontFamily: "DotGothic16",
+  fontSize: "32px",
+};
+
 export class PauseScene extends AbstractScene {
   constructor() {
     super(SCENES.UI_PAUSE);
@@ -18,6 +24,20 @@ export class PauseScene extends AbstractScene {
     const { width, height } = this.scale;
 
     this.add.rectangle(0, 0, width, height, 0x000000, 0.6).setOrigin(0);
+
+    this.add.existing(
+      <text
+        x={500}
+        y={260}
+        text="Paused"
+        resolution={2}
+        style={{
+          ...PAUSE_TEXT_STYLE,
+          fontSize: "48px",
+        }}
+      />
+    );
+
   }
 
   update() {
