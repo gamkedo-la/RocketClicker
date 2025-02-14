@@ -22,14 +22,16 @@ export class HudScene extends AbstractScene {
 
     const { width, height } = this.scale.gameSize;
 
+    const sidebarWidth = 250;
+
     const layout: FlexRow = (
       <Flex margin={0} padding={0} width={width} height={height} />
     );
 
-    layout.add(<LeftPanel width={200} height={height} />);
+    layout.add(<LeftPanel width={sidebarWidth} height={height} />);
     // TODO: figure out how to make "null" elements in Flex?
     layout.add(<rectangle fillColor={0x000000} visible={false} />, 1);
-    layout.add(<RightPanel width={200} height={height} />);
+    layout.add(<RightPanel width={sidebarWidth} height={height} />);
 
     layout.addToScene();
   }
