@@ -22,12 +22,14 @@ export class PauseScene extends AbstractScene {
 
   update() {
     if (this.key_esc.isDown || Phaser.Input.Keyboard.JustDown(this.key_p)) {
+      console.log("Unpausing");
       this.resumeGame();
     }
   }
 
   resumeGame() {
     this.scene.resume(SCENES.GAME);
+    this.scene.run(SCENES.THREE_COMET);
     this.scene.stop(SCENES.UI_PAUSE);
   }
 

@@ -378,7 +378,6 @@ export class GameScene extends AbstractScene {
   constructor() {
     super(SCENES.GAME);
   }
-  paused: boolean;
   muted: boolean;
   key_one!: Phaser.Input.Keyboard.Key;
   key_two!: Phaser.Input.Keyboard.Key;
@@ -499,9 +498,6 @@ export class GameScene extends AbstractScene {
         height={100}
         interactive
         onPointerdown={(self) => {
-          if (this.paused) {
-            return;
-          }
           console.log("Stardust mining button clicked!");
           console.log("Before:", material_storage[MATERIALS.StarDust].get());
           material_storage[MATERIALS.StarDust].update(
@@ -632,14 +628,11 @@ export class GameScene extends AbstractScene {
     });
 
     this.key_p.on("down", () => {
-      this.paused = !this.paused;
-      if (this.paused) {
-        this.scene.pause(SCENES.THREE_COMET);
-        this.scene.launch(SCENES.UI_PAUSE);
-      } else {
-        this.scene.run(SCENES.THREE_COMET);
-      }
-      console.log(this.paused + " Is the Pause state");
+     
+      this.scene.pause(SCENES.THREE_COMET);
+      this.scene.launch(SCENES.UI_PAUSE);
+     
+      console.log("Pausing");
     });
 
     this.key_m.on("down", () => {
@@ -653,9 +646,6 @@ export class GameScene extends AbstractScene {
       delay: 1000,
       repeat: -1,
       callback: () => {
-        if (this.paused) {
-          return;
-        }
         timer.update((timer) => timer + 1);
       },
     });
@@ -714,9 +704,6 @@ export class GameScene extends AbstractScene {
   tickTimer = 0;
 
   update(_time: number, delta: number) {
-    if (this.paused) {
-      return;
-    }
     this.tickTimer += delta;
     if (this.tickTimer >= this.tickLength) {
       this.tickTimer = 0;
