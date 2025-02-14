@@ -630,6 +630,7 @@ export class GameScene extends AbstractScene {
     this.key_p.on("down", () => {
      
       this.scene.pause(SCENES.THREE_COMET);
+      this.scene.pause(SCENES.GAME);
       this.scene.launch(SCENES.UI_PAUSE);
      
       console.log("Pausing");

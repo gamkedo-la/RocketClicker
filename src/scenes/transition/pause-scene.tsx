@@ -29,7 +29,7 @@ export class PauseScene extends AbstractScene {
 
   resumeGame() {
     this.scene.resume(SCENES.GAME);
-    this.scene.run(SCENES.THREE_COMET);
+    this.scene.resume(SCENES.THREE_COMET);
     this.scene.stop(SCENES.UI_PAUSE);
   }
 
