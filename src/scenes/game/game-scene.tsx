@@ -175,6 +175,7 @@ function Cell({
       width={width}
       height={height}
       interactive
+
       onPointerdown={(self, pointer) => {
         if (pointer.time - lastClick < 500) {
           grid_buildings.get(id)!.set(null);
@@ -197,13 +198,37 @@ function Cell({
       onPointerup={(self) => {
         (self.first! as Phaser.GameObjects.Rectangle).fillColor = 0xdddddd;
       }}
-      onPointerover={(self) => {
+      onPointerover={(self, pointer) => {
+         if (grid_buildings.get(id)?.get() !== null) {
+           const tooltipText = <text 
+             text="Double-click to remove"
+             x={pointer.x + 10}
+             y={pointer.y - 10}
+             style={{ 
+               fontSize: '14px',
+               backgroundColor: '#000000',
+               padding: { x: 5, y: 2 },
+               color: '#ffffff'
+             }}
+           />;
+           self.scene.add.existing(tooltipText);
+           (self as any).tooltipText = tooltipText;
+           
+           (self.first! as Phaser.GameObjects.Rectangle).strokeColor = 0xff0000;
+           (self.first! as Phaser.GameObjects.Rectangle).lineWidth = 2;
+         }
         (self.first! as Phaser.GameObjects.Rectangle).fillColor =
           mouse_selected_building.get() !== null ? 0xaaffaa : 0xdddddd;
         // needs a scene reference
         // this.soundSystem.play("sfx-click");
       }}
       onPointerout={(self) => {
+         if ((self as any).tooltipText) {
+            (self as any).tooltipText.destroy();
+            (self as any).tooltipText = null;
+          }
+         (self.first! as Phaser.GameObjects.Rectangle).strokeColor = 0x000000;
+         (self.first! as Phaser.GameObjects.Rectangle).lineWidth = 1;
         (self.first! as Phaser.GameObjects.Rectangle).fillColor = 0xffffff;
       }}
     >
