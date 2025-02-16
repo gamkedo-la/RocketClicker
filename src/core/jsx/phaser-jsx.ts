@@ -1,4 +1,4 @@
-import { SignalImpl } from "@game/core/signals/signals";
+import { getSignalValue, SignalImpl } from "@game/core/signals/signals";
 import { Signal } from "@game/core/signals/types";
 
 import {
@@ -9,6 +9,7 @@ import {
   RectangleElement,
   SpriteElement,
   TextElement,
+  TileSpriteElement,
 } from "./types";
 
 import { cleanupSymbol, SignalCleanup } from "@game/core/signals/types";
@@ -178,6 +179,22 @@ export function setupGameObject<T extends Phaser.GameObjects.GameObject>(
             spriteProps.frame instanceof SignalImpl
               ? spriteProps.frame.get()
               : spriteProps.frame,
+        },
+        false
+      ) as unknown as T;
+      break;
+
+    case "tileSprite":
+      const tileSpriteProps = props as TileSpriteElement;
+
+      gameObject = scene.make.tileSprite(
+        {
+          x: getSignalValue(tileSpriteProps.x, 0),
+          y: getSignalValue(tileSpriteProps.y, 0),
+          width: getSignalValue(tileSpriteProps.width),
+          height: getSignalValue(tileSpriteProps.height),
+          key: getSignalValue(tileSpriteProps.texture),
+          frame: getSignalValue(tileSpriteProps.frame),
         },
         false
       ) as unknown as T;

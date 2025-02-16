@@ -11,6 +11,7 @@ declare global {
       text: TextElement;
       rectangle: RectangleElement;
       sprite: SpriteElement;
+      tileSprite: TileSpriteElement;
       image: ImageElement;
       circle: CircleElement;
       zone: ZoneElement;
@@ -48,6 +49,12 @@ export type SpriteElement = PhaserGameObjectProps<Phaser.GameObjects.Sprite> & {
   texture: SignalValue<string>;
   frame?: SignalValue<string | number>;
 };
+
+export type TileSpriteElement =
+  PhaserGameObjectProps<Phaser.GameObjects.TileSprite> & {
+    texture: SignalValue<string>;
+    frame?: SignalValue<string | number>;
+  };
 
 export type ImageElement = PhaserGameObjectProps<Phaser.GameObjects.Image> & {
   texture: SignalValue<string>;
