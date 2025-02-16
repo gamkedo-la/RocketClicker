@@ -137,6 +137,14 @@ export class DebugPanel {
         label: "Y",
         format: (v: number) => v.toFixed(0),
       });
+      elementFolder.addBinding(element, "width", {
+        label: "Width",
+        format: (v: number) => v.toFixed(0),
+      });
+      elementFolder.addBinding(element, "height", {
+        label: "Height",
+        format: (v: number) => v.toFixed(0),
+      });
 
       // Special handling for containers
       if (isContainer) {
