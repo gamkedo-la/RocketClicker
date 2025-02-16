@@ -220,6 +220,11 @@ export function isSignal(value: any): value is Signal<any> {
   return value instanceof SignalImpl;
 }
 
-export function getSignalValue<T>(value: SignalValue<T>): T {
-  return isSignal(value) ? (value as Signal<T>).get() : (value as T);
+export function getSignalValue<T>(
+  value: SignalValue<T>,
+  defaultValue?: T
+): T | undefined {
+  return isSignal(value)
+    ? (value as Signal<T>).get()
+    : (value as T) ?? defaultValue;
 }
