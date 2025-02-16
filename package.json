@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@types/three": "^0.172.0",
-    "phaser": "3.87.0",
+    "phaser": "3.88.0",
     "three": "^0.172.0",
     "tweakpane": "4.0.5"
   }
