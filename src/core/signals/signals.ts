@@ -222,9 +222,13 @@ export function isSignal(value: any): value is Signal<any> {
 
 export function getSignalValue<T>(
   value: SignalValue<T>,
-  defaultValue?: T
-): T | undefined {
-  return isSignal(value)
-    ? (value as Signal<T>).get()
-    : (value as T) ?? defaultValue;
+  defaultValue: T = value as T
+): NonNullable<T> {
+  const resolvedValue = isSignal(value) ? value.get() : defaultValue;
+  if (resolvedValue == null) {
+    throw new Error(
+      "Signal value and default value cannot both be null/undefined"
+    );
+  }
+  return resolvedValue as NonNullable<T>;
 }

@@ -36,7 +36,7 @@ export const JsxElementsRegistry = {
     parent: Phaser.GameObjects.GameObject | null
   ): Phaser.GameObjects.GameObject[] {
     return Array.from(this.elements.entries())
-      .filter(([child, p]) => child.parentContainer === parent)
+      .filter(([child, _p]) => child.parentContainer === parent)
       .map(([child]) => child);
   },
 };
@@ -163,22 +163,10 @@ export function setupGameObject<T extends Phaser.GameObjects.GameObject>(
 
       gameObject = scene.make.sprite(
         {
-          x:
-            spriteProps.x instanceof SignalImpl
-              ? spriteProps.x.get()
-              : spriteProps.x || 0,
-          y:
-            spriteProps.y instanceof SignalImpl
-              ? spriteProps.y.get()
-              : spriteProps.y || 0,
-          key:
-            spriteProps.texture instanceof SignalImpl
-              ? spriteProps.texture.get()
-              : spriteProps.texture,
-          frame:
-            spriteProps.frame instanceof SignalImpl
-              ? spriteProps.frame.get()
-              : spriteProps.frame,
+          x: getSignalValue(spriteProps.x, 0),
+          y: getSignalValue(spriteProps.y, 0),
+          key: getSignalValue(spriteProps.texture),
+          frame: getSignalValue(spriteProps.frame),
         },
         false
       ) as unknown as T;
@@ -205,18 +193,9 @@ export function setupGameObject<T extends Phaser.GameObjects.GameObject>(
 
       gameObject = scene.make.image(
         {
-          x:
-            imageProps.x instanceof SignalImpl
-              ? imageProps.x.get()
-              : imageProps.x || 0,
-          y:
-            imageProps.y instanceof SignalImpl
-              ? imageProps.y.get()
-              : imageProps.y || 0,
-          key:
-            imageProps.texture instanceof SignalImpl
-              ? imageProps.texture.get()
-              : imageProps.texture,
+          x: getSignalValue(imageProps.x, 0),
+          y: getSignalValue(imageProps.y, 0),
+          key: getSignalValue(imageProps.texture),
         },
         false
       ) as unknown as T;
@@ -227,22 +206,10 @@ export function setupGameObject<T extends Phaser.GameObjects.GameObject>(
 
       gameObject = scene.make.text(
         {
-          x:
-            textProps.x instanceof SignalImpl
-              ? textProps.x.get()
-              : textProps.x || 0,
-          y:
-            textProps.y instanceof SignalImpl
-              ? textProps.y.get()
-              : textProps.y || 0,
-          text:
-            textProps.text instanceof SignalImpl
-              ? textProps.text.get()
-              : textProps.text,
-          style:
-            textProps.style instanceof SignalImpl
-              ? textProps.style.get()
-              : textProps.style,
+          x: getSignalValue(textProps.x, 0),
+          y: getSignalValue(textProps.y, 0),
+          text: getSignalValue(textProps.text),
+          style: getSignalValue(textProps.style),
         },
         false
       ) as unknown as T;
@@ -253,31 +220,17 @@ export function setupGameObject<T extends Phaser.GameObjects.GameObject>(
 
       gameObject = new Phaser.GameObjects.Rectangle(
         scene,
-        rectangleProps.x instanceof SignalImpl
-          ? rectangleProps.x.get()
-          : rectangleProps.x || 0,
-        rectangleProps.y instanceof SignalImpl
-          ? rectangleProps.y.get()
-          : rectangleProps.y || 0,
-        rectangleProps.width instanceof SignalImpl
-          ? rectangleProps.width.get()
-          : rectangleProps.width,
-        rectangleProps.height instanceof SignalImpl
-          ? rectangleProps.height.get()
-          : rectangleProps.height,
-        rectangleProps.fillColor instanceof SignalImpl
-          ? rectangleProps.fillColor.get()
-          : rectangleProps.fillColor
+        getSignalValue(rectangleProps.x, 0),
+        getSignalValue(rectangleProps.y, 0),
+        getSignalValue(rectangleProps.width),
+        getSignalValue(rectangleProps.height),
+        getSignalValue(rectangleProps.fillColor)
       ) as unknown as T;
 
       if (rectangleProps.strokeColor) {
         (gameObject as unknown as Phaser.GameObjects.Rectangle).setStrokeStyle(
-          rectangleProps.strokeWidth instanceof SignalImpl
-            ? rectangleProps.strokeWidth.get()
-            : rectangleProps.strokeWidth || 1,
-          rectangleProps.strokeColor instanceof SignalImpl
-            ? rectangleProps.strokeColor.get()
-            : rectangleProps.strokeColor
+          getSignalValue(rectangleProps.strokeWidth, 1),
+          getSignalValue(rectangleProps.strokeColor)
         );
       }
 
@@ -288,30 +241,12 @@ export function setupGameObject<T extends Phaser.GameObjects.GameObject>(
 
       gameObject = scene.make.nineslice(
         {
-          x:
-            nineSliceProps.x instanceof SignalImpl
-              ? nineSliceProps.x.get()
-              : nineSliceProps.x || 0,
-          y:
-            nineSliceProps.y instanceof SignalImpl
-              ? nineSliceProps.y.get()
-              : nineSliceProps.y || 0,
-          width:
-            nineSliceProps.width instanceof SignalImpl
-              ? nineSliceProps.width.get()
-              : nineSliceProps.width,
-          height:
-            nineSliceProps.height instanceof SignalImpl
-              ? nineSliceProps.height.get()
-              : nineSliceProps.height,
-          key:
-            nineSliceProps.texture instanceof SignalImpl
-              ? nineSliceProps.texture.get()
-              : nineSliceProps.texture,
-          frame:
-            nineSliceProps.frame instanceof SignalImpl
-              ? nineSliceProps.frame.get()
-              : nineSliceProps.frame,
+          x: getSignalValue(nineSliceProps.x, 0),
+          y: getSignalValue(nineSliceProps.y, 0),
+          width: getSignalValue(nineSliceProps.width),
+          height: getSignalValue(nineSliceProps.height),
+          key: getSignalValue(nineSliceProps.texture),
+          frame: getSignalValue(nineSliceProps.frame),
           leftWidth: nineSliceProps.leftWidth,
           rightWidth: nineSliceProps.rightWidth,
           topHeight: nineSliceProps.topHeight,
@@ -334,26 +269,16 @@ export function setupGameObject<T extends Phaser.GameObjects.GameObject>(
 
       const container = scene.make.container(
         {
-          x:
-            containerProps.x instanceof SignalImpl
-              ? containerProps.x.get()
-              : containerProps.x || 0,
-          y:
-            containerProps.y instanceof SignalImpl
-              ? containerProps.y.get()
-              : containerProps.y || 0,
+          x: getSignalValue(containerProps.x, 0),
+          y: getSignalValue(containerProps.y, 0),
           children,
         },
         false
       );
 
       container.setSize(
-        containerProps.width instanceof SignalImpl
-          ? containerProps.width.get()
-          : containerProps.width || 0,
-        containerProps.height instanceof SignalImpl
-          ? containerProps.height.get()
-          : containerProps.height || 0
+        getSignalValue(containerProps.width),
+        getSignalValue(containerProps.height)
       );
 
       if (import.meta.env.DEV) {
