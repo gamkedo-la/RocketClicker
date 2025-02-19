@@ -36,6 +36,7 @@ export default class SoundSystem {
     this.scene.sound.add("sfx-mine-stardust");
     this.scene.sound.add("sfx-pick-up");
     this.scene.sound.add("sfx-put-down");
+    this.scene.sound.add("sfx-rocket-launch");
     this.scene.sound.add("placeholder-music-loop",{loop:true});
     this.play("placeholder-music-loop");
 
