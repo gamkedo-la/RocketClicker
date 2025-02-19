@@ -38,3 +38,26 @@ export const COLORS_NAMES = {
   "pleasing-pink": 0xf4cbd4,
   white: 0xffffff,
 };
+
+export const STRING_COLORS_NAMES = {
+  black: "#000000",
+  "dark-void": "#170f17",
+  "dark-knight": "#181931",
+  umbra: "#211424",
+  "elite-teal": "#192d38",
+  castro: "#45232e",
+  "cuba-libre": "#783939",
+  "stormy-night": "#3b274d",
+  "shadow-purple": "#4b344e",
+  meteorite: "#4a3d78",
+  namibia: "#7b6f62",
+  chutney: "#9e4e4e",
+  "montreux-blue": "#607b9b",
+  "vicious-violet": "#865099",
+  "fever-dream": "#d65480",
+  "vaporwave-blue": "#16e1ff",
+  "peaches-of-immortality": "#da8a8a",
+  "strawberry-field": "#f68080",
+  "pleasing-pink": "#f4cbd4",
+  white: "#ffffff",
+};
