@@ -31,11 +31,6 @@ export class Preloader extends AbstractScene {
   }
 
   preload() {
-    this.load.script(
-      "webfont",
-      "https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"
-    );
-
     // Load the assetPack.json
     this.load.pack("assetPack", "assetPack.json");
 
@@ -43,18 +38,13 @@ export class Preloader extends AbstractScene {
     // Make the spritesheets to be handled by assetPack.json through
     // the asset-conversion vite plugin. I'm not sure yet how to set
     // the metadata for the spritesheets.
+
+    });
+
+    this.load.font("handjet", "assets/handjet-font.ttf");
   }
 
   create() {
-    WebFont.load({
-      google: {
-        families: ["DotGothic16"],
-      },
-      active: () => {
-        return this.scene.start(SCENES.GAME);
-      },
-    });
-
     // TODO:
     // Auto animations
 
@@ -64,6 +54,8 @@ export class Preloader extends AbstractScene {
     graphics.fillCircle(1, 1, 2);
     graphics.generateTexture("wind_particle", 2, 2);
     graphics.destroy();
+
+    this.scene.start(SCENES.GAME);
   }
 
   shutdown() {}

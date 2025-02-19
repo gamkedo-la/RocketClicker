@@ -10,7 +10,18 @@ Conversion config example
 */
 
 const config = {
-  conversions: [],
+  conversions: [
+    {
+      input: "handjet-font/static/Handjet-Thin.ttf",
+      output: "handjet-font.ttf",
+    },
+    {
+      input: "ui/nine-slice-1.aseprite",
+      output: "nine/one.png",
+      executable: "aseprite",
+      args: "-b ${input} --save-as ${output}",
+    },
+  ],
 };
 
 export default config;
