@@ -29,8 +29,6 @@ export type Direction = (typeof DIRECTION)[keyof typeof DIRECTION];
 export interface FlexElement {
   _flexWidth: number;
   _flexHeight: number;
-  setWidth: any;
-  setHeight: any;
   x: number;
   y: number;
   basis: number;
@@ -38,11 +36,16 @@ export interface FlexElement {
   height: number;
   flexGrow: number;
   flexShrink: number;
+  selfAlign: AlignmentItems;
 
   containerElement: Phaser.GameObjects.Container | null;
 
   setY: (y: number) => void;
   setX: (x: number) => void;
+  setWidth: (width: number) => void;
+  setHeight: (height: number) => void;
+  setPosition: (x: number, y: number) => void;
+  setSize: (width: number, height: number) => void;
   setScrollFactor: (x: number, y: number) => void;
   setOrigin: (x: number, y: number) => void;
 }
@@ -100,6 +103,7 @@ export abstract class AbstractFlex implements FlexElement {
   flexGrow: number;
   minFlexGrow: number;
   flexShrink: number;
+  selfAlign: AlignmentItems;
 
   protected origin: Phaser.Math.Vector2;
   protected scrollFactor: Phaser.Math.Vector2;
@@ -160,8 +164,8 @@ export abstract class AbstractFlex implements FlexElement {
 
   abstract getFreeSpace(): number;
   abstract getAxisTotalSizeSum(): number;
-  abstract setJustify(justify: Justify): void;
-  abstract setAlign(align: AlignmentItems): void;
+  abstract updateJustify(justify: Justify): void;
+  abstract updateCrossAxis(): void;
 
   add(
     child: FlexElement,
@@ -180,9 +184,12 @@ export abstract class AbstractFlex implements FlexElement {
       );
     }
 
-    child.flexGrow = flexGrow;
+    if (!child.flexGrow) {
+      child.flexGrow = flexGrow;
+    }
     // TODO: flexShrink
     // child.flexShrink = flexShrink;
+    child.selfAlign = child.selfAlign ?? this.align;
 
     child.basis = this.direction === DIRECTION.ROW ? child.width : child.height;
 
@@ -201,8 +208,8 @@ export abstract class AbstractFlex implements FlexElement {
 
   layout(): void {
     this.updateBounds();
-    this.setJustify(this.justify);
-    this.setAlign(this.align);
+    this.updateJustify(this.justify);
+    this.updateCrossAxis();
   }
 
   trashLayout(): void {
@@ -333,6 +340,20 @@ export abstract class AbstractFlex implements FlexElement {
   }
 
   setHeight(height: number): void {
+    this.height = height;
+    this._flexHeight = height;
+    this.layout();
+  }
+
+  setPosition(x: number, y: number): void {
+    this.x = x;
+    this.y = y;
+    this.layout();
+  }
+
+  setSize(width: number, height: number): void {
+    this.width = width;
+    this._flexWidth = width;
     this.height = height;
     this._flexHeight = height;
     this.layout();

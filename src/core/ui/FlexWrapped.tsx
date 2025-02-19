@@ -131,13 +131,13 @@ export class FlexWrapped extends AbstractFlex {
     return this.linesContainer.getFreeSpace();
   }
 
-  setJustify(justify: (typeof JUSTIFY)[keyof typeof JUSTIFY]): this {
-    this.linesContainer.setJustify(justify);
+  updateJustify(justify: (typeof JUSTIFY)[keyof typeof JUSTIFY]): this {
+    this.linesContainer.updateJustify(justify);
     return this;
   }
 
-  setAlign(align: (typeof ALIGN_ITEMS)[keyof typeof ALIGN_ITEMS]): this {
-    this.linesContainer.setAlign(align);
+  updateAlign(align: (typeof ALIGN_ITEMS)[keyof typeof ALIGN_ITEMS]): this {
+    this.linesContainer.updateAlign(align);
     return this;
   }
 

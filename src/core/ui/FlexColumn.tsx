@@ -54,7 +54,7 @@ export class FlexColumn extends AbstractFlex {
     return child;
   }
 
-  setJustify(justify: Justify): this {
+  updateJustify(justify: Justify): this {
     this.justify = justify;
 
     switch (justify) {
@@ -83,29 +83,6 @@ export class FlexColumn extends AbstractFlex {
     return this;
   }
 
-  setAlign(align: AlignmentItems): this {
-    this.align = align;
-
-    switch (align) {
-      case ALIGN_ITEMS.FLEX_START:
-        this.updateCrossAxis(ALIGNMENT.LEFT);
-        break;
-      case ALIGN_ITEMS.FLEX_END:
-        this.updateCrossAxis(ALIGNMENT.RIGHT);
-        break;
-      case ALIGN_ITEMS.CENTER:
-        this.updateCrossAxis(ALIGNMENT.CENTER);
-        break;
-      case ALIGN_ITEMS.STRETCH:
-        this.updateCrossAxis(ALIGNMENT.STRETCH);
-        break;
-      default:
-        throw new Error(`Unknown align: ${align}`);
-    }
-
-    return this;
-  }
-
   getFreeSpace(): number {
     return this.innerBounds.height - this.axisSizeSum;
   }
@@ -128,7 +105,7 @@ export class FlexColumn extends AbstractFlex {
     let freeSpace = this.getFreeSpace();
     let considerGrow = false;
 
-    if (this.growSum && freeSpace > this.minFlexGrow) {
+    if (this.growSum && freeSpace) {
       considerGrow = true;
       align = ALIGNMENT.TOP;
       // Undo the added margin from getAxisTotalSizeSum
@@ -196,45 +173,63 @@ export class FlexColumn extends AbstractFlex {
     });
   }
 
-  updateCrossAxis(align: Alignment): void {
-    let position = 0;
-    let scale = 0;
-
+  getAlignPosition(align: AlignmentItems): Alignment {
     switch (align) {
-      case ALIGNMENT.LEFT: {
-        position = this.innerBounds.left;
-        scale = 0;
-        break;
-      }
-      case ALIGNMENT.CENTER: {
-        position = this.innerBounds.left + this.innerBounds.width / 2;
-        scale = 0.5;
-        break;
-      }
-      case ALIGNMENT.RIGHT: {
-        position = this.innerBounds.right;
-        scale = 1;
-        break;
-      }
-      case ALIGNMENT.STRETCH: {
-        position = this.innerBounds.left;
-        scale = 0;
-        // Set the width of the item to the width of the flex
-        this.children.forEach((item) => {
-          item.setWidth(this.innerBounds.width);
-        });
-        break;
-      }
+      case ALIGN_ITEMS.FLEX_START:
+        return ALIGNMENT.LEFT;
+      case ALIGN_ITEMS.FLEX_END:
+        return ALIGNMENT.RIGHT;
+      case ALIGN_ITEMS.CENTER:
+        return ALIGNMENT.CENTER;
+      case ALIGN_ITEMS.STRETCH:
+        return ALIGNMENT.STRETCH;
+      default:
+        throw new Error(`Unknown align: ${align}`);
     }
+  }
+
+  updateCrossAxis(): void {
+    const alignmentDimensions = {
+      [ALIGNMENT.LEFT]: {
+        position: this.innerBounds.left,
+        scale: 0,
+      },
+      [ALIGNMENT.CENTER]: {
+        position: this.innerBounds.left + this.innerBounds.width / 2,
+        scale: 0.5,
+      },
+      [ALIGNMENT.RIGHT]: {
+        position: this.innerBounds.right,
+        scale: 1,
+      },
+      [ALIGNMENT.STRETCH]: {
+        position: this.innerBounds.left,
+        scale: 0,
+      },
+    };
 
     this.children.forEach((item) => {
+      const alignment = this.getAlignPosition(
+        item.selfAlign
+      ) as keyof typeof alignmentDimensions;
+      const { position, scale } = alignmentDimensions[alignment];
+
       if (item.setOrigin) {
         item.setOrigin(0, 0);
       }
+
       if (this.containerElement) {
         item.setX(position - item.width * scale - this.containerElement.x);
       } else {
         item.setX(position - item.width * scale);
+      }
+
+      if (item.selfAlign === ALIGN_ITEMS.STRETCH) {
+        if (item.setWidth) {
+          item.setWidth(this.innerBounds.width);
+        } else {
+          item.width = this.innerBounds.width;
+        }
       }
     });
   }
