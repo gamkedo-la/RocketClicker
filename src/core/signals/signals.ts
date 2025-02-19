@@ -224,11 +224,5 @@ export function getSignalValue<T>(
   value: SignalValue<T>,
   defaultValue: T = value as T
 ): NonNullable<T> {
-  const resolvedValue = isSignal(value) ? value.get() : defaultValue;
-  if (resolvedValue == null) {
-    throw new Error(
-      "Signal value and default value cannot both be null/undefined"
-    );
-  }
-  return resolvedValue as NonNullable<T>;
+  return (isSignal(value) ? value.get() : defaultValue) as NonNullable<T>;
 }
