@@ -12,8 +12,20 @@ Conversion config example
 const config = {
   conversions: [
     {
-      input: "handjet-font/static/Handjet-Thin.ttf",
+      input: "handjet-font/static/Handjet-Medium.ttf",
       output: "handjet-font.ttf",
+    },
+    {
+      input: "ui/bg-dark-1.aseprite",
+      output: "bg.png",
+      executable: "aseprite",
+      args: "-b ${input} --sheet ${output}",
+    },
+    {
+      input: "ui/emboss-1.aseprite",
+      output: "emboss.png",
+      executable: "aseprite",
+      args: "-b ${input} --sheet ${output}",
     },
     {
       input: "ui/nine-slice-1.aseprite",

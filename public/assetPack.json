@@ -2,6 +2,56 @@
   "assetPack": {
     "files": [
       {
+        "type": "image",
+        "key": "bg",
+        "url": "assets/bg.png"
+      },
+      {
+        "type": "image",
+        "key": "emboss-albedo",
+        "url": "assets/emboss-albedo.png"
+      },
+      {
+        "type": "image",
+        "key": "emboss",
+        "url": "assets/emboss.png"
+      },
+      {
+        "type": "image",
+        "key": "key-art",
+        "url": "assets/key-art.png"
+      },
+      {
+        "type": "image",
+        "key": "nine/one",
+        "url": "assets/nine/one.png"
+      },
+      {
+        "type": "image",
+        "key": "nine",
+        "url": "assets/nine.png"
+      },
+      {
+        "type": "image",
+        "key": "screen-border",
+        "url": "assets/screen-border.png"
+      },
+      {
+        "type": "image",
+        "key": "ten-normal",
+        "url": "assets/ten-normal.png"
+      },
+      {
+        "type": "image",
+        "key": "ten",
+        "url": "assets/ten.png"
+      },
+      {
+        "type": "image",
+        "key": "texture",
+        "url": "assets/texture.png"
+      },
+      {
         "type": "audio",
         "key": "build-H2compressor",
         "url": "assets/build-H2compressor.mp3"
@@ -130,11 +180,6 @@
         "type": "binary",
         "key": "martin",
         "url": "assets/martin.glb"
-      },
-      {
-        "type": "image",
-        "key": "texture",
-        "url": "assets/texture.png"
       }
     ]
   },

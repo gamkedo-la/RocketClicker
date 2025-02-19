@@ -98,7 +98,7 @@ export abstract class AbstractScene extends Phaser.Scene {
 
     // composer.addPass( new RenderPass( scene, camera ) )
 
-    const r = new RenderPixelatedPass(3, threeScene, camera);
+    const r = new RenderPixelatedPass(2, threeScene, camera);
     r.depthEdgeStrength = 100;
     r.normalEdgeStrength = 3;
     composer.addPass(r);

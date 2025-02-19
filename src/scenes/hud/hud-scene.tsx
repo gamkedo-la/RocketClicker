@@ -1,4 +1,7 @@
+import { RESOURCES } from "@game/assets";
+import { ALIGN_ITEMS } from "@game/core/ui/AbstractFlex";
 import { Flex } from "@game/core/ui/Flex";
+import { FlexItem, Spacer } from "@game/core/ui/FlexItem";
 import { FlexRow } from "@game/core/ui/FlexRow";
 import PhaserGamebus from "@game/lib/gamebus";
 
@@ -22,16 +25,42 @@ export class HudScene extends AbstractScene {
 
     const { width, height } = this.scale.gameSize;
 
+    const screenBorder = (
+      <Flex
+        padding={0}
+        width={width}
+        height={height}
+        align={ALIGN_ITEMS.STRETCH}
+      >
+        <FlexItem grow={1}>
+          <nineslice
+            texture={RESOURCES["screen-border"]}
+            leftWidth={16}
+            rightWidth={16}
+            topHeight={16}
+            bottomHeight={16}
+          />
+        </FlexItem>
+      </Flex>
+    );
+
+    screenBorder.addToScene();
+
     const sidebarWidth = 250;
 
     const layout: FlexRow = (
-      <Flex margin={0} padding={0} width={width} height={height} />
+      <Flex
+        padding={0}
+        margin={0}
+        width={width}
+        height={height}
+        align={ALIGN_ITEMS.STRETCH}
+      >
+        <LeftPanel width={sidebarWidth} />
+        <Spacer />
+        <RightPanel width={sidebarWidth} />
+      </Flex>
     );
-
-    layout.add(<LeftPanel width={sidebarWidth} height={height} />);
-    // TODO: figure out how to make "null" elements in Flex?
-    layout.add(<rectangle fillColor={0x000000} visible={false} />, 1);
-    layout.add(<RightPanel width={sidebarWidth} height={height} />);
 
     layout.addToScene();
   }

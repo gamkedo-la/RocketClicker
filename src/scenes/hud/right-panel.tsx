@@ -1,16 +1,11 @@
 import { Flex } from "@game/core/ui/Flex";
+import { NineOne } from "./components/nine-one";
 
-export const RightPanel = ({
-  width,
-  height,
-}: {
-  width: number;
-  height: number;
-}) => {
+export const RightPanel = ({ width }: { width: number }) => {
   const r: Phaser.GameObjects.Rectangle = <rectangle strokeColor={0x00ffff} />;
 
   return (
-    <Flex width={width} height={height} backgroundElement={r}>
+    <Flex width={width} padding={30} backgroundElement={<NineOne />}>
       <text text="Right Panel" />
     </Flex>
   );

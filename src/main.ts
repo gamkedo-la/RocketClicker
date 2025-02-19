@@ -35,7 +35,7 @@ const config: Types.Core.GameConfig = {
   canvas: myCustomCanvas,
   context: myCustomContext as any,
   backgroundColor: "#3c9f9c",
-  roundPixels: true,
+  pixelArt: true,
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
