@@ -371,7 +371,11 @@ export abstract class AbstractFlex implements FlexElement {
 
   addToScene(scene: Phaser.Scene = window.currentScene) {
     if (this.backgroundElement) {
-      scene.add.existing(this.backgroundElement);
+      if (this.backgroundElement instanceof AbstractFlex) {
+        this.backgroundElement.addToScene(scene);
+      } else {
+        scene.add.existing(this.backgroundElement);
+      }
     }
 
     if (this.containerElement) {
