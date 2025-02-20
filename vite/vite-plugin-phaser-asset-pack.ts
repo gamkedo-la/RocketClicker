@@ -12,12 +12,27 @@ const supportedExtensions = [
   ".wav",
   ".json",
   ".glb",
+  ".ttf",
 ];
 
 interface StandardAssetInfo {
   type: string;
   key: string;
   url: string;
+}
+
+interface SpritesheetAssetInfo {
+  type: string;
+  key: string;
+  url: string;
+  frameConfig?: {
+    frameWidth?: number;
+    frameHeight?: number;
+    startFrame?: number;
+    endFrame?: number;
+    margin?: number;
+    spacing?: number;
+  };
 }
 
 interface AtlasAssetInfo {
@@ -27,12 +42,43 @@ interface AtlasAssetInfo {
   textureURL: string;
 }
 
-type AssetInfo = StandardAssetInfo | AtlasAssetInfo;
+type AssetInfo = StandardAssetInfo | SpritesheetAssetInfo | AtlasAssetInfo;
 
 interface AssetTypeInfo {
   extensions: string[];
-  getInfo: (key: string, url: string, pngUrl?: string) => AssetInfo;
+  getInfo: (
+    key: string,
+    url: string,
+    pngUrl?: string,
+    config?: AssetConfiguration
+  ) => AssetInfo;
   check?: (content: any) => boolean;
+}
+
+interface AssetConfiguration {
+  input: string;
+  output: string;
+  type?: string;
+  frameConfig?: {
+    frameWidth?: number;
+    frameHeight?: number;
+    startFrame?: number;
+    endFrame?: number;
+    margin?: number;
+    spacing?: number;
+  };
+  atlas?: {
+    jsonPath?: string;
+    texturePath?: string;
+  };
+}
+
+interface AssetsConfigFile {
+  assets: AssetConfiguration[];
+  meta: {
+    generated: string;
+    version: string;
+  };
 }
 
 const assetTypes: Record<string, AssetTypeInfo> = {
@@ -69,6 +115,28 @@ const assetTypes: Record<string, AssetTypeInfo> = {
     extensions: [".glb"],
     getInfo: (key, url): AssetInfo => ({ type: "binary", key, url }),
   },
+  font: {
+    extensions: [".ttf"],
+    getInfo: (key, url): AssetInfo => ({ type: "font", key, url }),
+  },
+  spritesheet: {
+    extensions: [".png"],
+    getInfo: (key, url, _, config): AssetInfo => ({
+      type: "spritesheet",
+      key,
+      url,
+      frameConfig: config?.frameConfig,
+    }),
+  },
+  atlas: {
+    extensions: [".png"],
+    getInfo: (key, url, _, config): AssetInfo => ({
+      type: "atlas",
+      key,
+      textureURL: url,
+      atlasURL: config?.atlas?.jsonPath || "",
+    }),
+  },
 };
 
 export default function phaserAssetsPlugin(): Plugin {
@@ -94,6 +162,7 @@ export default function phaserAssetsPlugin(): Plugin {
   };
 
   function generateAssets() {
+    const assetsConfig = loadAssetsConfiguration();
     const assetsDir = path.resolve("public/assets");
     const assets: Record<string, AssetInfo[]> = {};
 
@@ -114,7 +183,12 @@ export default function phaserAssetsPlugin(): Plugin {
           if (path.extname(file).toLowerCase() === ".json") {
             jsonFiles.push({ file, filePath, baseDir });
           } else {
-            const assetInfo = getAssetInfo(file, filePath, baseDir);
+            const assetInfo = getAssetInfo(
+              file,
+              filePath,
+              baseDir,
+              assetsConfig
+            );
             if (assetInfo) {
               if (!assets[assetInfo.type]) {
                 assets[assetInfo.type] = [];
@@ -127,7 +201,12 @@ export default function phaserAssetsPlugin(): Plugin {
 
       // Process JSON files after other files
       jsonFiles.forEach(({ file, filePath, baseDir }) => {
-        const assetInfo = processJsonAsset(file, filePath, baseDir);
+        const assetInfo = processJsonAsset(
+          file,
+          filePath,
+          baseDir,
+          assetsConfig
+        );
         if (assetInfo) {
           if (!assets[assetInfo.type]) {
             assets[assetInfo.type] = [];
@@ -140,12 +219,28 @@ export default function phaserAssetsPlugin(): Plugin {
     function getAssetInfo(
       file: string,
       filePath: string,
-      baseDir: string
+      baseDir: string,
+      assetsConfig?: AssetsConfigFile
     ): AssetInfo | null {
       const ext = path.extname(file).toLowerCase();
       const baseName = path.parse(file).name;
       const assetKey = path.join(baseDir, baseName).replace(/\\/g, "/");
       const assetPath = path.join("assets", baseDir, file).replace(/\\/g, "/");
+      const publicPath = path.join("public", "assets", baseDir, file);
+
+      // Find matching configuration by output path
+      const matchingConfig = assetsConfig?.assets.find(
+        (a) => a.output === publicPath
+      );
+
+      if (matchingConfig?.type && assetTypes[matchingConfig.type]) {
+        return assetTypes[matchingConfig.type].getInfo(
+          assetKey,
+          assetPath,
+          undefined,
+          matchingConfig
+        );
+      }
 
       for (const [type, typeInfo] of Object.entries(assetTypes)) {
         if (typeInfo.extensions.includes(ext)) {
@@ -159,12 +254,28 @@ export default function phaserAssetsPlugin(): Plugin {
     function processJsonAsset(
       file: string,
       filePath: string,
-      baseDir: string
+      baseDir: string,
+      assetsConfig?: AssetsConfigFile
     ): AssetInfo | null {
       const content = JSON.parse(fs.readFileSync(filePath, "utf8"));
       const baseName = path.parse(file).name;
       const assetKey = path.join(baseDir, baseName).replace(/\\/g, "/");
       const assetPath = path.join("assets", baseDir, file).replace(/\\/g, "/");
+      const relativePath = path.join(baseDir, file);
+
+      // Find matching configuration by output path
+      const matchingConfig = assetsConfig?.assets.find(
+        (a) => a.output === relativePath
+      );
+
+      if (matchingConfig?.type && assetTypes[matchingConfig.type]) {
+        return assetTypes[matchingConfig.type].getInfo(
+          assetKey,
+          assetPath,
+          undefined,
+          matchingConfig
+        );
+      }
 
       if (
         assetTypes.tilemapTiledJSON.check &&
@@ -190,7 +301,7 @@ export default function phaserAssetsPlugin(): Plugin {
       },
       meta: {
         app: "Phaser Vite Plugin",
-        version: "0.1",
+        version: "0.2",
       },
     };
 
@@ -245,5 +356,13 @@ ${resourcesContent}
         timestamp: true,
       }
     );
+  }
+
+  function loadAssetsConfiguration(): AssetsConfigFile | undefined {
+    const configPath = path.resolve("public/assets-configuration.json");
+    if (fs.existsSync(configPath)) {
+      return JSON.parse(fs.readFileSync(configPath, "utf8"));
+    }
+    return undefined;
   }
 }

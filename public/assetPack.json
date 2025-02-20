@@ -23,11 +23,6 @@
       },
       {
         "type": "image",
-        "key": "nine/one",
-        "url": "assets/nine/one.png"
-      },
-      {
-        "type": "image",
         "key": "nine",
         "url": "assets/nine.png"
       },
@@ -185,11 +180,25 @@
         "type": "binary",
         "key": "martin",
         "url": "assets/martin.glb"
+      },
+      {
+        "type": "font",
+        "key": "handjet",
+        "url": "assets/handjet.ttf"
+      },
+      {
+        "type": "spritesheet",
+        "key": "nine/one",
+        "url": "assets/nine/one.png",
+        "frameConfig": {
+          "frameWidth": 32,
+          "frameHeight": 32
+        }
       }
     ]
   },
   "meta": {
     "app": "Phaser Vite Plugin",
-    "version": "0.1"
+    "version": "0.2"
   }
 }

@@ -13,7 +13,7 @@ const config = {
   conversions: [
     {
       input: "handjet-font/static/Handjet-Medium.ttf",
-      output: "handjet-font.ttf",
+      output: "handjet.ttf",
     },
     {
       input: "ui/bg-dark-1.aseprite",
@@ -32,6 +32,13 @@ const config = {
       output: "nine/one.png",
       executable: "aseprite",
       args: "-b ${input} --save-as ${output}",
+      metadata: {
+        type: "spritesheet",
+        frameConfig: {
+          frameWidth: 32,
+          frameHeight: 32,
+        },
+      },
     },
   ],
 };
