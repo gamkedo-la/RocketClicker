@@ -1,7 +1,7 @@
 import { Scene } from "phaser";
 
 import { SCENES } from "../scenes";
-import { DebugPanel, DebugParameters } from "../game/debug-panel";
+import { DebugPanel, DebugParameters } from "../debug/debug-panel";
 
 export class Boot extends Scene {
   constructor() {

@@ -48,6 +48,16 @@
       },
       {
         "type": "audio",
+        "key": "build-H2compressor",
+        "url": "assets/build-H2compressor.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "build-O2compressor",
+        "url": "assets/build-O2compressor.mp3"
+      },
+      {
+        "type": "audio",
         "key": "build-chemicalplant",
         "url": "assets/build-chemicalplant.mp3"
       },
@@ -78,18 +88,8 @@
       },
       {
         "type": "audio",
-        "key": "build-H2compressor",
-        "url": "assets/build-H2compressor.mp3"
-      },
-      {
-        "type": "audio",
         "key": "build-miner",
         "url": "assets/build-miner.mp3"
-      },
-      {
-        "type": "audio",
-        "key": "build-O2compressor",
-        "url": "assets/build-O2compressor.mp3"
       },
       {
         "type": "audio",

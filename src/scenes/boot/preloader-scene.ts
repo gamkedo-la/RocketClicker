@@ -2,7 +2,7 @@ import { RESOURCES } from "@game/assets";
 import { GAME_WIDTH } from "@game/consts";
 
 import { AbstractScene } from "..";
-import { SCENES } from "../scenes";
+import { SCENES, TEST_SCENE } from "../scenes";
 
 export const RESOURCES_INDEX = Object.keys(RESOURCES).reduce(
   (acc, key, index) => ({ ...acc, [key]: index }),
@@ -28,17 +28,16 @@ export class Preloader extends AbstractScene {
     this.load.on("progress", (progress: number) => {
       bar.width = 4 + 460 * progress;
     });
+
+    if (import.meta.env.VITE_DEBUG) {
+      import("../debug/test-scene").then((m) => {
+        this.scene.add(TEST_SCENE, m.TestScene);
+      });
+    }
   }
 
   preload() {
-    // Load the assetPack.json
     this.load.pack("assetPack", "assetPack.json");
-
-    // TODO:
-    // Make the spritesheets to be handled by assetPack.json through
-    // the asset-conversion vite plugin. I'm not sure yet how to set
-    // the metadata for the spritesheets.
-
   }
 
   create() {

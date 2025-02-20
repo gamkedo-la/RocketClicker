@@ -27,3 +27,5 @@ export const SCENE_CLASSES: Record<SceneKeys, typeof Phaser.Scene> = {
   HUD: HudScene,
   UI_PAUSE: PauseScene,
 };
+
+export const TEST_SCENE = "TEST";
