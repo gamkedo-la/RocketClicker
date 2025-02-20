@@ -177,6 +177,11 @@
         "url": "assets/martin.glb"
       },
       {
+        "type": "font",
+        "key": "handjet",
+        "url": "assets/handjet.ttf"
+      },
+      {
         "type": "spritesheet",
         "key": "nine/one",
         "url": "assets/nine/one.png",

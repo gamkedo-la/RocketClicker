@@ -39,8 +39,6 @@ export class Preloader extends AbstractScene {
     // the asset-conversion vite plugin. I'm not sure yet how to set
     // the metadata for the spritesheets.
 
-
-    this.load.font("handjet", "assets/handjet-font.ttf");
   }
 
   create() {

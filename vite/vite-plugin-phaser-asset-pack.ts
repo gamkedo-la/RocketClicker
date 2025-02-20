@@ -12,6 +12,7 @@ const supportedExtensions = [
   ".wav",
   ".json",
   ".glb",
+  ".ttf",
 ];
 
 interface StandardAssetInfo {
@@ -113,6 +114,10 @@ const assetTypes: Record<string, AssetTypeInfo> = {
   binary: {
     extensions: [".glb"],
     getInfo: (key, url): AssetInfo => ({ type: "binary", key, url }),
+  },
+  font: {
+    extensions: [".ttf"],
+    getInfo: (key, url): AssetInfo => ({ type: "font", key, url }),
   },
   spritesheet: {
     extensions: [".png"],

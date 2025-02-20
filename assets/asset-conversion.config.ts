@@ -13,7 +13,7 @@ const config = {
   conversions: [
     {
       input: "handjet-font/static/Handjet-Medium.ttf",
-      output: "handjet-font.ttf",
+      output: "handjet.ttf",
     },
     {
       input: "ui/bg-dark-1.aseprite",

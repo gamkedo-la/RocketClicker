@@ -38,5 +38,6 @@ export const RESOURCES = {
   "comet-2": "comet-2",
   "comet-3": "comet-3",
   "martin": "martin",
+  "handjet": "handjet",
   "nine.one": "nine/one",
 } as const;
