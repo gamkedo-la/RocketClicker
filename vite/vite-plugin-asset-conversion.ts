@@ -3,6 +3,23 @@ import path from "path";
 import fs from "fs";
 import { Plugin } from "vite";
 
+interface AssetMetadata {
+  type?: string;
+  frameConfig?: {
+    frameWidth?: number;
+    frameHeight?: number;
+    startFrame?: number;
+    endFrame?: number;
+    margin?: number;
+    spacing?: number;
+  };
+  atlas?: {
+    jsonPath?: string;
+    texturePath?: string;
+  };
+  // Add any other metadata properties you need
+}
+
 interface ConversionConfig {
   input: string;
   output: string;
@@ -10,6 +27,7 @@ interface ConversionConfig {
   args: string;
   inputFolder?: string;
   outputFolder?: string;
+  metadata?: AssetMetadata; // Add metadata configuration
 }
 
 interface AssetConversionConfig {
@@ -78,6 +96,30 @@ function assetConversionPlugin(config: AssetConversionConfig): Plugin {
     });
   };
 
+  const generateAssetsConfig = () => {
+    const assetsConfig = {
+      assets: config.conversions.map((conversion) => {
+        const { input, output, metadata } = applyDefaultFolders(
+          config,
+          conversion
+        );
+        return {
+          input: path.relative(process.cwd(), input),
+          output: path.relative(process.cwd(), output),
+          ...metadata,
+        };
+      }),
+      meta: {
+        app: "Phaser Vite Plugin",
+        version: "0.2",
+      },
+    };
+
+    const outputPath = path.resolve("public/assets-configuration.json");
+    fs.writeFileSync(outputPath, JSON.stringify(assetsConfig, null, 2));
+    console.log("Generated assets configuration at:", outputPath);
+  };
+
   let watcher: fs.FSWatcher | null = null;
 
   return {
@@ -85,6 +127,7 @@ function assetConversionPlugin(config: AssetConversionConfig): Plugin {
     buildStart() {
       // Initial conversion of all assets
       config.conversions.forEach(convertAsset);
+      generateAssetsConfig();
 
       // Set up file watching
       const assetsDir = path.resolve("assets");
