@@ -136,9 +136,8 @@ function assetConversionPlugin(config: AssetConversionConfig): Plugin {
         { recursive: true },
         (eventType, filename) => {
           if (filename) {
-            const fullPath = path.join(assetsDir, filename);
             const conversion = config.conversions.find(
-              (c) => path.resolve(c.input) === fullPath
+              (c) => c.input === filename
             );
             if (conversion) {
               console.log(`Asset changed: ${filename}. Running conversion...`);
