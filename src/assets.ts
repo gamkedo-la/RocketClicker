@@ -7,7 +7,6 @@ export const RESOURCES = {
   "emboss-albedo": "emboss-albedo",
   "emboss": "emboss",
   "key-art": "key-art",
-  "nine.one": "nine/one",
   "nine": "nine",
   "screen-border": "screen-border",
   "ten-normal": "ten-normal",
@@ -39,4 +38,5 @@ export const RESOURCES = {
   "comet-2": "comet-2",
   "comet-3": "comet-3",
   "martin": "martin",
+  "nine.one": "nine/one",
 } as const;

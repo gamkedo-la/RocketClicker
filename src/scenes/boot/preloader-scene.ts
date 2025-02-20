@@ -40,11 +40,6 @@ export class Preloader extends AbstractScene {
     // the metadata for the spritesheets.
 
 
-    this.load.spritesheet("eleven", "assets/nine/one.png", {
-      frameWidth: 32,
-      frameHeight: 32,
-    });
-
     this.load.font("handjet", "assets/handjet-font.ttf");
   }
 

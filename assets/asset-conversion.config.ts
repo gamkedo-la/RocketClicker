@@ -32,6 +32,13 @@ const config = {
       output: "nine/one.png",
       executable: "aseprite",
       args: "-b ${input} --save-as ${output}",
+      metadata: {
+        type: "spritesheet",
+        frameConfig: {
+          frameWidth: 32,
+          frameHeight: 32,
+        },
+      },
     },
   ],
 };

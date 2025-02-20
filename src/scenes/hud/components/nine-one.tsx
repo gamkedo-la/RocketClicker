@@ -20,25 +20,25 @@ export const NineOne = () => {
       margin={0}
     >
       <Flex margin={0} padding={0}>
-        <image texture={"eleven"} frame={0} />
+        <image texture={RESOURCES["nine.one"]} frame={0} />
         <FlexItem grow={1}>
-          <tileSprite texture={"eleven"} frame={1} />
+          <tileSprite texture={RESOURCES["nine.one"]} frame={1} />
         </FlexItem>
-        <image texture={"eleven"} frame={2} />
+        <image texture={RESOURCES["nine.one"]} frame={2} />
       </Flex>
       <FlexItem grow={1}>
         <Flex margin={0} padding={0} align={ALIGN_ITEMS.STRETCH}>
-          <tileSprite texture={"eleven"} frame={3} />
+          <tileSprite texture={RESOURCES["nine.one"]} frame={3} />
           <Spacer grow={1} />
-          <tileSprite texture={"eleven"} frame={5} />
+          <tileSprite texture={RESOURCES["nine.one"]} frame={5} />
         </Flex>
       </FlexItem>
       <Flex margin={0} padding={0}>
-        <image texture={"eleven"} frame={6} />
+        <image texture={RESOURCES["nine.one"]} frame={6} />
         <FlexItem grow={1}>
-          <tileSprite texture={"eleven"} frame={7} />
+          <tileSprite texture={RESOURCES["nine.one"]} frame={7} />
         </FlexItem>
-        <image texture={"eleven"} frame={8} />
+        <image texture={RESOURCES["nine.one"]} frame={8} />
       </Flex>
     </Flex>
   );
