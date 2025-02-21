@@ -5,6 +5,10 @@ import PhaserGamebus from "@game/lib/gamebus";
 import { GameStatus } from "@game/state/game-state";
 import SoundSystem from "@game/systems/SoundSystem";
 
+import { ThreeCometScene } from "../three/three-comet-scene";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { Vector3 } from "three";
+
 import { Building } from "@game/entities/buildings/types";
 import { AbstractScene } from "..";
 import { SCENES } from "../scenes";
@@ -397,6 +401,24 @@ grid.forEach((row) => {
 
 const mouse_selected_building = signal<Building | null>(null);
 
+const handleWASD = (x: number, z: number, scene: Phaser.Scene): void => {
+  const threeCometScene: ThreeCometScene = scene.scene.get(SCENES.THREE_COMET) as ThreeCometScene;
+  const orbitControls: OrbitControls = threeCometScene.orbitControls;
+
+  const cameraDirection = new Vector3();
+  threeCometScene.threeCamera.getWorldDirection(cameraDirection);
+
+  const right = new Vector3().crossVectors(cameraDirection, threeCometScene.threeCamera.up).normalize();
+  const forward = new Vector3().crossVectors(threeCometScene.threeCamera.up, right).normalize();
+
+  const panOffset = new Vector3();
+  panOffset.addScaledVector(forward, z / 10000);
+  panOffset.addScaledVector(right, x / 10000);
+
+  orbitControls.target.add(panOffset);
+  orbitControls.update();
+}
+
 export class GameScene extends AbstractScene {
   declare bus: Phaser.Events.EventEmitter;
   declare gamebus: PhaserGamebus;
@@ -418,6 +440,14 @@ export class GameScene extends AbstractScene {
   key_nine!: Phaser.Input.Keyboard.Key;
   key_zero!: Phaser.Input.Keyboard.Key;
   key_escape!: Phaser.Input.Keyboard.Key;
+  key_w!: Phaser.Input.Keyboard.Key;
+  key_w_pressed: boolean;
+  key_a!: Phaser.Input.Keyboard.Key;
+  key_a_pressed: boolean;
+  key_s!: Phaser.Input.Keyboard.Key;
+  key_s_pressed: boolean;
+  key_d!: Phaser.Input.Keyboard.Key;
+  key_d_pressed: boolean;
   key_p!: Phaser.Input.Keyboard.Key;
   key_m!: Phaser.Input.Keyboard.Key;
   soundSystem!: SoundSystem;
@@ -462,8 +492,24 @@ export class GameScene extends AbstractScene {
     this.key_escape = this.input.keyboard!.addKey(
       Phaser.Input.Keyboard.KeyCodes.ESC
     );
-    this.key_p = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.P);
-    this.key_m = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.M);
+    this.key_w = this.input.keyboard!.addKey(
+      Phaser.Input.Keyboard.KeyCodes.W
+    );
+    this.key_a = this.input.keyboard!.addKey(
+      Phaser.Input.Keyboard.KeyCodes.A
+    )
+    this.key_s = this.input.keyboard!.addKey(
+      Phaser.Input.Keyboard.KeyCodes.S
+    )
+    this.key_d = this.input.keyboard!.addKey(
+      Phaser.Input.Keyboard.KeyCodes.D
+    )
+    this.key_p = this.input.keyboard!.addKey(
+      Phaser.Input.Keyboard.KeyCodes.P
+    );
+    this.key_m = this.input.keyboard!.addKey(
+      Phaser.Input.Keyboard.KeyCodes.M
+    );
 
     this.registerSystems();
 
@@ -655,6 +701,31 @@ export class GameScene extends AbstractScene {
       this.soundSystem.play("sfx-gui-confirm");
     });
 
+    this.key_w.on("down", () => {
+      this.key_w_pressed = true;
+    })
+    this.key_w.on("up", () => {
+      this.key_w_pressed = false;
+    })
+    this.key_a.on("down", () => {
+      this.key_a_pressed = true;
+    })
+    this.key_a.on("up", () => {
+      this.key_a_pressed = false;
+    })
+    this.key_s.on("down", () => {
+      this.key_s_pressed = true;
+    })
+    this.key_s.on("up", () => {
+      this.key_s_pressed = false;
+    })
+    this.key_d.on("down", () => {
+      this.key_d_pressed = true;
+    })
+    this.key_d.on("up", () => {
+      this.key_d_pressed = false;
+    })
+
     this.key_p.on("down", () => {
       this.scene.pause(SCENES.THREE_COMET);
       this.scene.pause(SCENES.GAME);
@@ -732,6 +803,11 @@ export class GameScene extends AbstractScene {
   tickTimer = 0;
 
   update(_time: number, delta: number) {
+    const cameraDeltaX: number = (this.key_d_pressed ? 1 : 0) - (this.key_a_pressed ? 1 : 0);
+    const cameraDeltaY: number = (this.key_w_pressed ? 1 : 0) - (this.key_s_pressed ? 1 : 0);
+
+    handleWASD(cameraDeltaX * delta, cameraDeltaY * delta, this);
+
     this.tickTimer += delta;
     if (this.tickTimer >= this.tickLength) {
       this.tickTimer = 0;

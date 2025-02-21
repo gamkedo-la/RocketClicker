@@ -11,6 +11,7 @@ export class ThreeCometScene extends AbstractScene {
   declare gamebus: PhaserGamebus;
 
   camera: Phaser.Cameras.Scene2D.Camera;
+  orbitControls: OrbitControls;
 
   constructor() {
     super(SCENES.THREE_COMET);
@@ -30,8 +31,9 @@ export class ThreeCometScene extends AbstractScene {
     const [scene, camera, renderer] = this.createThreeScene();
 
     this.threeCamera = camera;
+    this.orbitControls = new OrbitControls(camera, renderer.domElement);
 
-    const controls = new OrbitControls(camera, renderer.domElement);
+    const controls = this.orbitControls;
 
     controls.listenToKeyEvents(window);
 
