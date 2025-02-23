@@ -418,21 +418,6 @@ export class GameScene extends AbstractScene {
     this.gameState.setGameStatus(GameStatus.RUNNING);
 
     this.add.existing(
-      <Stack x={10} y={10} spacing={10}>
-        <text
-          text={
-            "Selected Building            Star Dust = SD | Metals = M | Pure Metals = PM"
-          }
-          style={UI_TEXT_STYLE}
-        />
-        <text
-          text={computed(() => mouse_selected_building.get()?.name ?? "")}
-          style={UI_TEXT_STYLE}
-        />
-      </Stack>
-    );
-
-    this.add.existing(
       <Stack x={130} y={90} spacing={8}>
         {BUILDINGS.map((building) => (
           <Button building={building} />
