@@ -9,10 +9,12 @@ import { AbstractScene } from "../index";
 import { SCENES } from "../scenes";
 import { LeftPanel } from "./left-panel";
 import { RightPanel } from "./right-panel";
+import { GameStateManager } from "@game/state/game-state";
 
 export class HudScene extends AbstractScene {
   declare bus: Phaser.Events.EventEmitter;
   declare gamebus: PhaserGamebus;
+  declare gameState: GameStateManager;
 
   camera: Phaser.Cameras.Scene2D.Camera;
 
@@ -56,9 +58,9 @@ export class HudScene extends AbstractScene {
         height={height}
         align={ALIGN_ITEMS.STRETCH}
       >
-        <LeftPanel width={sidebarWidth} />
+        <LeftPanel width={sidebarWidth} gameState={this.gameState} />
         <Spacer />
-        <RightPanel width={sidebarWidth} />
+        <RightPanel width={sidebarWidth} gameState={this.gameState} />
       </Flex>
     );
 

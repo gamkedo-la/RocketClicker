@@ -14,6 +14,7 @@ import {
   MATERIALS_NAMES,
 } from "@game/entities/materials/index";
 import { BUILDINGS } from "@game/entities/buildings/index";
+import MaterialsSystem from "@game/systems/MaterialsSystem";
 
 let i = 0;
 
@@ -281,59 +282,6 @@ function Cell({
   );
 }
 
-function Material({
-  x,
-  y,
-  name,
-  value,
-}: {
-  x?: number;
-  y?: number;
-  name: keyof typeof MATERIALS;
-  value: Signal<number>;
-}) {
-  let prev = 0;
-
-  const number_text: Phaser.GameObjects.Text = (
-    <text
-      x={10}
-      y={0}
-      origin={0}
-      text={computed(() =>
-        value.get().toLocaleString([], { maximumFractionDigits: 0 })
-      )}
-      style={{ color: "#000000" }}
-    />
-  );
-
-  effect(() => {
-    let curr = value.get();
-
-    // console.log(name, "prev", prev, "curr", curr);
-
-    if (prev < curr) {
-      number_text.setStyle({ color: "#00ff00" });
-    } else if (prev > curr) {
-      number_text.setStyle({ color: "#ff0000" });
-    }
-
-    prev = curr;
-  });
-
-  return (
-    <container x={x} y={y}>
-      <text
-        x={0}
-        y={0}
-        origin={{ x: 1, y: 0 }}
-        text={`${MATERIALS_NAMES[name]}`}
-        style={UI_TEXT_STYLE}
-      />
-      {number_text}
-    </container>
-  );
-}
-
 function showFloatingChange(
   scene: Phaser.Scene,
   x: number,
@@ -358,8 +306,6 @@ function showFloatingChange(
     onComplete: () => text.destroy(),
   });
 }
-
-const tick = signal(0);
 
 export const material_storage: Record<
   keyof typeof MATERIALS,
@@ -420,7 +366,9 @@ export class GameScene extends AbstractScene {
   key_escape!: Phaser.Input.Keyboard.Key;
   key_p!: Phaser.Input.Keyboard.Key;
   key_m!: Phaser.Input.Keyboard.Key;
+
   soundSystem!: SoundSystem;
+  materialsSystem!: MaterialsSystem;
 
   create() {
     this.bus = this.gamebus.getBus();
@@ -503,17 +451,6 @@ export class GameScene extends AbstractScene {
               return <Cell text={`${x},${y}`} id={cell} building={building} />;
             })}
           </Stack>
-        ))}
-      </Stack>
-    );
-
-    this.add.existing(
-      <Stack x={920} y={80} spacing={23}>
-        {Object.entries(MATERIALS).map(([key, _]) => (
-          <Material
-            name={key as keyof typeof MATERIALS}
-            value={material_storage[key as keyof typeof MATERIALS]}
-          />
         ))}
       </Stack>
     );
@@ -726,54 +663,14 @@ export class GameScene extends AbstractScene {
   registerSystems() {
     console.log("registering systems");
     this.soundSystem = new SoundSystem(this);
+    this.materialsSystem = new MaterialsSystem(this.gameState).create();
   }
 
   tickLength = 1000;
   tickTimer = 0;
 
-  update(_time: number, delta: number) {
-    this.tickTimer += delta;
-    if (this.tickTimer >= this.tickLength) {
-      this.tickTimer = 0;
-
-      tick.update((tick) => tick + 1);
-
-      material_storage[MATERIALS.kWh].set(0);
-
-      MATERIALS_GENERATION_ORDER.forEach((material_order) => {
-        grid_buildings.forEach((buildingSignal) => {
-          const building = buildingSignal.get();
-
-          if (building === null) return;
-
-          // TODO: Fuel cell is evaluating twice because it outputs twice
-          if (
-            building.output[material_order] === undefined ||
-            (material_order === MATERIALS.H2O && building.name === "Fuel Cell")
-          )
-            return;
-
-          //console.log(`${building.name} is generating ${material}'`);
-          let successRate = 1;
-          Object.entries(building.input).forEach(([input, value]) => {
-            const material =
-              material_storage[input as keyof typeof MATERIALS].get();
-            successRate = Math.min(successRate || 1, material / value);
-            material_storage[input as keyof typeof MATERIALS].update(
-              (material) => Math.max(material - value, 0)
-            );
-          });
-
-          if (!successRate) return;
-
-          Object.entries(building.output).forEach(([output, value]) => {
-            material_storage[output as keyof typeof MATERIALS].update(
-              (material) => material + value * successRate
-            );
-          });
-        });
-      });
-    }
+  update(time: number, delta: number) {
+    this.materialsSystem.update(time, delta);
   }
 
   shutdown() {}
