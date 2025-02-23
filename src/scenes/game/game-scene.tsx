@@ -721,7 +721,9 @@ export class GameScene extends AbstractScene {
     const cameraDeltaY: number =
       (this.key_w_pressed ? 1 : 0) - (this.key_s_pressed ? 1 : 0);
 
-    handleWASD(cameraDeltaX * delta, cameraDeltaY * delta, this);
+    if (cameraDeltaX !== 0 || cameraDeltaY !== 0) {
+      handleWASD(cameraDeltaX * delta, cameraDeltaY * delta, this);
+    }
 
     this.materialsSystem.update(time, delta);
   }
