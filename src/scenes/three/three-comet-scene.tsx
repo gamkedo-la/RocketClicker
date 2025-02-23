@@ -5,6 +5,7 @@ import { SCENES } from "../scenes";
 import { RESOURCES } from "@game/assets";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { DebugPanel } from "@game/scenes/debug/debug-panel";
 
 export class ThreeCometScene extends AbstractScene {
   declare bus: Phaser.Events.EventEmitter;
@@ -234,6 +235,10 @@ export class ThreeCometScene extends AbstractScene {
     }
   }
 
+  pointer = DebugPanel.debug(this, "pointer", new THREE.Vector2(), {
+    view: { type: "point2d", min: -1, max: 1, step: 0.01 },
+  });
+
   update(time: number, delta: number) {
     if (this.board) {
       // Get normalized device coordinates (-1 to +1) for mouse position
@@ -256,6 +261,9 @@ export class ThreeCometScene extends AbstractScene {
         const localPoint = this.comet.worldToLocal(worldPoint.clone());
 
         this.board_pointer.position.copy(localPoint);
+
+        this.pointer.x = localPoint.x;
+        this.pointer.y = localPoint.z;
       }
     }
 

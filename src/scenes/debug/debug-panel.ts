@@ -1,5 +1,34 @@
-import { Pane } from "tweakpane";
+import { Pane, FolderApi } from "tweakpane";
 import { JsxElementsRegistry } from "@game/core/jsx/phaser-jsx";
+import * as THREE from "three";
+
+export type DebugInputType =
+  | { type: "slider"; min?: number; max?: number; step?: number }
+  | { type: "vector2" | "point2d"; min?: number; max?: number; step?: number }
+  | { type: "text" }
+  | { type: "color" }
+  | { type: "boolean" }
+  | { type: "button"; label: string; onClick: () => void }
+  | {
+      type: "monitor";
+      interval?: number;
+      bufferSize?: number;
+      graph?: boolean;
+    };
+
+export interface DebugOptions {
+  label?: string;
+  view?: DebugInputType;
+  disabled?: boolean;
+  hidden?: boolean;
+  format?: (value: any) => string;
+}
+
+export interface FolderOptions {
+  title: string;
+  expanded?: boolean;
+  parent?: FolderApi | null;
+}
 
 export const DebugParameters: any = {
   fps: 0,
@@ -8,7 +37,10 @@ export const DebugParameters: any = {
 };
 
 export class DebugPanel {
-  static pane: Pane = new Pane({ expanded: true, title: "Debug" });
+  static pane: Pane = new Pane({
+    expanded: true,
+    title: "Debug",
+  });
   static tabApi: any;
   static jsxTab: any;
   static i = 0;
@@ -252,6 +284,145 @@ export class DebugPanel {
 
     newContent.addBlade({
       view: "separator",
+    });
+  }
+
+  static folder(options: FolderOptions): FolderApi {
+    const parent = options.parent || this.pane;
+    return parent.addFolder({
+      title: options.title,
+      expanded: options.expanded ?? true,
+    });
+  }
+
+  static debug<T>(
+    target: any,
+    key: string,
+    value: T,
+    options: DebugOptions = {}
+  ): T {
+    if (!this.pane) return value;
+
+    const { view, ...bindingOptions } = options;
+
+    if (!view) {
+      this.pane.addBinding(target, key, bindingOptions);
+      return value;
+    }
+
+    switch (view.type) {
+      case "slider":
+        target[key] = 0;
+        this.pane.addBinding(target, key, {
+          ...bindingOptions,
+          min: view.min ?? 0,
+          max: view.max ?? 1,
+          step: view.step ?? 0.1,
+        });
+        break;
+
+      case "vector2":
+      case "point2d":
+        target[key] = { x: 0, y: 0 };
+        if (value instanceof THREE.Vector2) {
+          this.pane.addBinding(target, key, {
+            ...bindingOptions,
+            view: "point2d",
+            min: view.min ?? -1,
+            max: view.max ?? 1,
+            step: view.step ?? 0.01,
+          });
+        }
+        break;
+
+      case "text":
+        target[key] = "";
+        this.pane.addBinding(target, key, {
+          ...bindingOptions,
+          view: view.type,
+        });
+        break;
+
+      case "color":
+        target[key] = { r: 0, g: 0, b: 0, a: 1 };
+        this.pane.addBinding(target, key, {
+          ...bindingOptions,
+          view: view.type,
+        });
+        break;
+
+      case "boolean":
+        target[key] = false;
+        this.pane.addBinding(target, key, {
+          ...bindingOptions,
+          view: view.type,
+        });
+        break;
+
+      case "button":
+        target[key] = null;
+        this.pane
+          .addButton({
+            title: view.label,
+            label: options.label,
+          })
+          .on("click", view.onClick);
+        break;
+
+      case "monitor":
+        target[key] = 0;
+        this.pane.addBinding(target, key, {
+          ...bindingOptions,
+          readonly: true,
+          interval: view.interval ?? 100,
+          view: view.graph ? "graph" : "text",
+        });
+        break;
+
+      default:
+        target[key] = null;
+        this.pane.addBinding(target, key, {
+          ...bindingOptions,
+        });
+    }
+
+    return value;
+  }
+
+  static debugVector2(
+    target: any,
+    key: string,
+    value: THREE.Vector2,
+    options: Partial<DebugOptions> = {}
+  ) {
+    return this.debug(target, key, value, {
+      ...options,
+      view: { type: "vector2" },
+    });
+  }
+
+  static debugSlider(
+    target: any,
+    key: string,
+    value: number,
+    min = 0,
+    max = 1,
+    step = 0.1
+  ) {
+    return this.debug(target, key, value, {
+      view: { type: "slider", min, max, step },
+    });
+  }
+
+  static debugMonitor(target: any, key: string, graph = false) {
+    return this.debug(target, key, target[key], {
+      view: { type: "monitor", graph },
+    });
+  }
+
+  static debugButton(label: string, onClick: () => void) {
+    return this.debug(null, "", null, {
+      view: { type: "button", label, onClick },
     });
   }
 }
