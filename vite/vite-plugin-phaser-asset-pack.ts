@@ -18,13 +18,15 @@ const supportedExtensions = [
 interface StandardAssetInfo {
   type: string;
   key: string;
-  url: string;
 }
 
-interface SpritesheetAssetInfo {
-  type: string;
-  key: string;
+interface LoadableAssetInfo extends StandardAssetInfo {
   url: string;
+  normalMapUrl?: string;
+}
+
+interface SpritesheetAssetInfo extends LoadableAssetInfo {
+  type: "spritesheet";
   frameConfig?: {
     frameWidth?: number;
     frameHeight?: number;
@@ -35,14 +37,24 @@ interface SpritesheetAssetInfo {
   };
 }
 
-interface AtlasAssetInfo {
-  type: string;
-  key: string;
+interface AsepriteAssetInfo extends StandardAssetInfo {
+  type: "aseprite";
   atlasURL: string;
   textureURL: string;
 }
 
-type AssetInfo = StandardAssetInfo | SpritesheetAssetInfo | AtlasAssetInfo;
+// TODO: Verfiy if normalMapUrl even works here?
+interface AtlasAssetInfo extends StandardAssetInfo {
+  type: "atlas";
+  atlasURL: string;
+  textureURL: string;
+}
+
+type AssetInfo =
+  | LoadableAssetInfo
+  | SpritesheetAssetInfo
+  | AtlasAssetInfo
+  | AsepriteAssetInfo;
 
 interface AssetTypeInfo {
   extensions: string[];
@@ -100,7 +112,7 @@ const assetTypes: Record<string, AssetTypeInfo> = {
     extensions: [".json"],
     check: (content): boolean =>
       content.meta && content.meta.app === "http://www.aseprite.org/",
-    getInfo: (key, jsonUrl, pngUrl): AssetInfo => ({
+    getInfo: (key, jsonUrl, pngUrl): AsepriteAssetInfo => ({
       type: "aseprite",
       key,
       atlasURL: jsonUrl,
@@ -224,31 +236,59 @@ export default function phaserAssetsPlugin(): Plugin {
     ): AssetInfo | null {
       const ext = path.extname(file).toLowerCase();
       const baseName = path.parse(file).name;
-      const assetKey = path.join(baseDir, baseName).replace(/\\/g, "/");
+      const assetKey = path
+        .join(baseDir, baseName.replace("-albedo", ""))
+        .replace(/\\/g, "/");
       const assetPath = path.join("assets", baseDir, file).replace(/\\/g, "/");
       const publicPath = path.join("public", "assets", baseDir, file);
+      const relativePath = path.join(baseDir, file);
+      const isAlbedoAsset = baseName.endsWith("-albedo");
+
+      // Skip processing normal maps independently
+      if (baseName.endsWith("-normal")) {
+        return null;
+      }
 
       // Find matching configuration by output path
-      const matchingConfig = assetsConfig?.assets.find(
-        (a) => a.output === publicPath
-      );
+      const matchingConfig = isAlbedoAsset
+        ? assetsConfig?.assets.find(
+            (a) => a.output === publicPath.replace("albedo", "{layer}")
+          )
+        : assetsConfig?.assets.find((a) => a.output === publicPath);
 
+      let assetInfo: AssetInfo | null = null;
+
+      // Get base asset info either from config or extension detection
       if (matchingConfig?.type && assetTypes[matchingConfig.type]) {
-        return assetTypes[matchingConfig.type].getInfo(
+        assetInfo = assetTypes[matchingConfig.type].getInfo(
           assetKey,
           assetPath,
           undefined,
           matchingConfig
         );
-      }
-
-      for (const [type, typeInfo] of Object.entries(assetTypes)) {
-        if (typeInfo.extensions.includes(ext)) {
-          return typeInfo.getInfo(assetKey, assetPath);
+      } else {
+        // Fall back to extension-based detection
+        for (const [_type, typeInfo] of Object.entries(assetTypes)) {
+          if (typeInfo.extensions.includes(ext)) {
+            assetInfo = typeInfo.getInfo(assetKey, assetPath);
+            break;
+          }
         }
       }
 
-      return null;
+      // If we found an asset and it's an albedo texture, look for normal map
+      if (isAlbedoAsset && assetInfo) {
+        const normalFile = file.replace("-albedo", "-normal");
+        // If normal map exists, add it to the asset info
+        if (fs.existsSync(filePath.replace("-albedo", "-normal"))) {
+          const normalAssetPath = path
+            .join("assets", baseDir, normalFile)
+            .replace(/\\/g, "/");
+          (assetInfo as LoadableAssetInfo).normalMapUrl = normalAssetPath;
+        }
+      }
+
+      return assetInfo;
     }
 
     function processJsonAsset(
@@ -283,12 +323,14 @@ export default function phaserAssetsPlugin(): Plugin {
       ) {
         return assetTypes.tilemapTiledJSON.getInfo(assetKey, assetPath);
       }
+
       if (assetTypes.aseprite.check && assetTypes.aseprite.check(content)) {
         const pngPath = path
           .join("assets", baseDir, `${baseName}.png`)
           .replace(/\\/g, "/");
         return assetTypes.aseprite.getInfo(assetKey, assetPath, pngPath);
       }
+
       return assetTypes.json.getInfo(assetKey, assetPath);
     }
 

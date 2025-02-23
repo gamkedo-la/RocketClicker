@@ -8,13 +8,14 @@
       },
       {
         "type": "image",
-        "key": "emboss-albedo",
+        "key": "emboss",
         "url": "assets/emboss-albedo.png"
       },
       {
         "type": "image",
-        "key": "emboss",
-        "url": "assets/emboss.png"
+        "key": "emboss-button",
+        "url": "assets/emboss-button-albedo.png",
+        "normalMapUrl": "assets/emboss-button-normal.png"
       },
       {
         "type": "image",
@@ -30,11 +31,6 @@
         "type": "image",
         "key": "screen-border",
         "url": "assets/screen-border.png"
-      },
-      {
-        "type": "image",
-        "key": "ten-normal",
-        "url": "assets/ten-normal.png"
       },
       {
         "type": "image",
@@ -189,11 +185,12 @@
       {
         "type": "spritesheet",
         "key": "nine/one",
-        "url": "assets/nine/one.png",
+        "url": "assets/nine/one-albedo.png",
         "frameConfig": {
           "frameWidth": 32,
           "frameHeight": 32
-        }
+        },
+        "normalMapUrl": "assets/nine/one-normal.png"
       }
     ]
   },

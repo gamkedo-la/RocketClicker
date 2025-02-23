@@ -1,4 +1,7 @@
-import { TransformablePhaserGameObject } from "@game/core/jsx/types";
+import {
+  PhaserJsxElement,
+  TransformablePhaserGameObject,
+} from "@game/core/jsx/types";
 import { SignalValue } from "@game/core/signals/types";
 
 export const ALIGN_ITEMS = {
@@ -60,7 +63,7 @@ export interface FlexProps {
   align?: AlignmentItems;
   justify?: Justify;
   direction?: Direction;
-  children?: FlexElement | FlexElement[];
+  children?: FlexElement | FlexElement[] | PhaserJsxElement;
   // Note for future: Was it enough to have only Container here? Thinking about layers and groups...
   containerElement?: Phaser.GameObjects.Container;
   backgroundElement?: TransformablePhaserGameObject;

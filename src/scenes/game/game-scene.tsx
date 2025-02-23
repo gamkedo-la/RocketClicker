@@ -5,19 +5,16 @@ import PhaserGamebus from "@game/lib/gamebus";
 import { GameStatus } from "@game/state/game-state";
 import SoundSystem from "@game/systems/SoundSystem";
 
-import { ThreeCometScene } from "../three/three-comet-scene";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { Vector3 } from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { ThreeCometScene } from "../three/three-comet-scene";
 
+import { BUILDINGS } from "@game/entities/buildings/index";
 import { Building } from "@game/entities/buildings/types";
+import { MATERIALS, MATERIALS_NAMES } from "@game/entities/materials/index";
+import MaterialsSystem from "@game/systems/MaterialsSystem";
 import { AbstractScene } from "..";
 import { SCENES } from "../scenes";
-import {
-  MATERIALS,
-  MATERIALS_GENERATION_ORDER,
-  MATERIALS_NAMES,
-} from "@game/entities/materials/index";
-import { BUILDINGS } from "@game/entities/buildings/index";
 
 let i = 0;
 
@@ -285,59 +282,6 @@ function Cell({
   );
 }
 
-function Material({
-  x,
-  y,
-  name,
-  value,
-}: {
-  x?: number;
-  y?: number;
-  name: keyof typeof MATERIALS;
-  value: Signal<number>;
-}) {
-  let prev = 0;
-
-  const number_text: Phaser.GameObjects.Text = (
-    <text
-      x={10}
-      y={0}
-      origin={0}
-      text={computed(() =>
-        value.get().toLocaleString([], { maximumFractionDigits: 0 })
-      )}
-      style={{ color: "#000000" }}
-    />
-  );
-
-  effect(() => {
-    let curr = value.get();
-
-    // console.log(name, "prev", prev, "curr", curr);
-
-    if (prev < curr) {
-      number_text.setStyle({ color: "#00ff00" });
-    } else if (prev > curr) {
-      number_text.setStyle({ color: "#ff0000" });
-    }
-
-    prev = curr;
-  });
-
-  return (
-    <container x={x} y={y}>
-      <text
-        x={0}
-        y={0}
-        origin={{ x: 1, y: 0 }}
-        text={`${MATERIALS_NAMES[name]}`}
-        style={UI_TEXT_STYLE}
-      />
-      {number_text}
-    </container>
-  );
-}
-
 function showFloatingChange(
   scene: Phaser.Scene,
   x: number,
@@ -362,8 +306,6 @@ function showFloatingChange(
     onComplete: () => text.destroy(),
   });
 }
-
-const tick = signal(0);
 
 export const material_storage: Record<
   keyof typeof MATERIALS,
@@ -402,14 +344,20 @@ grid.forEach((row) => {
 const mouse_selected_building = signal<Building | null>(null);
 
 const handleWASD = (x: number, z: number, scene: Phaser.Scene): void => {
-  const threeCometScene: ThreeCometScene = scene.scene.get(SCENES.THREE_COMET) as ThreeCometScene;
+  const threeCometScene: ThreeCometScene = scene.scene.get(
+    SCENES.THREE_COMET
+  ) as ThreeCometScene;
   const orbitControls: OrbitControls = threeCometScene.orbitControls;
 
   const cameraDirection = new Vector3();
   threeCometScene.threeCamera.getWorldDirection(cameraDirection);
 
-  const right = new Vector3().crossVectors(cameraDirection, threeCometScene.threeCamera.up).normalize();
-  const forward = new Vector3().crossVectors(threeCometScene.threeCamera.up, right).normalize();
+  const right = new Vector3()
+    .crossVectors(cameraDirection, threeCometScene.threeCamera.up)
+    .normalize();
+  const forward = new Vector3()
+    .crossVectors(threeCometScene.threeCamera.up, right)
+    .normalize();
 
   const panOffset = new Vector3();
   panOffset.addScaledVector(forward, z / 10000);
@@ -417,7 +365,7 @@ const handleWASD = (x: number, z: number, scene: Phaser.Scene): void => {
 
   orbitControls.target.add(panOffset);
   orbitControls.update();
-}
+};
 
 export class GameScene extends AbstractScene {
   declare bus: Phaser.Events.EventEmitter;
@@ -450,7 +398,9 @@ export class GameScene extends AbstractScene {
   key_d_pressed: boolean;
   key_p!: Phaser.Input.Keyboard.Key;
   key_m!: Phaser.Input.Keyboard.Key;
+
   soundSystem!: SoundSystem;
+  materialsSystem!: MaterialsSystem;
 
   create() {
     this.bus = this.gamebus.getBus();
@@ -492,43 +442,16 @@ export class GameScene extends AbstractScene {
     this.key_escape = this.input.keyboard!.addKey(
       Phaser.Input.Keyboard.KeyCodes.ESC
     );
-    this.key_w = this.input.keyboard!.addKey(
-      Phaser.Input.Keyboard.KeyCodes.W
-    );
-    this.key_a = this.input.keyboard!.addKey(
-      Phaser.Input.Keyboard.KeyCodes.A
-    )
-    this.key_s = this.input.keyboard!.addKey(
-      Phaser.Input.Keyboard.KeyCodes.S
-    )
-    this.key_d = this.input.keyboard!.addKey(
-      Phaser.Input.Keyboard.KeyCodes.D
-    )
-    this.key_p = this.input.keyboard!.addKey(
-      Phaser.Input.Keyboard.KeyCodes.P
-    );
-    this.key_m = this.input.keyboard!.addKey(
-      Phaser.Input.Keyboard.KeyCodes.M
-    );
+    this.key_w = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+    this.key_a = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+    this.key_s = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+    this.key_d = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+    this.key_p = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.P);
+    this.key_m = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.M);
 
     this.registerSystems();
 
     this.gameState.setGameStatus(GameStatus.RUNNING);
-
-    this.add.existing(
-      <Stack x={10} y={10} spacing={10}>
-        <text
-          text={
-            "Selected Building            Star Dust = SD | Metals = M | Pure Metals = PM"
-          }
-          style={UI_TEXT_STYLE}
-        />
-        <text
-          text={computed(() => mouse_selected_building.get()?.name ?? "")}
-          style={UI_TEXT_STYLE}
-        />
-      </Stack>
-    );
 
     this.add.existing(
       <Stack x={130} y={90} spacing={8}>
@@ -549,17 +472,6 @@ export class GameScene extends AbstractScene {
               return <Cell text={`${x},${y}`} id={cell} building={building} />;
             })}
           </Stack>
-        ))}
-      </Stack>
-    );
-
-    this.add.existing(
-      <Stack x={920} y={80} spacing={23}>
-        {Object.entries(MATERIALS).map(([key, _]) => (
-          <Material
-            name={key as keyof typeof MATERIALS}
-            value={material_storage[key as keyof typeof MATERIALS]}
-          />
         ))}
       </Stack>
     );
@@ -703,28 +615,28 @@ export class GameScene extends AbstractScene {
 
     this.key_w.on("down", () => {
       this.key_w_pressed = true;
-    })
+    });
     this.key_w.on("up", () => {
       this.key_w_pressed = false;
-    })
+    });
     this.key_a.on("down", () => {
       this.key_a_pressed = true;
-    })
+    });
     this.key_a.on("up", () => {
       this.key_a_pressed = false;
-    })
+    });
     this.key_s.on("down", () => {
       this.key_s_pressed = true;
-    })
+    });
     this.key_s.on("up", () => {
       this.key_s_pressed = false;
-    })
+    });
     this.key_d.on("down", () => {
       this.key_d_pressed = true;
-    })
+    });
     this.key_d.on("up", () => {
       this.key_d_pressed = false;
-    })
+    });
 
     this.key_p.on("down", () => {
       this.scene.pause(SCENES.THREE_COMET);
@@ -797,59 +709,21 @@ export class GameScene extends AbstractScene {
   registerSystems() {
     console.log("registering systems");
     this.soundSystem = new SoundSystem(this);
+    this.materialsSystem = new MaterialsSystem(this.gameState).create();
   }
 
   tickLength = 1000;
   tickTimer = 0;
 
-  update(_time: number, delta: number) {
-    const cameraDeltaX: number = (this.key_d_pressed ? 1 : 0) - (this.key_a_pressed ? 1 : 0);
-    const cameraDeltaY: number = (this.key_w_pressed ? 1 : 0) - (this.key_s_pressed ? 1 : 0);
+  update(time: number, delta: number) {
+    const cameraDeltaX: number =
+      (this.key_d_pressed ? 1 : 0) - (this.key_a_pressed ? 1 : 0);
+    const cameraDeltaY: number =
+      (this.key_w_pressed ? 1 : 0) - (this.key_s_pressed ? 1 : 0);
 
     handleWASD(cameraDeltaX * delta, cameraDeltaY * delta, this);
 
-    this.tickTimer += delta;
-    if (this.tickTimer >= this.tickLength) {
-      this.tickTimer = 0;
-
-      tick.update((tick) => tick + 1);
-
-      material_storage[MATERIALS.kWh].set(0);
-
-      MATERIALS_GENERATION_ORDER.forEach((material_order) => {
-        grid_buildings.forEach((buildingSignal) => {
-          const building = buildingSignal.get();
-
-          if (building === null) return;
-
-          // TODO: Fuel cell is evaluating twice because it outputs twice
-          if (
-            building.output[material_order] === undefined ||
-            (material_order === MATERIALS.H2O && building.name === "Fuel Cell")
-          )
-            return;
-
-          //console.log(`${building.name} is generating ${material}'`);
-          let successRate = 1;
-          Object.entries(building.input).forEach(([input, value]) => {
-            const material =
-              material_storage[input as keyof typeof MATERIALS].get();
-            successRate = Math.min(successRate || 1, material / value);
-            material_storage[input as keyof typeof MATERIALS].update(
-              (material) => Math.max(material - value, 0)
-            );
-          });
-
-          if (!successRate) return;
-
-          Object.entries(building.output).forEach(([output, value]) => {
-            material_storage[output as keyof typeof MATERIALS].update(
-              (material) => material + value * successRate
-            );
-          });
-        });
-      });
-    }
+    this.materialsSystem.update(time, delta);
   }
 
   shutdown() {}

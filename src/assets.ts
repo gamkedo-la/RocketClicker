@@ -4,12 +4,11 @@
 
 export const RESOURCES = {
   "bg": "bg",
-  "emboss-albedo": "emboss-albedo",
   "emboss": "emboss",
+  "emboss-button": "emboss-button",
   "key-art": "key-art",
   "nine": "nine",
   "screen-border": "screen-border",
-  "ten-normal": "ten-normal",
   "ten": "ten",
   "texture": "texture",
   "build-H2compressor": "build-H2compressor",
