@@ -43,7 +43,8 @@ export abstract class AbstractScene extends Phaser.Scene {
   createThreeScene() {
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
-    const aspect = (width * 0.75) / height;
+    // TODO: Magic number
+    const aspect = (width * 0.6) / height;
 
     const screenResolution = new THREE.Vector2(width, height);
     const renderResolution = screenResolution.clone().divideScalar(2);
@@ -66,7 +67,9 @@ export abstract class AbstractScene extends Phaser.Scene {
     renderer.autoClear = true;
     renderer.setPixelRatio(1);
     renderer.setSize(width, height);
-    renderer.setViewport(250, 0, width / 1.5, height);
+    // TODO: Magic number
+    // Remember to update the aspect and pointer raycasting
+    renderer.setViewport(250, 0, width * 0.6, height);
 
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;

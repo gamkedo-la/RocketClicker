@@ -238,7 +238,8 @@ export class ThreeCometScene extends AbstractScene {
     if (this.board) {
       // Get normalized device coordinates (-1 to +1) for mouse position
       const pointer = this.input.activePointer;
-      const x = (pointer.x * 2) / this.game.scale.width - 1;
+      // TODO: Magic number
+      const x = ((pointer.x - 250) * 2) / (this.game.scale.width * 0.6) - 1;
       const y = -((pointer.y * 2) / this.game.scale.height) + 1;
 
       // Setup raycaster
