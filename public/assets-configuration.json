@@ -9,12 +9,12 @@
       "output": "public/assets/bg.png"
     },
     {
-      "input": "assets/ui/emboss-1.aseprite",
-      "output": "public/assets/emboss.png"
+      "input": "assets/ui/emboss-button.aseprite",
+      "output": "public/assets/emboss-button-{layer}.png"
     },
     {
       "input": "assets/ui/nine-slice-1.aseprite",
-      "output": "public/assets/nine/one.png",
+      "output": "public/assets/nine/one-{layer}.png",
       "type": "spritesheet",
       "frameConfig": {
         "frameWidth": 32,
