@@ -25,6 +25,8 @@ export const RightPanel = ({
         align={ALIGN_ITEMS.FLEX_END}
       >
         {...Object.keys(MATERIALS).map((material) => (
+          // TODO: add material icons
+          // <image texture={RESOURCES[material]} />
           <Counter
             title={material}
             value={
