@@ -17,6 +17,7 @@ export const RESOURCES = {
   "nine.one": "nine/one",
   "nine": "nine",
   "O2": "O2",
+  "pure-metals": "pure-metals",
   "screen-border": "screen-border",
   "ten": "ten",
   "texture": "texture",
