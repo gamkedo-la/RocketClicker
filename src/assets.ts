@@ -19,6 +19,7 @@ export const RESOURCES = {
   "O2": "O2",
   "pure-metals": "pure-metals",
   "screen-border": "screen-border",
+  "stardust": "stardust",
   "ten": "ten",
   "texture": "texture",
   "build-chemicalplant": "build-chemicalplant",

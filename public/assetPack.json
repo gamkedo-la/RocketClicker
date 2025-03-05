@@ -85,6 +85,11 @@
       },
       {
         "type": "image",
+        "key": "stardust",
+        "url": "assets/stardust.png"
+      },
+      {
+        "type": "image",
         "key": "ten",
         "url": "assets/ten.png"
       },
