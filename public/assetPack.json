@@ -39,6 +39,11 @@
       },
       {
         "type": "image",
+        "key": "kWh",
+        "url": "assets/kWh.png"
+      },
+      {
+        "type": "image",
         "key": "LH2",
         "url": "assets/LH2.png"
       },

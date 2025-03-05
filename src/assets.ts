@@ -10,6 +10,7 @@ export const RESOURCES = {
   "H2O": "H2O",
   "intro-title": "intro-title",
   "key-art": "key-art",
+  "kWh": "kWh",
   "LH2": "LH2",
   "LOX": "LOX",
   "nine.one": "nine/one",
