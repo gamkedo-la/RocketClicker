@@ -13,6 +13,7 @@ export const RESOURCES = {
   "kWh": "kWh",
   "LH2": "LH2",
   "LOX": "LOX",
+  "metals": "metals",
   "nine.one": "nine/one",
   "nine": "nine",
   "O2": "O2",

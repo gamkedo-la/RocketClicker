@@ -54,6 +54,11 @@
       },
       {
         "type": "image",
+        "key": "metals",
+        "url": "assets/metals.png"
+      },
+      {
+        "type": "image",
         "key": "nine/one",
         "url": "assets/nine/one-albedo.png",
         "normalMapUrl": "assets/nine/one-normal.png"
