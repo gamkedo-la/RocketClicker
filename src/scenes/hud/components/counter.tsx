@@ -4,6 +4,7 @@ import { effect } from "@game/core/signals/signals";
 import { Signal } from "@game/core/signals/types";
 import { Flex } from "@game/core/ui/Flex";
 import { FlexRow } from "@game/core/ui/FlexRow";
+import { MATERIALS_ICONS } from "@game/entities/materials/index";
 
 export const Counter = ({
   title,
@@ -36,6 +37,8 @@ export const Counter = ({
     />
   );
 
+  const counterIcon = <image texture={MATERIALS_ICONS[title]} />;
+
   const counterText: Phaser.GameObjects.Text = (
     <text
       text="000000000"
@@ -56,6 +59,7 @@ export const Counter = ({
 
   const flex: FlexRow = (
     <Flex padding={0}>
+      {counterIcon}
       {counterTitle}
       {counterFlex}
     </Flex>

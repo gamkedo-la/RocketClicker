@@ -3,6 +3,31 @@
     "files": [
       {
         "type": "image",
+        "key": "H2",
+        "url": "assets/H2.png"
+      },
+      {
+        "type": "image",
+        "key": "H2O",
+        "url": "assets/H2O.png"
+      },
+      {
+        "type": "image",
+        "key": "LH2",
+        "url": "assets/LH2.png"
+      },
+      {
+        "type": "image",
+        "key": "LOX",
+        "url": "assets/LOX.png"
+      },
+      {
+        "type": "image",
+        "key": "O2",
+        "url": "assets/O2.png"
+      },
+      {
+        "type": "image",
         "key": "bg",
         "url": "assets/bg.png"
       },
@@ -19,23 +44,8 @@
       },
       {
         "type": "image",
-        "key": "H2",
-        "url": "assets/H2.png"
-      },
-      {
-        "type": "image",
-        "key": "H2O",
-        "url": "assets/H2O.png"
-      },
-      {
-        "type": "image",
         "key": "intro-title",
         "url": "assets/intro-title.png"
-      },
-      {
-        "type": "image",
-        "key": "key-art",
-        "url": "assets/key-art.png"
       },
       {
         "type": "image",
@@ -44,13 +54,8 @@
       },
       {
         "type": "image",
-        "key": "LH2",
-        "url": "assets/LH2.png"
-      },
-      {
-        "type": "image",
-        "key": "LOX",
-        "url": "assets/LOX.png"
+        "key": "key-art",
+        "url": "assets/key-art.png"
       },
       {
         "type": "image",
@@ -59,19 +64,8 @@
       },
       {
         "type": "image",
-        "key": "nine/one",
-        "url": "assets/nine/one-albedo.png",
-        "normalMapUrl": "assets/nine/one-normal.png"
-      },
-      {
-        "type": "image",
         "key": "nine",
         "url": "assets/nine.png"
-      },
-      {
-        "type": "image",
-        "key": "O2",
-        "url": "assets/O2.png"
       },
       {
         "type": "image",
@@ -97,6 +91,16 @@
         "type": "image",
         "key": "texture",
         "url": "assets/texture.png"
+      },
+      {
+        "type": "audio",
+        "key": "build-H2compressor",
+        "url": "assets/build-H2compressor.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "build-O2compressor",
+        "url": "assets/build-O2compressor.mp3"
       },
       {
         "type": "audio",
@@ -130,18 +134,8 @@
       },
       {
         "type": "audio",
-        "key": "build-H2compressor",
-        "url": "assets/build-H2compressor.mp3"
-      },
-      {
-        "type": "audio",
         "key": "build-miner",
         "url": "assets/build-miner.mp3"
-      },
-      {
-        "type": "audio",
-        "key": "build-O2compressor",
-        "url": "assets/build-O2compressor.mp3"
       },
       {
         "type": "audio",
@@ -237,6 +231,16 @@
         "type": "font",
         "key": "handjet",
         "url": "assets/handjet.ttf"
+      },
+      {
+        "type": "spritesheet",
+        "key": "nine/one",
+        "url": "assets/nine/one-albedo.png",
+        "frameConfig": {
+          "frameWidth": 32,
+          "frameHeight": 32
+        },
+        "normalMapUrl": "assets/nine/one-normal.png"
       }
     ]
   },
