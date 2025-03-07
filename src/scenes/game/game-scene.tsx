@@ -5,8 +5,6 @@ import PhaserGamebus from "@game/lib/gamebus";
 import { GameStatus } from "@game/state/game-state";
 import SoundSystem from "@game/systems/SoundSystem";
 
-import { Vector3 } from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { ThreeCometScene } from "../three/three-comet-scene";
 
 import { BUILDINGS } from "@game/entities/buildings/index";
@@ -347,24 +345,8 @@ const handleWASD = (x: number, z: number, scene: Phaser.Scene): void => {
   const threeCometScene: ThreeCometScene = scene.scene.get(
     SCENES.THREE_COMET
   ) as ThreeCometScene;
-  const orbitControls: OrbitControls = threeCometScene.orbitControls;
 
-  const cameraDirection = new Vector3();
-  threeCometScene.threeCamera.getWorldDirection(cameraDirection);
-
-  const right = new Vector3()
-    .crossVectors(cameraDirection, threeCometScene.threeCamera.up)
-    .normalize();
-  const forward = new Vector3()
-    .crossVectors(threeCometScene.threeCamera.up, right)
-    .normalize();
-
-  const panOffset = new Vector3();
-  panOffset.addScaledVector(forward, z / 10000);
-  panOffset.addScaledVector(right, x / 10000);
-
-  orbitControls.target.add(panOffset);
-  orbitControls.update();
+  threeCometScene.camera.addOrigin(x, 0, z);
 };
 
 export class GameScene extends AbstractScene {
@@ -717,12 +699,12 @@ export class GameScene extends AbstractScene {
 
   update(time: number, delta: number) {
     const cameraDeltaX: number =
-      (this.key_d_pressed ? 1 : 0) - (this.key_a_pressed ? 1 : 0);
+      (this.key_a_pressed ? 1 : 0) - (this.key_d_pressed ? 1 : 0);
     const cameraDeltaY: number =
       (this.key_w_pressed ? 1 : 0) - (this.key_s_pressed ? 1 : 0);
 
     if (cameraDeltaX !== 0 || cameraDeltaY !== 0) {
-      handleWASD(cameraDeltaX * delta, cameraDeltaY * delta, this);
+      handleWASD(cameraDeltaX / 1000, cameraDeltaY / 1000, this);
     }
 
     this.materialsSystem.update(time, delta);
