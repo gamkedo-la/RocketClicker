@@ -28,13 +28,19 @@ export const Counter = ({
       text={title}
       resolution={2}
       style={{
-        fontFamily: "handjet",
+        fontFamily: "jersey15",
         fontSize: "18px",
         color: STRING_COLORS_NAMES["cuba-libre"],
-        stroke: STRING_COLORS_NAMES["cuba-libre"],
-        strokeThickness: 1,
       }}
     />
+  );
+  counterTitle.setShadow(
+    0,
+    -2,
+    STRING_COLORS_NAMES["dark-void"],
+    0,
+    true,
+    true
   );
 
   const counterIcon = <image texture={MATERIALS_ICONS[title]} />;
@@ -44,7 +50,7 @@ export const Counter = ({
       text="000000000"
       resolution={2}
       style={{
-        fontFamily: "handjet",
+        fontFamily: "jersey15",
         fontSize: "18px",
         color: STRING_COLORS_NAMES["vaporwave-blue"],
       }}

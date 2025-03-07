@@ -12,8 +12,8 @@ Conversion config example
 const config = {
   conversions: [
     {
-      input: "handjet-font/static/Handjet-Medium.ttf",
-      output: "handjet.ttf",
+      input: "jersey15-font/Jersey15-Regular.ttf",
+      output: "jersey15.ttf",
     },
     {
       input: "ui/bg-dark-1.aseprite",

@@ -229,8 +229,8 @@
       },
       {
         "type": "font",
-        "key": "handjet",
-        "url": "assets/handjet.ttf"
+        "key": "jersey15",
+        "url": "assets/jersey15.ttf"
       },
       {
         "type": "spritesheet",

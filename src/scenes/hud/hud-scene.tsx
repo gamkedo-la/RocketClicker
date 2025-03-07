@@ -42,7 +42,7 @@ export class HudScene extends AbstractScene {
             ) /* TODO: /mouse_selected_building.get()?.name ?? "")*/
           }
           style={{
-            fontFamily: "handjet",
+            fontFamily: "jersey15",
             color: STRING_COLORS_NAMES["white"],
             fontSize: 16,
           }}
@@ -52,7 +52,7 @@ export class HudScene extends AbstractScene {
             "Selected Building            Star Dust = SD | Metals = M | Pure Metals = PM"
           }
           style={{
-            fontFamily: "handjet",
+            fontFamily: "jersey15",
             color: STRING_COLORS_NAMES["white"],
             fontSize: 16,
           }}

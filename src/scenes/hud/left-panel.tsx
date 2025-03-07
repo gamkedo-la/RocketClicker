@@ -9,7 +9,7 @@ const UI_TEXT_STYLE = {
   color: STRING_COLORS_NAMES["cuba-libre"],
   fontSize: "32px",
   align: "center",
-  fontFamily: "handjet",
+  fontFamily: "jersey15",
 };
 
 export const LeftPanel = ({

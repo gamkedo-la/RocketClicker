@@ -19,11 +19,11 @@ let i = 0;
 // background varies from black to white, when it moves
 const UI_TEXT_STYLE = {
   color: "#ffffff",
-  stroke: "#ffffff",
+  stroke: "#000000",
   strokeThickness: 2,
   fontSize: "24px",
   align: "center",
-  fontFamily: "handjet",
+  fontFamily: "jersey15",
 };
 
 function hasResources(

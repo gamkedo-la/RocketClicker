@@ -1,8 +1,8 @@
 {
   "assets": [
     {
-      "input": "assets/handjet-font/static/Handjet-Medium.ttf",
-      "output": "public/assets/handjet.ttf"
+      "input": "assets/jersey15-font/Jersey15-Regular.ttf",
+      "output": "public/assets/jersey15.ttf"
     },
     {
       "input": "assets/ui/bg-dark-1.aseprite",
