@@ -40,7 +40,7 @@ export class Camera {
     this.update();
 
     // TODO: Magic numbers :love:
-    this.addOrigin(0.05, 0, 0.133);
+    this.addOrigin(0.045, 0, 0.133);
   }
 
   update() {
