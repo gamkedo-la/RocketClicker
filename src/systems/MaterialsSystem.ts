@@ -12,7 +12,7 @@ export default class MaterialsSystem implements System {
   tickTimer = 0;
   tickLength = 1000;
 
-  constructor(gameState: GameStateManager) {
+  constructor(private gameState: GameStateManager) {
     gameState.state.subscribe((state) => {
       this.material_storage = state.material_storage;
     });
@@ -29,12 +29,9 @@ export default class MaterialsSystem implements System {
 
       this.material_storage[MATERIALS.kWh].set(0);
 
+      const grid_buildings = this.gameState.state.get()?.board.grid_buildings;
+
       MATERIALS_GENERATION_ORDER.forEach((material_order) => {
-        // Temporary bumping
-        this.material_storage[material_order].update(
-          (material) => material + 1
-        );
-        /*
         grid_buildings.forEach((buildingSignal) => {
           const building = buildingSignal.get();
 
@@ -44,10 +41,12 @@ export default class MaterialsSystem implements System {
           if (
             building.output[material_order] === undefined ||
             (material_order === MATERIALS.H2O && building.name === "Fuel Cell")
-          )
+          ) {
             return;
+          }
 
-          //console.log(`${building.name} is generating ${material}'`);
+          //console.log(`${building.name} is generating ${material_order}`);
+
           let successRate = 1;
           Object.entries(building.input).forEach(([input, value]) => {
             const material =
@@ -66,7 +65,6 @@ export default class MaterialsSystem implements System {
             );
           });
         });
-        */
       });
     }
   }

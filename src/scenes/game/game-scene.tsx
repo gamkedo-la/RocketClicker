@@ -7,7 +7,7 @@ import SoundSystem from "@game/systems/SoundSystem";
 
 import { ThreeCometScene } from "../three/three-comet-scene";
 
-import { BUILDINGS } from "@game/entities/buildings/index";
+import { BUILDINGS, getBuildingById } from "@game/entities/buildings/index";
 import { Building } from "@game/entities/buildings/types";
 import { MATERIALS, MATERIALS_NAMES } from "@game/entities/materials/index";
 import MaterialsSystem from "@game/systems/MaterialsSystem";
@@ -320,40 +320,14 @@ export const material_storage: Record<
   StarDust: signal(100),
 };
 
-const grid = [
-  [0, 1, 2, 3, 4],
-  [5, 6, 7, 8, 9],
-  [10, 11, 12, 13, 14],
-  [15, 16, 17, 18, 19],
-  [20, 21, 22, 23, 24],
-];
-
-const grid_buildings: Map<number, Signal<Building | null>> = new Map<
-  number,
-  Signal<Building | null>
->();
-
-grid.forEach((row) => {
-  row.forEach((cell) => {
-    grid_buildings.set(cell, signal<Building | null>(null));
-  });
-});
-
 const mouse_selected_building = signal<Building | null>(null);
-
-const handleWASD = (x: number, z: number, scene: Phaser.Scene): void => {
-  const threeCometScene: ThreeCometScene = scene.scene.get(
-    SCENES.THREE_COMET
-  ) as ThreeCometScene;
-
-  threeCometScene.camera.addOrigin(x, 0, z);
-};
 
 export class GameScene extends AbstractScene {
   declare bus: Phaser.Events.EventEmitter;
   declare gamebus: PhaserGamebus;
 
   camera: Phaser.Cameras.Scene2D.Camera;
+  threeCometScene: ThreeCometScene;
 
   constructor() {
     super(SCENES.GAME);
@@ -388,6 +362,9 @@ export class GameScene extends AbstractScene {
     this.bus = this.gamebus.getBus();
 
     this.scene.run(SCENES.THREE_COMET);
+    this.threeCometScene = this.scene.get(
+      SCENES.THREE_COMET
+    ) as ThreeCometScene;
 
     this.camera = this.cameras.main;
 
@@ -443,62 +420,45 @@ export class GameScene extends AbstractScene {
       </Stack>
     );
 
-    const grid_container = (
-      <Stack x={300} y={200} spacing={10}>
-        {grid.map((row, y) => (
-          <Stack spacing={10} direction="horizontal">
-            {row.map((cell, x) => {
-              const building = grid_buildings.get(cell)!;
-              if (cell === 12)
-                return <Cell text={`rocket`} id={cell} building={null} />;
-              return <Cell text={`${x},${y}`} id={cell} building={building} />;
-            })}
-          </Stack>
-        ))}
-      </Stack>
-    );
-
-    this.add.existing(
-      <container
-        x={920}
-        y={500}
-        width={100}
-        height={100}
-        interactive
-        onPointerdown={(self) => {
-          console.log("Stardust mining button clicked!");
-          console.log("Before:", material_storage[MATERIALS.StarDust].get());
-          material_storage[MATERIALS.StarDust].update(
-            (material) => material + 20
-          );
-          console.log("After:", material_storage[MATERIALS.StarDust].get());
-          showFloatingChange(this, self.x, self.y, 20);
-          (self.first! as any).fillColor = 0xaaaaa00;
-          // needs a scene reference
-          // this.soundSystem.play("sfx-mine-stardust");
-        }}
-        onPointerup={(self) => {
-          (self.first! as any).fillColor = 0xffffaa;
-        }}
-        onPointerover={(self) => {
-          (self.first! as any).fillColor = 0xffffaa;
-          // needs a scene reference
-          // this.soundSystem.play("sfx-click");
-        }}
-        onPointerout={(self) => {
-          (self.first! as any).fillColor = 0xffffff;
-        }}
-      >
-        <rectangle width={140} height={60} fillColor={0xffffff} />
-        <text
-          x={0}
-          y={0}
-          origin={0.5}
-          text={"Mine StarDust\n(+20)"}
-          style={{ color: "#000000", align: "center" }}
-        />
-      </container>
-    );
+    <container
+      x={920}
+      y={500}
+      width={100}
+      height={100}
+      interactive
+      onPointerdown={(self) => {
+        console.log("Stardust mining button clicked!");
+        console.log("Before:", material_storage[MATERIALS.StarDust].get());
+        material_storage[MATERIALS.StarDust].update(
+          (material) => material + 20
+        );
+        console.log("After:", material_storage[MATERIALS.StarDust].get());
+        showFloatingChange(this, self.x, self.y, 20);
+        (self.first! as any).fillColor = 0xaaaaa00;
+        // needs a scene reference
+        // this.soundSystem.play("sfx-mine-stardust");
+      }}
+      onPointerup={(self) => {
+        (self.first! as any).fillColor = 0xffffaa;
+      }}
+      onPointerover={(self) => {
+        (self.first! as any).fillColor = 0xffffaa;
+        // needs a scene reference
+        // this.soundSystem.play("sfx-click");
+      }}
+      onPointerout={(self) => {
+        (self.first! as any).fillColor = 0xffffff;
+      }}
+    >
+      <rectangle width={140} height={60} fillColor={0xffffff} />
+      <text
+        x={0}
+        y={0}
+        origin={0.5}
+        text={"Mine StarDust\n(+20)"}
+        style={{ color: "#000000", align: "center" }}
+      />
+    </container>;
 
     this.key_one.on("down", () => {
       if (hasResources(BUILDINGS[0], material_storage)) {
@@ -686,6 +646,11 @@ export class GameScene extends AbstractScene {
     setTimeout(() => {
       this.scale.refresh();
     }, 100);
+
+    setTimeout(() => {
+      this.gameState.addBuilding(4, 4, getBuildingById("generator"));
+      this.gameState.removeBuilding(0, 0);
+    }, 3000);
   }
 
   registerSystems() {
@@ -704,7 +669,11 @@ export class GameScene extends AbstractScene {
       (this.key_w_pressed ? 1 : 0) - (this.key_s_pressed ? 1 : 0);
 
     if (cameraDeltaX !== 0 || cameraDeltaY !== 0) {
-      handleWASD(cameraDeltaX / 1000, cameraDeltaY / 1000, this);
+      this.threeCometScene.camera.addOrigin(
+        cameraDeltaX / 1000,
+        0,
+        cameraDeltaY / 1000
+      );
     }
 
     this.materialsSystem.update(time, delta);

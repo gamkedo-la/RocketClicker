@@ -9,3 +9,10 @@ export const starMaterial = new THREE.MeshStandardMaterial({
   emissive: 0xffffff,
   emissiveIntensity: 1,
 });
+
+export const buildingMaterial = new THREE.MeshStandardMaterial({
+  color: 0x444444,
+  dithering: true,
+  metalness: 0.3,
+  roughness: 1,
+});

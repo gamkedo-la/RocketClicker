@@ -37,7 +37,7 @@ export class GameStateManager
     time: 0,
     score: 0,
     material_storage: Object.fromEntries(
-      Object.keys(MATERIALS).map((material) => [material, signal(0)])
+      Object.keys(MATERIALS).map((material) => [material, signal(10000)])
     ) as Record<keyof typeof MATERIALS, Signal<number>>,
     board: {
       boardWidth: 5,
@@ -49,6 +49,16 @@ export class GameStateManager
 
   constructor(pluginManager: Phaser.Plugins.PluginManager) {
     super(pluginManager);
+
+    const board = this.state.get().board;
+
+    // Initialize the grid_buildings map with empty signals
+    for (let y = 0; y < board.boardHeight; y++) {
+      for (let x = 0; x < board.boardWidth; x++) {
+        const cellId = y * board.boardWidth + x;
+        board.grid_buildings.set(cellId, signal<Building | null>(null));
+      }
+    }
   }
 
   private mutateState(mutation: (state: State) => boolean): void {
@@ -60,5 +70,113 @@ export class GameStateManager
       state.status = status;
       return true;
     });
+  }
+
+  /**
+   * Add a building to a specific cell on the board
+   */
+  addBuildingToCell(cellId: number, building: Building): boolean {
+    const board = this.state.get().board;
+
+    if (cellId < 0 || cellId >= board.boardWidth * board.boardHeight) {
+      console.error(`Invalid cell ID: ${cellId}`);
+      return false;
+    }
+
+    const buildingSignal = board.grid_buildings.get(cellId);
+    if (!buildingSignal) {
+      console.error(`No building signal found for cell ID: ${cellId}`);
+      return false;
+    }
+
+    buildingSignal.set(building);
+    return true;
+  }
+
+  addBuilding(x: number, y: number, building: Building): boolean {
+    const cellId = this.gridToCell(x, y);
+    return this.addBuildingToCell(cellId, building);
+  }
+
+  /**
+   * Remove a building from a specific cell on the board
+   */
+  removeBuildingFromCell(cellId: number): boolean {
+    const board = this.state.get().board;
+
+    if (cellId < 0 || cellId >= board.boardWidth * board.boardHeight) {
+      console.error(`Invalid cell ID: ${cellId}`);
+      return false;
+    }
+
+    const buildingSignal = board.grid_buildings.get(cellId);
+    if (!buildingSignal) {
+      console.error(`No building signal found for cell ID: ${cellId}`);
+      return false;
+    }
+
+    buildingSignal.set(null);
+    return true;
+  }
+
+  removeBuilding(x: number, y: number): boolean {
+    const cellId = this.gridToCell(x, y);
+    return this.removeBuildingFromCell(cellId);
+  }
+
+  /**
+   * Get the building at a specific cell on the board
+   */
+  getBuildingAtCell(cellId: number): Building | null {
+    const board = this.state.get().board;
+
+    if (cellId < 0 || cellId >= board.boardWidth * board.boardHeight) {
+      console.error(`Invalid cell ID: ${cellId}`);
+      return null;
+    }
+
+    const buildingSignal = board.grid_buildings.get(cellId);
+    if (!buildingSignal) {
+      console.error(`No building signal found for cell ID: ${cellId}`);
+      return null;
+    }
+
+    return buildingSignal.get();
+  }
+
+  getBuildingAt(x: number, y: number): Building | null {
+    const cellId = this.gridToCell(x, y);
+    return this.getBuildingAtCell(cellId);
+  }
+
+  /**
+   * Convert grid coordinates to a cell ID
+   */
+  gridToCell(x: number, y: number): number {
+    const board = this.state.get().board;
+
+    if (x < 0 || x >= board.boardWidth || y < 0 || y >= board.boardHeight) {
+      console.error(`Invalid grid coordinates: ${x}, ${y}`);
+      return -1;
+    }
+
+    return y * board.boardWidth + x;
+  }
+
+  /**
+   * Convert a cell ID to grid coordinates
+   */
+  cellToGrid(cellId: number): { x: number; y: number } | null {
+    const board = this.state.get().board;
+
+    if (cellId < 0 || cellId >= board.boardWidth * board.boardHeight) {
+      console.error(`Invalid cell ID: ${cellId}`);
+      return null;
+    }
+
+    const x = cellId % board.boardWidth;
+    const y = Math.floor(cellId / board.boardWidth);
+
+    return { x, y };
   }
 }
