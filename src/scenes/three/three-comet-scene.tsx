@@ -9,13 +9,14 @@ import { AbstractScene } from "..";
 import { SCENES } from "../scenes";
 
 import { effect } from "@game/core/signals/signals";
-import { BUILDINGS } from "@game/entities/buildings/index";
+import { BUILDINGS, getBuildingById } from "@game/entities/buildings/index";
 import { Building } from "@game/entities/buildings/types";
 import { Camera } from "./components/camera";
 import { loader, ThreeScene } from "./components/scene";
 import { createLights } from "./elements/lights";
 import { buildingMaterial, starMaterial } from "./elements/materials";
 import { createSky } from "./elements/sky";
+import { MATERIALS } from "@game/entities/materials/index";
 
 export class ThreeCometScene extends AbstractScene {
   declare bus: Phaser.Events.EventEmitter;
@@ -255,6 +256,30 @@ export class ThreeCometScene extends AbstractScene {
     }
   }
 
+  private showFloatingChange(
+    x: number,
+    y: number,
+    value: number,
+    color: string = "#00ff00"
+  ) {
+    const formattedValue = value >= 0 ? `+${value}` : value.toString();
+    const text = this.add.text(x, y, formattedValue, {
+      fontSize: "32px",
+      color: color,
+      fontStyle: "bold",
+    });
+    text.setOrigin(0.5);
+
+    this.tweens.add({
+      targets: text,
+      y: y - 120,
+      alpha: { from: 1, to: 0 },
+      duration: 3000,
+      ease: "Cubic.easeOut",
+      onComplete: () => text.destroy(),
+    });
+  }
+
   pointer = DebugPanel.debug(this, "pointer", new THREE.Vector2(), {
     view: { type: "point2d", min: 0, max: 5, step: 0.001 },
   });
@@ -331,6 +356,9 @@ export class ThreeCometScene extends AbstractScene {
               )
             );
           }
+        } else if (this.hoveredObject.userData.id === "comet") {
+          this.showFloatingChange(pointer.x, pointer.y, 100);
+          this.gameState.changeMaterial(MATERIALS.StarDust, 100);
         }
       }
     }

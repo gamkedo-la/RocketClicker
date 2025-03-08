@@ -420,46 +420,6 @@ export class GameScene extends AbstractScene {
       </Stack>
     );
 
-    <container
-      x={920}
-      y={500}
-      width={100}
-      height={100}
-      interactive
-      onPointerdown={(self) => {
-        console.log("Stardust mining button clicked!");
-        console.log("Before:", material_storage[MATERIALS.StarDust].get());
-        material_storage[MATERIALS.StarDust].update(
-          (material) => material + 20
-        );
-        console.log("After:", material_storage[MATERIALS.StarDust].get());
-        showFloatingChange(this, self.x, self.y, 20);
-        (self.first! as any).fillColor = 0xaaaaa00;
-        // needs a scene reference
-        // this.soundSystem.play("sfx-mine-stardust");
-      }}
-      onPointerup={(self) => {
-        (self.first! as any).fillColor = 0xffffaa;
-      }}
-      onPointerover={(self) => {
-        (self.first! as any).fillColor = 0xffffaa;
-        // needs a scene reference
-        // this.soundSystem.play("sfx-click");
-      }}
-      onPointerout={(self) => {
-        (self.first! as any).fillColor = 0xffffff;
-      }}
-    >
-      <rectangle width={140} height={60} fillColor={0xffffff} />
-      <text
-        x={0}
-        y={0}
-        origin={0.5}
-        text={"Mine StarDust\n(+20)"}
-        style={{ color: "#000000", align: "center" }}
-      />
-    </container>;
-
     this.key_one.on("down", () => {
       if (hasResources(BUILDINGS[0], material_storage)) {
         mouse_selected_building.set(BUILDINGS[0]);
@@ -646,11 +606,6 @@ export class GameScene extends AbstractScene {
     setTimeout(() => {
       this.scale.refresh();
     }, 100);
-
-    setTimeout(() => {
-      this.gameState.addBuilding(4, 4, getBuildingById("generator"));
-      this.gameState.removeBuilding(0, 0);
-    }, 3000);
   }
 
   registerSystems() {

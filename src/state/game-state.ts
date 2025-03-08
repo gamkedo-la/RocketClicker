@@ -179,4 +179,9 @@ export class GameStateManager
 
     return { x, y };
   }
+
+  changeMaterial(material: keyof typeof MATERIALS, amount: number): void {
+    const materialStorage = this.state.get().material_storage;
+    materialStorage[material].update((current) => current + amount);
+  }
 }
