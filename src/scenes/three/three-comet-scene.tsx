@@ -38,9 +38,13 @@ export class ThreeCometScene extends AbstractScene {
   board_bounds: THREE.Box3;
   board_size: THREE.Vector3;
 
-  terrain: THREE.Mesh[][];
+  interactiveMeshes: THREE.Mesh[];
+
+  // Building meshes that are on the comet
   buildingMeshes: Map<number, THREE.Object3D> = new Map();
-  buildingModels: Map<string, THREE.Object3D> = new Map();
+
+  // Cache of building models
+  buildingsModelsCache: Map<string, THREE.Object3D> = new Map();
 
   async create() {
     this.bus = this.gamebus.getBus();
@@ -57,11 +61,7 @@ export class ThreeCometScene extends AbstractScene {
     this.threeScene = scene.threeScene;
     this.threeCamera = camera.camera;
 
-    const board = this.gameState.state.get()?.board;
-
-    this.terrain = Array.from({ length: board.boardWidth }, () =>
-      Array(board.boardHeight).fill(0)
-    );
+    this.interactiveMeshes = [];
 
     this.loadCometSystemModel();
     this.setupBoardListeners();
@@ -83,8 +83,13 @@ export class ThreeCometScene extends AbstractScene {
         if (node.name === "comet") {
           this.comet = node as THREE.Mesh;
 
+          this.comet.userData = {
+            id: "comet",
+          };
+
           // Add the camera pivot as a child of the comet
           this.comet.add(this.camera.getPivot());
+          this.interactiveMeshes.push(this.comet);
         }
 
         if (node.name === "board") {
@@ -105,22 +110,6 @@ export class ThreeCometScene extends AbstractScene {
 
       // Load building models
       this.loadBuildingModels();
-
-      /*
-      const buildingTypes = BUILDINGS.map((b) => b.id);
-
-      for (let x = 0; x < 3; x++) {
-        for (let y = 0; y < 3; y++) {
-          this.gameState.addBuilding(
-            x,
-            y,
-            getBuildingById(
-              buildingTypes[Math.floor(Math.random() * buildingTypes.length)]
-            )
-          );
-        }
-      }
-      */
     });
   }
 
@@ -129,24 +118,30 @@ export class ThreeCometScene extends AbstractScene {
 
     for (let x = 0; x < board.boardWidth; x++) {
       for (let y = 0; y < board.boardHeight; y++) {
-        const ground = new THREE.Mesh(
+        const terrainMesh = new THREE.Mesh(
           new THREE.BoxGeometry(0.035, 0.0005, 0.035),
-          buildingMaterial
+          buildingMaterial.clone()
         );
 
-        ground.castShadow = true;
-        ground.receiveShadow = true;
+        terrainMesh.castShadow = true;
+        terrainMesh.receiveShadow = true;
 
-        ground.position.set(
+        terrainMesh.position.set(
           -0.055 + (x + y) * 0.025,
           0.039,
           -0.05 + (x - y) * 0.025
         );
 
-        ground.rotateY(Math.PI / 4);
+        terrainMesh.rotateY(Math.PI / 4);
 
-        //this.comet.add(ground);
-        this.terrain[x][y] = ground;
+        terrainMesh.userData = {
+          cellId: this.gameState.gridToCell(x, y),
+          grid: { x, y },
+          id: "terrain",
+        };
+
+        this.comet.add(terrainMesh);
+        this.interactiveMeshes.push(terrainMesh);
       }
     }
   }
@@ -187,7 +182,7 @@ export class ThreeCometScene extends AbstractScene {
 
       mesh.rotateY(Math.PI / 4);
 
-      this.buildingModels.set(type, mesh);
+      this.buildingsModelsCache.set(type, mesh);
     });
   }
 
@@ -217,22 +212,35 @@ export class ThreeCometScene extends AbstractScene {
     this.removeBuildingFromCell(cellId);
 
     // Get the building model
-    let buildingMesh = this.buildingModels.get(building.id)!.clone();
+    let buildingMesh = this.buildingsModelsCache.get(building.id)!.clone();
+
+    const mesh = buildingMesh as THREE.Mesh;
+    if (mesh.material) {
+      mesh.material = (mesh.material as THREE.Material).clone();
+    }
 
     // TODO: Shadows or something
-    buildingMesh.castShadow = true;
-    buildingMesh.receiveShadow = true;
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+
+    const grid = this.gameState.cellToGrid(cellId)!;
+
+    mesh.userData = {
+      id: building.id,
+      grid: { x: grid.x, y: grid.y },
+      cellId,
+    };
 
     // Position the building
     const position = this.getCellPosition(cellId);
-    buildingMesh.position.copy(position);
+    mesh.position.copy(position);
 
     // Add to the scene and track it
-    this.comet.add(buildingMesh);
-    this.buildingMeshes.set(cellId, buildingMesh);
+    this.comet.add(mesh);
+    this.buildingMeshes.set(cellId, mesh);
 
     console.log(`Added building ${building.name} to cell ${cellId}`);
-    return buildingMesh;
+    return mesh;
   }
 
   /**
@@ -248,7 +256,7 @@ export class ThreeCometScene extends AbstractScene {
   }
 
   pointer = DebugPanel.debug(this, "pointer", new THREE.Vector2(), {
-    view: { type: "point2d", min: -1, max: 1, step: 0.001 },
+    view: { type: "point2d", min: 0, max: 5, step: 0.001 },
   });
 
   board_pointer_coor = DebugPanel.debug(
@@ -262,10 +270,26 @@ export class ThreeCometScene extends AbstractScene {
 
   zAxis = new THREE.Vector3(0, 0, 1);
 
-  update(time: number, delta: number) {
-    if (this.board) {
-      const pointer = this.input.activePointer;
+  hoveredObject: THREE.Mesh | null = null;
 
+  pointerDownFrames = 0;
+  pointerJustDown = false;
+
+  update(time: number, delta: number) {
+    const pointer = this.input.activePointer;
+    if (pointer.isDown) {
+      this.pointerDownFrames++;
+    } else {
+      this.pointerDownFrames = 0;
+    }
+
+    if (this.pointerDownFrames === 1) {
+      this.pointerJustDown = true;
+    } else {
+      this.pointerJustDown = false;
+    }
+
+    if (this.board && this.pointerJustDown) {
       // First normalize within the viewport
       const viewportWidth = this.game.scale.width * 0.6;
       const viewportX = pointer.x - 250; // Adjust for viewport offset
@@ -279,10 +303,35 @@ export class ThreeCometScene extends AbstractScene {
       raycaster.setFromCamera(new THREE.Vector2(x, y), this.threeCamera);
 
       // TODO: interactions!
-      const intersects = raycaster.intersectObjects(this.terrain[0]);
+      const intersects = raycaster.intersectObjects(this.interactiveMeshes);
 
       if (intersects.length > 0) {
         const intersection = intersects[0];
+
+        // Debugging
+        if (this.hoveredObject) {
+          const material = this.hoveredObject
+            .material as THREE.MeshStandardMaterial;
+          material.emissive.setHex(0);
+        }
+        this.hoveredObject = intersection.object as THREE.Mesh;
+        const material = this.hoveredObject
+          .material as THREE.MeshStandardMaterial;
+        material.emissive.setHex(0x555555);
+
+        if (this.hoveredObject.userData.id === "terrain") {
+          const { grid, cellId } = this.hoveredObject.userData;
+          this.pointer.set(grid.x, grid.y);
+
+          if (!this.gameState.getBuildingAtCell(cellId)) {
+            this.gameState.addBuildingToCell(
+              cellId,
+              getBuildingById(
+                BUILDINGS[Math.floor(Math.random() * BUILDINGS.length)].id
+              )
+            );
+          }
+        }
       }
     }
 
