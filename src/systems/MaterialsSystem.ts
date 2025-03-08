@@ -61,7 +61,7 @@ export default class MaterialsSystem implements System {
 
           Object.entries(building.output).forEach(([output, value]) => {
             this.material_storage[output as keyof typeof MATERIALS].update(
-              (material) => material + value * successRate
+              (material) => material + Math.floor(value * successRate)
             );
           });
         });
