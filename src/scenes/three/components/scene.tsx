@@ -4,12 +4,17 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { RenderPixelatedPass } from "three/examples/jsm/postprocessing/RenderPixelatedPass.js";
 
 import { assert } from "@game/core/common/assert";
+import { DebugPanel } from "@game/scenes/debug/debug-panel";
 
 export const loader = new GLTFLoader();
 
 export class ThreeScene {
   threeScene: THREE.Scene;
   renderer: THREE.WebGLRenderer;
+
+  renderWithComposer = DebugPanel.debug(this, "renderWithComposer", false, {
+    view: { type: "boolean" },
+  });
 
   constructor(private scene: Phaser.Scene, private camera: THREE.Camera) {
     const width = this.scene.cameras.main.width;
@@ -71,8 +76,11 @@ export class ThreeScene {
     view.render = () => {
       this.renderer.resetState();
 
-      //renderer.render(threeScene, camera);
-      composer.render();
+      if (this.renderWithComposer) {
+        composer.render();
+      } else {
+        this.renderer.render(this.threeScene, this.camera);
+      }
 
       // Phaser 3.85 needs to reset
       this.renderer.resetState();
