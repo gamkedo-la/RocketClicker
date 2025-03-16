@@ -1,0 +1,11 @@
+{
+  "name": "@devtools/packer",
+  "version": "1.0.0",
+  "description": "Texture atlas generator for Aseprite files",
+  "main": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "ts-node index.ts"
+  }
+}
