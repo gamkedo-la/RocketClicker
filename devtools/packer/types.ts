@@ -14,7 +14,7 @@ export interface ExtractedSprite {
   x: number;
   y: number;
   data: Uint8Array;
-  sliceData?: Uint8Array; // Optional reference to slice data
+  sliceSprite?: ExtractedSprite; // Reference to the slice layer sprite if it exists
 }
 
 // Modified for Phaser 3 MultiAtlas format

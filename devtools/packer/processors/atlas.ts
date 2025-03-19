@@ -161,7 +161,7 @@ export class Atlas {
       };
 
       // Find the corresponding slice layer if it exists
-      if (!sprite.sliceData) {
+      if (!sprite.sliceSprite) {
         // No slice data, create a single frame for the whole layer
         textures.push({
           image: baseName,
@@ -173,7 +173,7 @@ export class Atlas {
           scale: 1,
           frames: [
             {
-              filename: "0",
+              filename: sprite.name,
               frame: {
                 x: 0,
                 y: 0,
@@ -199,7 +199,7 @@ export class Atlas {
       }
 
       // Generate frames for sliced sprites
-      const sliceFrames = generateFrames(sprite, sprite.sliceData);
+      const sliceFrames = generateFrames(sprite);
 
       // Adjust frame coordinates based on trim
       const frames: AtlasFrame[] = sliceFrames.map((frame, index) => {
@@ -212,7 +212,7 @@ export class Atlas {
         const adjustedHeight = Math.min(frame.h, trimInfo.height - adjustedY);
 
         return {
-          filename: index.toString(),
+          filename: `${sprite.name}#${index}`,
           frame: {
             x: adjustedX,
             y: adjustedY,

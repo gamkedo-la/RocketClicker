@@ -68,13 +68,13 @@ export async function extractSprites(
   );
 
   // Create a map of slice layers for easier lookup
-  const sliceLayers = new Map<string, Uint8Array>();
+  const sliceLayers = new Map<string, ExtractedSprite>();
 
   // Find all slice layers and map them to their corresponding content layer
   extractedSprites.forEach((sprite) => {
     if (sprite.name.endsWith("-slices")) {
       const contentLayerName = sprite.name.replace("-slices", "");
-      sliceLayers.set(contentLayerName, sprite.data);
+      sliceLayers.set(contentLayerName, sprite);
     }
   });
 
@@ -94,13 +94,14 @@ export async function extractSprites(
     if (sprite.name.endsWith("-slices")) continue;
 
     // Find matching slice layer for this content layer
-    const sliceData = sliceLayers.get(sprite.name);
+    const sliceSprite = sliceLayers.get(sprite.name);
 
     // Link slice layer if found
-    if (sliceData) {
-      sprite.sliceData = sliceData;
+    if (sliceSprite) {
+      // Just store a reference to the entire slice sprite
+      sprite.sliceSprite = sliceSprite;
       console.log(
-        `  Found slice layer "${sprite.name}-slices" for "${sprite.name}"`
+        `  Found slice layer "${sprite.name}-slices" for "${sprite.name}" at position (${sliceSprite.x}, ${sliceSprite.y}) with dimensions ${sliceSprite.width}x${sliceSprite.height}`
       );
     }
 
