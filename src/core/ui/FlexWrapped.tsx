@@ -27,7 +27,7 @@ export class FlexWrapped extends AbstractFlex {
           y: this.y,
           width: this.width,
           height: this.height,
-          padding: this.padding,
+          padding: [this.paddingX, this.paddingY],
           margin: this.margin,
           align: this.align,
           justify: this.alignContent,
@@ -38,7 +38,7 @@ export class FlexWrapped extends AbstractFlex {
           y: this.y,
           width: this.width,
           height: this.height,
-          padding: this.padding,
+          padding: [this.paddingX, this.paddingY],
           margin: this.margin,
           align: this.align,
           justify: this.alignContent,
@@ -137,8 +137,12 @@ export class FlexWrapped extends AbstractFlex {
   }
 
   updateAlign(align: (typeof ALIGN_ITEMS)[keyof typeof ALIGN_ITEMS]): this {
-    this.linesContainer.updateAlign(align);
+    (this.linesContainer as FlexWrapped).updateAlign(align);
     return this;
+  }
+
+  updateCrossAxis(): void {
+    this.linesContainer.updateCrossAxis();
   }
 
   getDebug(

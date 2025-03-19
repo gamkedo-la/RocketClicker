@@ -43,11 +43,11 @@ export class FlexColumn extends AbstractFlex {
   ): FlexElement {
     super.add(child, flexGrow);
 
-    this.width = Math.max(this.width, child.width + this.padding * 2);
+    this.width = Math.max(this.width, child.width + this.paddingX * 2);
 
     this.height = Math.max(
       this.height,
-      this.getAxisTotalSizeSum() + this.padding * 2
+      this.getAxisTotalSizeSum() + this.paddingY * 2
     );
 
     this.layout();
@@ -243,8 +243,8 @@ export class FlexColumn extends AbstractFlex {
     let axisSizeSum = this.getAxisTotalSizeSum();
 
     this.children.forEach((child) => {
-      this.width = Math.max(this.width, child.width + this.padding * 2);
-      this.height = Math.max(this.height, axisSizeSum + this.padding * 2);
+      this.width = Math.max(this.width, child.width + this.paddingX * 2);
+      this.height = Math.max(this.height, axisSizeSum + this.paddingY * 2);
     });
 
     this.layout();

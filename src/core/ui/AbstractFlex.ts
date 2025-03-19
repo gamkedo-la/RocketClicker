@@ -58,7 +58,7 @@ export interface FlexProps {
   y?: SignalValue<number>;
   width?: SignalValue<number>;
   height?: SignalValue<number>;
-  padding?: number;
+  padding?: number | [number, number];
   margin?: number;
   align?: AlignmentItems;
   justify?: Justify;
@@ -88,7 +88,8 @@ export abstract class AbstractFlex implements FlexElement {
   _flexWidth: number;
   _flexHeight: number;
 
-  padding: number;
+  paddingX: number;
+  paddingY: number;
   margin: number;
 
   align: AlignmentItems;
@@ -126,11 +127,18 @@ export abstract class AbstractFlex implements FlexElement {
     this.height = config.height ?? 0;
     this._flexWidth = config.width ?? 0;
     this._flexHeight = config.height ?? 0;
-    this.padding = config.padding ?? 10;
     this.margin = config.margin ?? 4;
     this.align = config.align ?? ALIGN_ITEMS.CENTER;
     this.justify = config.justify ?? JUSTIFY.FLEX_START;
     this.alignContent = config.alignContent ?? JUSTIFY.CENTER;
+
+    if (Array.isArray(config.padding)) {
+      this.paddingX = config.padding[0] ?? 0;
+      this.paddingY = config.padding[1] ?? 0;
+    } else {
+      this.paddingX = config.padding ?? 0;
+      this.paddingY = config.padding ?? 0;
+    }
 
     this.children = [];
 
@@ -156,8 +164,8 @@ export abstract class AbstractFlex implements FlexElement {
 
     this.outerBounds = new Phaser.Geom.Rectangle(this.x, this.y, 0, 0);
     this.innerBounds = new Phaser.Geom.Rectangle(
-      this.x + this.padding,
-      this.y + this.padding,
+      this.x + this.paddingX,
+      this.y + this.paddingY,
       0,
       0
     );
@@ -234,14 +242,14 @@ export abstract class AbstractFlex implements FlexElement {
   updateBounds(): void {
     this.outerBounds.setSize(this.width, this.height);
     this.innerBounds.setSize(
-      this.width - this.padding * 2,
-      this.height - this.padding * 2
+      this.width - this.paddingX * 2,
+      this.height - this.paddingY * 2
     );
 
     this.outerBounds.setPosition(this.x, this.y);
     this.innerBounds.setPosition(
-      this.outerBounds.left + this.padding,
-      this.outerBounds.top + this.padding
+      this.outerBounds.left + this.paddingX,
+      this.outerBounds.top + this.paddingY
     );
 
     if (this.containerElement) {
