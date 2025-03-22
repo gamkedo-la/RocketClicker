@@ -1,6 +1,7 @@
 import {
   AbstractFlex,
   ALIGN_ITEMS,
+  AlignmentItems,
   DIRECTION,
   FlexElement,
   FlexProperties,
@@ -10,9 +11,24 @@ import {
 import { FlexColumn } from "./FlexColumn";
 import { FlexRow } from "./FlexRow";
 
+const swapAlignContent = (alignContent: AlignmentItems): Justify => {
+  switch (alignContent) {
+    case ALIGN_ITEMS.FLEX_START:
+      return JUSTIFY.FLEX_START;
+    case ALIGN_ITEMS.FLEX_END:
+      return JUSTIFY.FLEX_END;
+    case ALIGN_ITEMS.CENTER:
+      return JUSTIFY.CENTER;
+    case ALIGN_ITEMS.STRETCH:
+      return JUSTIFY.CENTER;
+    default:
+      return JUSTIFY.CENTER;
+  }
+};
+
 export class FlexWrapped extends AbstractFlex {
-  private linesContainer: AbstractFlex;
-  private currentLine: AbstractFlex;
+  private linesContainer: FlexColumn | FlexRow;
+  private currentLine: FlexColumn | FlexRow;
   private isRowLayout: boolean;
 
   constructor(config: FlexProperties) {
@@ -29,8 +45,9 @@ export class FlexWrapped extends AbstractFlex {
           height: this.height,
           padding: [this.paddingX, this.paddingY],
           margin: this.margin,
-          align: this.align,
-          justify: this.alignContent,
+          justify: swapAlignContent(this.alignContent),
+          backgroundElement: this.backgroundElement,
+          containerElement: this.containerElement,
           children: [],
         })
       : new FlexRow({
@@ -40,8 +57,9 @@ export class FlexWrapped extends AbstractFlex {
           height: this.height,
           padding: [this.paddingX, this.paddingY],
           margin: this.margin,
-          align: this.align,
-          justify: this.alignContent,
+          justify: swapAlignContent(this.alignContent),
+          backgroundElement: this.backgroundElement,
+          containerElement: this.containerElement,
           children: [],
         });
 
@@ -49,22 +67,20 @@ export class FlexWrapped extends AbstractFlex {
     this.linesContainer.add(this.currentLine);
   }
 
-  private createNewLine(): AbstractFlex {
+  private createNewLine(): FlexColumn | FlexRow {
     return this.isRowLayout
       ? new FlexRow({
-          width: this.width,
+          width: this.width - this.paddingX * 2,
           margin: this.margin,
           padding: 0,
           justify: this.justify,
-          align: this.align,
           children: [],
         })
       : new FlexColumn({
-          height: this.height,
+          height: this.height - this.paddingY * 2,
           margin: this.margin,
           padding: 0,
           justify: this.justify,
-          align: this.align,
           children: [],
         });
   }
@@ -73,7 +89,7 @@ export class FlexWrapped extends AbstractFlex {
     this.children.push(child);
 
     if (flexGrow && flexGrow > 0) {
-      console.warn("flexGrow with wrapped flexes wass not tested");
+      console.warn("flexGrow with wrapped flexes was not tested");
     }
 
     if (!this.fitsInCurrentLine(child)) {
@@ -82,7 +98,7 @@ export class FlexWrapped extends AbstractFlex {
     }
 
     const flex = this.currentLine.add(child, flexGrow);
-    this.linesContainer.trashLayout();
+    this.layout();
 
     return flex;
   }
@@ -113,10 +129,14 @@ export class FlexWrapped extends AbstractFlex {
   }
 
   layout(): void {
-    this.linesContainer.setX(this.x);
-    this.linesContainer.setY(this.y);
-    this.linesContainer.setWidth(this.width);
-    this.linesContainer.setHeight(this.height);
+    this.linesContainer.x = this.x;
+    this.linesContainer.y = this.y;
+    this.linesContainer.width = this.width;
+    this.linesContainer.height = this.height;
+    this.linesContainer._flexWidth = this.width;
+    this.linesContainer._flexHeight = this.height;
+
+    this.linesContainer.trashLayout();
 
     // Update our dimensions to match the lines container
     this.width = this.linesContainer.width;
@@ -133,11 +153,6 @@ export class FlexWrapped extends AbstractFlex {
 
   updateJustify(justify: (typeof JUSTIFY)[keyof typeof JUSTIFY]): this {
     this.linesContainer.updateJustify(justify);
-    return this;
-  }
-
-  updateAlign(align: (typeof ALIGN_ITEMS)[keyof typeof ALIGN_ITEMS]): this {
-    (this.linesContainer as FlexWrapped).updateAlign(align);
     return this;
   }
 

@@ -60,14 +60,13 @@ export interface FlexProps {
   height?: SignalValue<number>;
   padding?: number | [number, number];
   margin?: number;
-  align?: AlignmentItems;
+  alignContent?: AlignmentItems;
   justify?: Justify;
   direction?: Direction;
   children?: FlexElement | FlexElement[] | PhaserJsxElement;
   // Note for future: Was it enough to have only Container here? Thinking about layers and groups...
   containerElement?: Phaser.GameObjects.Container;
   backgroundElement?: TransformablePhaserGameObject;
-  alignContent?: Justify;
   wrapped?: boolean;
 }
 
@@ -92,11 +91,9 @@ export abstract class AbstractFlex implements FlexElement {
   paddingY: number;
   margin: number;
 
-  align: AlignmentItems;
+  alignContent: AlignmentItems;
   justify: Justify;
   direction: Direction;
-
-  alignContent?: Justify;
 
   children: FlexElement[];
 
@@ -128,9 +125,8 @@ export abstract class AbstractFlex implements FlexElement {
     this._flexWidth = config.width ?? 0;
     this._flexHeight = config.height ?? 0;
     this.margin = config.margin ?? 4;
-    this.align = config.align ?? ALIGN_ITEMS.CENTER;
+    this.alignContent = config.alignContent ?? ALIGN_ITEMS.CENTER;
     this.justify = config.justify ?? JUSTIFY.FLEX_START;
-    this.alignContent = config.alignContent ?? JUSTIFY.CENTER;
 
     if (Array.isArray(config.padding)) {
       this.paddingX = config.padding[0] ?? 0;
@@ -200,7 +196,7 @@ export abstract class AbstractFlex implements FlexElement {
     }
     // TODO: flexShrink
     // child.flexShrink = flexShrink;
-    child.selfAlign = child.selfAlign ?? this.align;
+    child.selfAlign = child.selfAlign ?? this.alignContent;
 
     child.basis = this.direction === DIRECTION.ROW ? child.width : child.height;
 
@@ -288,21 +284,23 @@ export abstract class AbstractFlex implements FlexElement {
     graphics: Phaser.GameObjects.Graphics,
     withChildren: boolean = false
   ): void {
-    graphics.lineStyle(3, 0x0000ff);
-    graphics.strokeRect(
-      this.outerBounds.left,
-      this.outerBounds.top,
-      this.outerBounds.width,
-      this.outerBounds.height
-    );
+    if (!withChildren) {
+      graphics.lineStyle(3, 0x0000ff);
+      graphics.strokeRect(
+        this.outerBounds.left,
+        this.outerBounds.top,
+        this.outerBounds.width,
+        this.outerBounds.height
+      );
 
-    graphics.lineStyle(3, 0x00ff00);
-    graphics.strokeRect(
-      this.innerBounds.left,
-      this.innerBounds.top,
-      this.innerBounds.width,
-      this.innerBounds.height
-    );
+      graphics.lineStyle(3, 0x00ff00);
+      graphics.strokeRect(
+        this.innerBounds.left,
+        this.innerBounds.top,
+        this.innerBounds.width,
+        this.innerBounds.height
+      );
+    }
 
     if (withChildren) {
       this.children.forEach((item) => {

@@ -243,9 +243,16 @@ export class FlexColumn extends AbstractFlex {
     let axisSizeSum = this.getAxisTotalSizeSum();
 
     this.children.forEach((child) => {
+      if (child instanceof AbstractFlex) {
+        child.trashLayout();
+      }
+
       this.width = Math.max(this.width, child.width + this.paddingX * 2);
       this.height = Math.max(this.height, axisSizeSum + this.paddingY * 2);
     });
+
+    this._flexWidth = this.width;
+    this._flexHeight = this.height;
 
     this.layout();
   }
