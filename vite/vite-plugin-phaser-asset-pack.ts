@@ -44,16 +44,16 @@ interface AsepriteAssetInfo extends StandardAssetInfo {
 }
 
 // TODO: Verfiy if normalMapUrl even works here?
-interface AtlasAssetInfo extends StandardAssetInfo {
-  type: "atlas";
+interface MultiAtlasAssetInfo extends StandardAssetInfo {
+  type: "multiatlas";
   atlasURL: string;
-  textureURL: string;
+  path: string;
 }
 
 type AssetInfo =
   | LoadableAssetInfo
   | SpritesheetAssetInfo
-  | AtlasAssetInfo
+  | MultiAtlasAssetInfo
   | AsepriteAssetInfo;
 
 interface AssetTypeInfo {
@@ -71,6 +71,9 @@ interface AssetConfiguration {
   input: string;
   output: string;
   type?: string;
+  finalOutput?: string;
+
+  // Spritesheet
   frameConfig?: {
     frameWidth?: number;
     frameHeight?: number;
@@ -79,10 +82,9 @@ interface AssetConfiguration {
     margin?: number;
     spacing?: number;
   };
-  atlas?: {
-    jsonPath?: string;
-    texturePath?: string;
-  };
+
+  // MultiAtlas
+  atlasURL?: string;
 }
 
 interface AssetsConfigFile {
@@ -140,13 +142,15 @@ const assetTypes: Record<string, AssetTypeInfo> = {
       frameConfig: config?.frameConfig,
     }),
   },
-  atlas: {
-    extensions: [".png"],
+  multiatlas: {
+    extensions: [".json"],
+    check: (content): boolean =>
+      content.meta && content.meta.format === "multiatlas",
     getInfo: (key, url, _, config): AssetInfo => ({
-      type: "atlas",
-      key,
-      textureURL: url,
-      atlasURL: config?.atlas?.jsonPath || "",
+      type: "multiatlas",
+      key: key.split("/").pop()!,
+      atlasURL: url, //config?.atlasURL || "",
+      path: path.dirname(url),
     }),
   },
 };
@@ -250,11 +254,22 @@ export default function phaserAssetsPlugin(): Plugin {
       }
 
       // Find matching configuration by output path
-      const matchingConfig = isAlbedoAsset
+      let matchingConfig = isAlbedoAsset
         ? assetsConfig?.assets.find(
             (a) => a.output === publicPath.replace("albedo", "{layer}")
           )
         : assetsConfig?.assets.find((a) => a.output === publicPath);
+
+      if (!matchingConfig) {
+        matchingConfig = assetsConfig?.assets.find((a) =>
+          a.finalOutput?.includes(publicPath.replace("public/assets/", ""))
+        );
+      }
+
+      if (matchingConfig?.type === "multiatlas") {
+        // MultiAtlas assets are only json files
+        return null;
+      }
 
       let assetInfo: AssetInfo | null = null;
 
@@ -304,9 +319,18 @@ export default function phaserAssetsPlugin(): Plugin {
       const relativePath = path.join(baseDir, file);
 
       // Find matching configuration by output path
-      const matchingConfig = assetsConfig?.assets.find(
+      let matchingConfig = assetsConfig?.assets.find(
         (a) => a.output === relativePath
       );
+
+      // Can't find the matching config, so we can't process the multiatlas yet
+      if (!matchingConfig) {
+        matchingConfig = assetsConfig?.assets.find(
+          (a) =>
+            path.basename(a.output) === path.dirname(relativePath) &&
+            path.extname(a.output) === ""
+        );
+      }
 
       if (matchingConfig?.type && assetTypes[matchingConfig.type]) {
         return assetTypes[matchingConfig.type].getInfo(
