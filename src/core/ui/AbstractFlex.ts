@@ -58,7 +58,12 @@ export interface FlexProps {
   y?: SignalValue<number>;
   width?: SignalValue<number>;
   height?: SignalValue<number>;
-  padding?: number | [number, number];
+  // 4 values like css: top, right, bottom, left
+  padding?:
+    | number
+    | [number, number]
+    | [number, number, number]
+    | [number, number, number, number];
   margin?: number;
   alignContent?: AlignmentItems;
   justify?: Justify;
@@ -87,8 +92,11 @@ export abstract class AbstractFlex implements FlexElement {
   _flexWidth: number;
   _flexHeight: number;
 
-  paddingX: number;
-  paddingY: number;
+  paddingTop: number;
+  paddingRight: number;
+  paddingBottom: number;
+  paddingLeft: number;
+
   margin: number;
 
   alignContent: AlignmentItems;
@@ -129,11 +137,24 @@ export abstract class AbstractFlex implements FlexElement {
     this.justify = config.justify ?? JUSTIFY.FLEX_START;
 
     if (Array.isArray(config.padding)) {
-      this.paddingX = config.padding[0] ?? 0;
-      this.paddingY = config.padding[1] ?? 0;
+      if (config.padding.length === 2) {
+        this.paddingTop = this.paddingBottom = config.padding[0] ?? 0;
+        this.paddingRight = this.paddingLeft = config.padding[1] ?? 0;
+      } else if (config.padding.length === 3) {
+        this.paddingTop = config.padding[0] ?? 0;
+        this.paddingRight = this.paddingLeft = config.padding[1] ?? 0;
+        this.paddingBottom = config.padding[2] ?? 0;
+      } else if (config.padding.length === 4) {
+        this.paddingTop = config.padding[0] ?? 0;
+        this.paddingRight = config.padding[1] ?? 0;
+        this.paddingBottom = config.padding[2] ?? 0;
+        this.paddingLeft = config.padding[3] ?? 0;
+      }
     } else {
-      this.paddingX = config.padding ?? 0;
-      this.paddingY = config.padding ?? 0;
+      this.paddingTop = config.padding ?? 0;
+      this.paddingRight = config.padding ?? 0;
+      this.paddingBottom = config.padding ?? 0;
+      this.paddingLeft = config.padding ?? 0;
     }
 
     this.children = [];
@@ -160,8 +181,8 @@ export abstract class AbstractFlex implements FlexElement {
 
     this.outerBounds = new Phaser.Geom.Rectangle(this.x, this.y, 0, 0);
     this.innerBounds = new Phaser.Geom.Rectangle(
-      this.x + this.paddingX,
-      this.y + this.paddingY,
+      this.x + this.paddingLeft,
+      this.y + this.paddingTop,
       0,
       0
     );
@@ -236,46 +257,46 @@ export abstract class AbstractFlex implements FlexElement {
   }
 
   updateBounds(): void {
-    this.outerBounds.setSize(this.width, this.height);
+    this.outerBounds.setSize(Math.floor(this.width), Math.floor(this.height));
     this.innerBounds.setSize(
-      this.width - this.paddingX * 2,
-      this.height - this.paddingY * 2
+      Math.floor(this.width - this.paddingLeft - this.paddingRight),
+      Math.floor(this.height - this.paddingTop - this.paddingBottom)
     );
 
-    this.outerBounds.setPosition(this.x, this.y);
+    this.outerBounds.setPosition(Math.floor(this.x), Math.floor(this.y));
     this.innerBounds.setPosition(
-      this.outerBounds.left + this.paddingX,
-      this.outerBounds.top + this.paddingY
+      Math.floor(this.outerBounds.left + this.paddingLeft),
+      Math.floor(this.outerBounds.top + this.paddingTop)
     );
 
     if (this.containerElement) {
       this.containerElement.setPosition(
-        this.outerBounds.left,
-        this.outerBounds.top
+        Math.floor(this.outerBounds.left),
+        Math.floor(this.outerBounds.top)
       );
       this.containerElement.setSize(
-        this.outerBounds.width,
-        this.outerBounds.height
+        Math.floor(this.outerBounds.width),
+        Math.floor(this.outerBounds.height)
       );
 
       this.containerElement.input?.hitArea?.setPosition(
-        this.containerElement.width / 2,
-        this.containerElement.height / 2
+        Math.floor(this.containerElement.width / 2),
+        Math.floor(this.containerElement.height / 2)
       );
       this.containerElement.input?.hitArea?.setSize(
-        this.containerElement.width,
-        this.containerElement.height
+        Math.floor(this.containerElement.width),
+        Math.floor(this.containerElement.height)
       );
     }
 
     if (this.backgroundElement) {
       this.backgroundElement.setPosition(
-        this.outerBounds.left,
-        this.outerBounds.top
+        Math.floor(this.outerBounds.left),
+        Math.floor(this.outerBounds.top)
       );
       this.backgroundElement.setSize(
-        this.outerBounds.width,
-        this.outerBounds.height
+        Math.floor(this.outerBounds.width),
+        Math.floor(this.outerBounds.height)
       );
     }
   }

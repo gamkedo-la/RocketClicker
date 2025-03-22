@@ -43,7 +43,12 @@ export class FlexWrapped extends AbstractFlex {
           y: this.y,
           width: this.width,
           height: this.height,
-          padding: [this.paddingX, this.paddingY],
+          padding: [
+            this.paddingLeft,
+            this.paddingTop,
+            this.paddingRight,
+            this.paddingBottom,
+          ],
           margin: this.margin,
           justify: swapAlignContent(this.alignContent),
           backgroundElement: this.backgroundElement,
@@ -55,7 +60,12 @@ export class FlexWrapped extends AbstractFlex {
           y: this.y,
           width: this.width,
           height: this.height,
-          padding: [this.paddingX, this.paddingY],
+          padding: [
+            this.paddingLeft,
+            this.paddingTop,
+            this.paddingRight,
+            this.paddingBottom,
+          ],
           margin: this.margin,
           justify: swapAlignContent(this.alignContent),
           backgroundElement: this.backgroundElement,
@@ -70,14 +80,14 @@ export class FlexWrapped extends AbstractFlex {
   private createNewLine(): FlexColumn | FlexRow {
     return this.isRowLayout
       ? new FlexRow({
-          width: this.width - this.paddingX * 2,
+          width: this.width - this.paddingLeft - this.paddingRight,
           margin: this.margin,
           padding: 0,
           justify: this.justify,
           children: [],
         })
       : new FlexColumn({
-          height: this.height - this.paddingY * 2,
+          height: this.height - this.paddingTop - this.paddingBottom,
           margin: this.margin,
           padding: 0,
           justify: this.justify,

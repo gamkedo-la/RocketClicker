@@ -43,11 +43,14 @@ export class FlexRow extends AbstractFlex {
   ): FlexElement {
     super.add(child, flexGrow);
 
-    this.height = Math.max(this.height, child.height + this.paddingY * 2);
+    this.height = Math.max(
+      this.height,
+      child.height + this.paddingTop + this.paddingBottom
+    );
 
     this.width = Math.max(
       this.width,
-      this.getAxisTotalSizeSum() + this.paddingX * 2
+      this.getAxisTotalSizeSum() + this.paddingLeft + this.paddingRight
     );
 
     this.layout();
@@ -247,8 +250,14 @@ export class FlexRow extends AbstractFlex {
         child.trashLayout();
       }
 
-      this.width = Math.max(this.width, axisSizeSum + this.paddingX * 2);
-      this.height = Math.max(this.height, child.height + this.paddingY * 2);
+      this.width = Math.max(
+        this.width,
+        axisSizeSum + this.paddingLeft + this.paddingRight
+      );
+      this.height = Math.max(
+        this.height,
+        child.height + this.paddingTop + this.paddingBottom
+      );
     });
 
     this._flexWidth = this.width;
