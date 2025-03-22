@@ -224,6 +224,21 @@
       },
       {
         "type": "binary",
+        "key": "compressor",
+        "url": "assets/compressor.glb"
+      },
+      {
+        "type": "binary",
+        "key": "condenser",
+        "url": "assets/condenser.glb"
+      },
+      {
+        "type": "binary",
+        "key": "generator",
+        "url": "assets/generator.glb"
+      },
+      {
+        "type": "binary",
         "key": "martin",
         "url": "assets/martin.glb"
       },
