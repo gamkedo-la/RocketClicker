@@ -7,7 +7,7 @@ import SoundSystem from "@game/systems/SoundSystem";
 
 import { ThreeCometScene } from "../three/three-comet-scene";
 
-import { BUILDINGS, getBuildingById } from "@game/entities/buildings/index";
+import { BUILDINGS } from "@game/entities/buildings/index";
 import { Building } from "@game/entities/buildings/types";
 import { MATERIALS, MATERIALS_NAMES } from "@game/entities/materials/index";
 import MaterialsSystem from "@game/systems/MaterialsSystem";
@@ -412,13 +412,11 @@ export class GameScene extends AbstractScene {
 
     this.gameState.setGameStatus(GameStatus.RUNNING);
 
-    this.add.existing(
-      <Stack x={130} y={90} spacing={8}>
-        {BUILDINGS.map((building) => (
-          <Button building={building} />
-        ))}
-      </Stack>
-    );
+    <Stack x={130} y={90} spacing={8}>
+      {BUILDINGS.map((building) => (
+        <Button building={building} />
+      ))}
+    </Stack>;
 
     this.key_one.on("down", () => {
       if (hasResources(BUILDINGS[0], material_storage)) {
