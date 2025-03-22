@@ -25,3 +25,6 @@ dist-ssr
 
 zz_scratchpad
 _*.*
+
+# Packer temp directory
+devtools/packer/temp/

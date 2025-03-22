@@ -24,6 +24,6 @@
       "@game/*": ["./src/*.ts"]
     }
   },
-  "include": ["src"],
-  "exclude": ["zz_scratchpad"]
+  "include": ["src", "devtools/packer"],
+  "exclude": ["zz_scratchpad", "node_modules"]
 }
