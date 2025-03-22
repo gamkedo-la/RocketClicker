@@ -13,6 +13,7 @@ import {
 } from "./types";
 
 import { cleanupSymbol, SignalCleanup } from "@game/core/signals/types";
+import { TEXT_STYLE } from "@game/consts";
 
 export const JsxElementsRegistry = {
   elements: new Map<
@@ -209,7 +210,7 @@ export function setupGameObject<T extends Phaser.GameObjects.GameObject>(
           x: getSignalValue(textProps.x, 0),
           y: getSignalValue(textProps.y, 0),
           text: getSignalValue(textProps.text),
-          style: getSignalValue(textProps.style),
+          style: getSignalValue(textProps.style) || TEXT_STYLE,
         },
         false
       ) as unknown as T;
