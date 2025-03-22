@@ -1,9 +1,10 @@
+import { RESOURCES } from "@game/assets";
 import { ALIGN_ITEMS, DIRECTION, JUSTIFY } from "@game/core/ui/AbstractFlex";
 import { Flex } from "@game/core/ui/Flex";
 import { MATERIALS } from "@game/entities/materials/index";
 import { GameStateManager } from "@game/state/game-state";
 import { Counter } from "./components/counter";
-import { NineOne } from "./components/nine-one";
+import { NineSlice } from "./components/nineslice";
 
 export const RightPanel = ({
   width,
@@ -14,10 +15,12 @@ export const RightPanel = ({
 }) => {
   return (
     <Flex
-      width={width}
+      width={width + 10}
       justify={JUSTIFY.CENTER}
-      padding={30}
-      backgroundElement={<NineOne />}
+      padding={[10, 9]}
+      backgroundElement={
+        <NineSlice texture={RESOURCES["ui-left-panel"]} frame="bg-panel" />
+      }
     >
       <Flex
         direction={DIRECTION.COLUMN}

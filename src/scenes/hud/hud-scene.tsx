@@ -5,13 +5,14 @@ import { FlexItem, Spacer } from "@game/core/ui/FlexItem";
 import { FlexRow } from "@game/core/ui/FlexRow";
 import PhaserGamebus from "@game/lib/gamebus";
 
-import { AbstractScene } from "../index";
-import { SCENES } from "../scenes";
-import { LeftPanel } from "./left-panel";
-import { RightPanel } from "./right-panel";
 import { COLORS_NAMES, STRING_COLORS_NAMES } from "@game/consts";
 import { computed } from "@game/core/signals/signals";
 import { GameStateManager } from "@game/state/game-state";
+import { AbstractScene } from "../index";
+import { SCENES } from "../scenes";
+import { NineSlice } from "./components/nineslice";
+import { LeftPanel } from "./left-panel";
+import { RightPanel } from "./right-panel";
 
 export class HudScene extends AbstractScene {
   declare bus: Phaser.Events.EventEmitter;
@@ -36,11 +37,13 @@ export class HudScene extends AbstractScene {
         backgroundElement={<rectangle fillColor={COLORS_NAMES["black"]} />}
       >
         <text
-          text={
-            computed(
-              () => "Selected Building"
-            ) /* TODO: /mouse_selected_building.get()?.name ?? "")*/
-          }
+          text={computed(
+            () =>
+              `Selected Building: ${
+                this.gameState.state.get().mouse_selected_building.get()
+                  ?.building?.name
+              }`
+          )}
           style={{
             fontFamily: "jersey15",
             color: STRING_COLORS_NAMES["white"],
@@ -48,13 +51,9 @@ export class HudScene extends AbstractScene {
           }}
         />
         <text
-          text={
-            "Selected Building            Star Dust = SD | Metals = M | Pure Metals = PM"
-          }
+          text={"            Star Dust = SD | Metals = M | Pure Metals = PM"}
           style={{
-            fontFamily: "jersey15",
             color: STRING_COLORS_NAMES["white"],
-            fontSize: 16,
           }}
         />
       </Flex>
@@ -71,12 +70,9 @@ export class HudScene extends AbstractScene {
       >
         {topBar}
         <FlexItem grow={1}>
-          <nineslice
-            texture={RESOURCES["screen-border"]}
-            leftWidth={16}
-            rightWidth={16}
-            topHeight={16}
-            bottomHeight={16}
+          <NineSlice
+            texture={RESOURCES["ui-left-panel"]}
+            frame="screen-frame"
           />
         </FlexItem>
       </Flex>
@@ -88,8 +84,7 @@ export class HudScene extends AbstractScene {
 
     const layout: FlexRow = (
       <Flex
-        // TODO: temporary making space for top bar, flex needs array here
-        padding={32}
+        padding={[45, 12, 13]}
         margin={0}
         width={width}
         height={height}

@@ -1,11 +1,13 @@
+import { RESOURCES } from "@game/assets";
 import { STRING_COLORS_NAMES } from "@game/consts";
-import { DIRECTION } from "@game/core/ui/AbstractFlex";
+import { DIRECTION, JUSTIFY } from "@game/core/ui/AbstractFlex";
 import { Flex } from "@game/core/ui/Flex";
+import { BUILDINGS, getBuildingById } from "@game/entities/buildings/index";
 import { MATERIALS } from "@game/entities/materials/index";
 import { GameStateManager } from "@game/state/game-state";
 import { FlexRow } from "../../core/ui/FlexRow";
 import { BuildingSelector } from "./components/BuildingSelector";
-import { NineOne } from "./components/nine-one";
+import { NineSlice } from "./components/nineslice";
 
 const UI_TEXT_STYLE = {
   color: STRING_COLORS_NAMES["cuba-libre"],
@@ -37,21 +39,59 @@ export const LeftPanel = ({
   const z: FlexRow = (
     <Flex
       width={width}
-      padding={10}
-      backgroundElement={<NineOne />}
+      padding={[10, 9]}
+      backgroundElement={
+        <NineSlice texture={RESOURCES["ui-left-panel"]} frame="bg-panel" />
+      }
       direction={DIRECTION.COLUMN}
     >
       {title}
-      <Flex width={width} wrapped>
-        <BuildingSelector />
-        <BuildingSelector />
-        <BuildingSelector />
-        <BuildingSelector />
-        <BuildingSelector />
-        <BuildingSelector />
-        <BuildingSelector />
-        <BuildingSelector />
-        <BuildingSelector />
+      <Flex
+        width={width - 20}
+        justify={JUSTIFY.SPACE_AROUND}
+        wrapped
+        padding={2}
+      >
+        <BuildingSelector
+          building={getBuildingById(BUILDINGS[0].id)}
+          gameState={gameState}
+        />
+        <BuildingSelector
+          building={getBuildingById(BUILDINGS[1].id)}
+          gameState={gameState}
+        />
+        <BuildingSelector
+          building={getBuildingById(BUILDINGS[2].id)}
+          gameState={gameState}
+        />
+        <BuildingSelector
+          building={getBuildingById(BUILDINGS[3].id)}
+          gameState={gameState}
+        />
+        <BuildingSelector
+          building={getBuildingById(BUILDINGS[4].id)}
+          gameState={gameState}
+        />
+        <BuildingSelector
+          building={getBuildingById(BUILDINGS[5].id)}
+          gameState={gameState}
+        />
+        <BuildingSelector
+          building={getBuildingById(BUILDINGS[6].id)}
+          gameState={gameState}
+        />
+        <BuildingSelector
+          building={getBuildingById(BUILDINGS[7].id)}
+          gameState={gameState}
+        />
+        <BuildingSelector
+          building={getBuildingById(BUILDINGS[8].id)}
+          gameState={gameState}
+        />
+        <BuildingSelector
+          building={getBuildingById(BUILDINGS[9].id)}
+          gameState={gameState}
+        />
       </Flex>
     </Flex>
   );

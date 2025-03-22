@@ -1,15 +1,27 @@
 import { RESOURCES } from "@game/assets";
 
 import { FiniteStateMachine } from "@game/core/state-machine/state-machine";
-import { Signal } from "@game/core/signals/types";
 
 import { ALIGN_ITEMS, DIRECTION, JUSTIFY } from "@game/core/ui/AbstractFlex";
 import { Flex } from "@game/core/ui/Flex";
 import { FlexColumn } from "@game/core/ui/FlexColumn";
 
-import { NineSlice } from "./nineslice";
+import { STRING_COLORS_NAMES } from "@game/consts";
+import { signal } from "@game/core/signals/signals";
+import { Building } from "@game/entities/buildings/types";
 
-export const Button = ({ active }: { active?: Signal<boolean> }) => {
+import { NineSlice } from "./nineslice";
+import { GameStateManager } from "@game/state/game-state";
+
+export const Button = ({
+  building,
+  gameState,
+}: {
+  building: Building;
+  gameState: GameStateManager;
+}) => {
+  const active = signal<boolean>(false);
+
   const state: FiniteStateMachine<
     "hovered" | "pressed" | "available" | "unavailable",
     "mouseenter" | "mouseleave" | "mousedown" | "mouseup" | "resourceAvailable"
@@ -45,14 +57,6 @@ export const Button = ({ active }: { active?: Signal<boolean> }) => {
     />
   );
 
-  active?.subscribe((active) => {
-    if (active) {
-      state.setState("available");
-    } else {
-      state.setState("hovered");
-    }
-  });
-
   <stateObserver fsm={state}>
     <onEnter
       state="available"
@@ -72,12 +76,24 @@ export const Button = ({ active }: { active?: Signal<boolean> }) => {
         image.setFrame("button-building#2");
       }}
     />
+    <onExit
+      state="pressed"
+      run={() => {
+        gameState.setMouseSelectedBuilding(building);
+      }}
+    />
   </stateObserver>;
 
   return image;
 };
 
-export function BuildingSelector(): FlexColumn {
+export function BuildingSelector({
+  building,
+  gameState,
+}: {
+  building: Building;
+  gameState: GameStateManager;
+}): FlexColumn {
   return (
     <Flex
       direction={DIRECTION.COLUMN}
@@ -88,7 +104,8 @@ export function BuildingSelector(): FlexColumn {
           frame={"bg-buildings"}
         />
       }
-      padding={[5, 5]}
+      padding={6}
+      width={76}
     >
       <Flex
         backgroundElement={
@@ -97,15 +114,49 @@ export function BuildingSelector(): FlexColumn {
             frame={"title-bg-buildings"}
           />
         }
-        padding={5}
+        padding={[4, 3]}
+        justify={JUSTIFY.CENTER}
       >
-        <text text={"Generator"} />
+        <text
+          text={building.name}
+          style={{
+            color: STRING_COLORS_NAMES["dark-knight"],
+            shadow: {
+              color: STRING_COLORS_NAMES["white"],
+              offsetX: 0,
+              offsetY: 1,
+              blur: 0,
+              fill: true,
+            },
+          }}
+        />
       </Flex>
       <Flex justify={JUSTIFY.SPACE_EVENLY}>
-        <Flex direction={DIRECTION.COLUMN}>
-          <text text={["kWh", "\\/", "kWh"].join("\n")} />
+        <Flex
+          direction={DIRECTION.COLUMN}
+          alignContent={ALIGN_ITEMS.CENTER}
+          margin={2}
+        >
+          <text
+            text={[Object.keys(building.input)].join("\n")}
+            style={{
+              fontSize: 12,
+              color: STRING_COLORS_NAMES["castro"],
+            }}
+          />
+          <image
+            texture={RESOURCES["ui-left-panel"]}
+            frame={"building-arrow#0"}
+          />
+          <text
+            text={[Object.keys(building.output)].join("\n")}
+            style={{
+              fontSize: 12,
+              color: STRING_COLORS_NAMES["castro"],
+            }}
+          />
         </Flex>
-        <Button />
+        <Button building={building} gameState={gameState} />
       </Flex>
     </Flex>
   );

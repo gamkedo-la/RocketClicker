@@ -58,7 +58,7 @@ export const Counter = ({
   );
 
   const counterFlex: FlexRow = (
-    <Flex width={64} backgroundElement={nineSlice}>
+    <Flex width={64} padding={10} backgroundElement={nineSlice}>
       {counterText}
     </Flex>
   );

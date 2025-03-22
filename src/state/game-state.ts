@@ -22,6 +22,11 @@ export interface State {
   score: number;
   material_storage: Record<keyof typeof MATERIALS, Signal<number>>;
   board: BoardState;
+  mouse_selected_building: Signal<MouseSelectedBuilding>;
+}
+
+export interface MouseSelectedBuilding {
+  building: Building | null;
 }
 
 export interface GameState {
@@ -45,6 +50,7 @@ export class GameStateManager
       grid: Array.from({ length: 5 }, () => Array(5).fill(0)),
       grid_buildings: new Map(),
     },
+    mouse_selected_building: signal<MouseSelectedBuilding>({ building: null }),
   });
 
   constructor(pluginManager: Phaser.Plugins.PluginManager) {
@@ -183,5 +189,9 @@ export class GameStateManager
   changeMaterial(material: keyof typeof MATERIALS, amount: number): void {
     const materialStorage = this.state.get().material_storage;
     materialStorage[material].update((current) => current + amount);
+  }
+
+  setMouseSelectedBuilding(building: Building | null): void {
+    this.state.get().mouse_selected_building.set({ building });
   }
 }
