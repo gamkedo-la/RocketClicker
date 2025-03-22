@@ -168,7 +168,7 @@ export class ThreeCometScene extends AbstractScene {
 
   private loadBuildingModels() {
     // This will load all building models and store them for later use
-    // For now, we'll create simple placeholder geometries
+    // For now, if there's no model, we are create simple placeholder geometries
 
     const buildingTypes = BUILDINGS.map((b) => b.id);
     const colors = [
@@ -176,14 +176,39 @@ export class ThreeCometScene extends AbstractScene {
       0x800080, 0x008000, 0x800000,
     ];
 
+    // Load 3D models for buildings that have them
+    const modelLoaders = new Map([
+      ["h2-compressor", RESOURCES.compressor],
+      ["condenser", RESOURCES.condenser],
+    ]);
+
     buildingTypes.forEach((type, index) => {
-      const geometry = new THREE.BoxGeometry(0.02, 0.02, 0.02);
-      const material = new THREE.MeshPhongMaterial({ color: colors[index] });
-      const mesh = new THREE.Mesh(geometry, material);
+      // Check if we have a 3D model for this building type
+      if (modelLoaders.has(type)) {
+        const modelResource = modelLoaders.get(type)!;
+        loader.parse(this.cache.binary.get(modelResource), "", (gltf) => {
+          gltf.scene.traverse((node) => {
+            if (node instanceof THREE.Mesh) {
+              node.castShadow = true;
+              node.receiveShadow = true;
+            }
+          });
 
-      mesh.rotateY(Math.PI / 4);
+          // Scale and rotate the model as needed
+          gltf.scene.scale.set(0.0033, 0.0033, 0.0033);
+          //gltf.scene.position.set(0, -0.1, 0);
+          gltf.scene.rotateY(Math.PI / 4);
 
-      this.buildingsModelsCache.set(type, mesh);
+          this.buildingsModelsCache.set(type, gltf.scene);
+        });
+      } else {
+        // Use placeholder geometry for buildings without models
+        const geometry = new THREE.BoxGeometry(0.02, 0.02, 0.02);
+        const material = new THREE.MeshPhongMaterial({ color: colors[index] });
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.rotateY(Math.PI / 4);
+        this.buildingsModelsCache.set(type, mesh);
+      }
     });
   }
 
@@ -235,6 +260,7 @@ export class ThreeCometScene extends AbstractScene {
     // Position the building
     const position = this.getCellPosition(cellId);
     mesh.position.copy(position);
+    mesh.position.y -= 0.008;
 
     // Add to the scene and track it
     this.comet.add(mesh);
@@ -352,7 +378,7 @@ export class ThreeCometScene extends AbstractScene {
             this.gameState.addBuildingToCell(
               cellId,
               getBuildingById(
-                BUILDINGS[Math.floor(Math.random() * BUILDINGS.length)].id
+                Math.random() > 0.5 ? "h2-compressor" : "condenser"
               )
             );
           }
