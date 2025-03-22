@@ -4,8 +4,8 @@ export const GAME_WIDTH = 1280;
 export const GAME_HEIGHT = 720;
 
 export const TEXT_STYLE = {
-  fontFamily: "DotGothic16",
-  fontSize: "32px",
+  fontFamily: "Jersey15",
+  fontSize: "16px",
 };
 
 // Color pallete from https://lospec.com/gallery/hby/the-fallen
