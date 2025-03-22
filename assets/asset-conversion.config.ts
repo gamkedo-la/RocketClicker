@@ -25,16 +25,17 @@ const config = {
       },
     },
     {
-      input: "ui/bg-dark-1.aseprite",
-      output: "bg.png",
-      executable: "aseprite",
-      args: "-b ${input} --sheet ${output}",
-    },
-    {
       input: "ui/emboss-button.aseprite",
       output: "emboss-button-{layer}.png",
       executable: "aseprite",
       args: "-b ${input} --split-layers --save-as ${output}",
+    },
+    /*
+    {
+      input: "ui/bg-dark-1.aseprite",
+      output: "bg.png",
+      executable: "aseprite",
+      args: "-b ${input} --sheet ${output}",
     },
     {
       input: "ui/nine-slice-1.aseprite",
@@ -49,6 +50,7 @@ const config = {
         },
       },
     },
+    */
   ],
 };
 

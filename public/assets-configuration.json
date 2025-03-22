@@ -12,21 +12,8 @@
       "atlasURL": "ui-left-panel.json"
     },
     {
-      "input": "assets/ui/bg-dark-1.aseprite",
-      "output": "public/assets/bg.png"
-    },
-    {
       "input": "assets/ui/emboss-button.aseprite",
       "output": "public/assets/emboss-button-{layer}.png"
-    },
-    {
-      "input": "assets/ui/nine-slice-1.aseprite",
-      "output": "public/assets/nine/one-{layer}.png",
-      "type": "spritesheet",
-      "frameConfig": {
-        "frameWidth": 32,
-        "frameHeight": 32
-      }
     }
   ],
   "meta": {

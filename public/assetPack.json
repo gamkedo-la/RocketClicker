@@ -28,16 +28,6 @@
       },
       {
         "type": "image",
-        "key": "bg",
-        "url": "assets/bg.png"
-      },
-      {
-        "type": "image",
-        "key": "emboss",
-        "url": "assets/emboss-albedo.png"
-      },
-      {
-        "type": "image",
         "key": "emboss-button",
         "url": "assets/emboss-button-albedo.png",
         "normalMapUrl": "assets/emboss-button-normal.png"
@@ -54,18 +44,8 @@
       },
       {
         "type": "image",
-        "key": "key-art",
-        "url": "assets/key-art.png"
-      },
-      {
-        "type": "image",
         "key": "metals",
         "url": "assets/metals.png"
-      },
-      {
-        "type": "image",
-        "key": "nine",
-        "url": "assets/nine.png"
       },
       {
         "type": "image",
@@ -74,18 +54,8 @@
       },
       {
         "type": "image",
-        "key": "screen-border",
-        "url": "assets/screen-border.png"
-      },
-      {
-        "type": "image",
         "key": "stardust",
         "url": "assets/stardust.png"
-      },
-      {
-        "type": "image",
-        "key": "ten",
-        "url": "assets/ten.png"
       },
       {
         "type": "image",
@@ -246,16 +216,6 @@
         "type": "font",
         "key": "jersey15",
         "url": "assets/jersey15.ttf"
-      },
-      {
-        "type": "spritesheet",
-        "key": "nine/one",
-        "url": "assets/nine/one-albedo.png",
-        "frameConfig": {
-          "frameWidth": 32,
-          "frameHeight": 32
-        },
-        "normalMapUrl": "assets/nine/one-normal.png"
       },
       {
         "type": "multiatlas",
