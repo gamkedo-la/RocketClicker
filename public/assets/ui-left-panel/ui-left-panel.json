@@ -371,41 +371,41 @@
           "frame": {
             "x": 1,
             "y": 115,
-            "w": 2,
-            "h": 14
+            "w": 3,
+            "h": 6
           },
           "rotated": false,
           "trimmed": false,
           "spriteSourceSize": {
             "x": 0,
             "y": 0,
-            "w": 2,
-            "h": 14
+            "w": 3,
+            "h": 6
           },
           "sourceSize": {
-            "w": 2,
-            "h": 14
+            "w": 3,
+            "h": 6
           }
         },
         {
           "filename": "title-bg-buildings#0.1",
           "frame": {
-            "x": 3,
+            "x": 4,
             "y": 115,
-            "w": 44,
-            "h": 14
+            "w": 43,
+            "h": 6
           },
           "rotated": false,
           "trimmed": false,
           "spriteSourceSize": {
             "x": 0,
             "y": 0,
-            "w": 44,
-            "h": 14
+            "w": 43,
+            "h": 6
           },
           "sourceSize": {
-            "w": 44,
-            "h": 14
+            "w": 43,
+            "h": 6
           }
         },
         {
@@ -414,7 +414,7 @@
             "x": 47,
             "y": 115,
             "w": 5,
-            "h": 14
+            "h": 6
           },
           "rotated": false,
           "trimmed": false,
@@ -422,11 +422,137 @@
             "x": 0,
             "y": 0,
             "w": 5,
-            "h": 14
+            "h": 6
           },
           "sourceSize": {
             "w": 5,
-            "h": 14
+            "h": 6
+          }
+        },
+        {
+          "filename": "title-bg-buildings#0.3",
+          "frame": {
+            "x": 1,
+            "y": 121,
+            "w": 3,
+            "h": 3
+          },
+          "rotated": false,
+          "trimmed": false,
+          "spriteSourceSize": {
+            "x": 0,
+            "y": 0,
+            "w": 3,
+            "h": 3
+          },
+          "sourceSize": {
+            "w": 3,
+            "h": 3
+          }
+        },
+        {
+          "filename": "title-bg-buildings#0.4",
+          "frame": {
+            "x": 4,
+            "y": 121,
+            "w": 43,
+            "h": 3
+          },
+          "rotated": false,
+          "trimmed": false,
+          "spriteSourceSize": {
+            "x": 0,
+            "y": 0,
+            "w": 43,
+            "h": 3
+          },
+          "sourceSize": {
+            "w": 43,
+            "h": 3
+          }
+        },
+        {
+          "filename": "title-bg-buildings#0.5",
+          "frame": {
+            "x": 47,
+            "y": 121,
+            "w": 5,
+            "h": 3
+          },
+          "rotated": false,
+          "trimmed": false,
+          "spriteSourceSize": {
+            "x": 0,
+            "y": 0,
+            "w": 5,
+            "h": 3
+          },
+          "sourceSize": {
+            "w": 5,
+            "h": 3
+          }
+        },
+        {
+          "filename": "title-bg-buildings#0.6",
+          "frame": {
+            "x": 1,
+            "y": 124,
+            "w": 3,
+            "h": 5
+          },
+          "rotated": false,
+          "trimmed": false,
+          "spriteSourceSize": {
+            "x": 0,
+            "y": 0,
+            "w": 3,
+            "h": 5
+          },
+          "sourceSize": {
+            "w": 3,
+            "h": 5
+          }
+        },
+        {
+          "filename": "title-bg-buildings#0.7",
+          "frame": {
+            "x": 4,
+            "y": 124,
+            "w": 43,
+            "h": 5
+          },
+          "rotated": false,
+          "trimmed": false,
+          "spriteSourceSize": {
+            "x": 0,
+            "y": 0,
+            "w": 43,
+            "h": 5
+          },
+          "sourceSize": {
+            "w": 43,
+            "h": 5
+          }
+        },
+        {
+          "filename": "title-bg-buildings#0.8",
+          "frame": {
+            "x": 47,
+            "y": 124,
+            "w": 5,
+            "h": 5
+          },
+          "rotated": false,
+          "trimmed": false,
+          "spriteSourceSize": {
+            "x": 0,
+            "y": 0,
+            "w": 5,
+            "h": 5
+          },
+          "sourceSize": {
+            "w": 5,
+            "h": 5
           }
         }
       ]
