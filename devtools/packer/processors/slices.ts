@@ -69,6 +69,8 @@ function isSliceMarker(
 export function generateFrames(
   baseSprite: ExtractedSprite
 ): { x: number; y: number; w: number; h: number }[] {
+  console.log(`Generating frames for ${baseSprite.name}...`);
+
   // Check if we have a slice sprite
   if (!baseSprite.sliceSprite) {
     console.warn(`No slice sprite found for ${baseSprite.name}`);
@@ -81,17 +83,15 @@ export function generateFrames(
   const sliceOffsetX = sliceSprite.x - baseSprite.x;
   const sliceOffsetY = sliceSprite.y - baseSprite.y;
 
-  console.log(`Slice offset: (${sliceOffsetX}, ${sliceOffsetY})`);
-  console.log(`Content position: (${baseSprite.x}, ${baseSprite.y})`);
-  console.log(`Slice position: (${sliceSprite.x}, ${sliceSprite.y})`);
-
-  // Get baseSprite origin within the full image
-  const baseSpriteOriginX = baseSprite.x;
-  const baseSpriteOriginY = baseSprite.y;
-
   console.log(
-    `Base sprite origin in full image: (${baseSpriteOriginX}, ${baseSpriteOriginY})`
+    `Base sprite dimensions: ${baseSprite.width}x${baseSprite.height}`
   );
+  console.log(`Base sprite position: (${baseSprite.x}, ${baseSprite.y})`);
+  console.log(
+    `Slice sprite dimensions: ${sliceSprite.width}x${sliceSprite.height}`
+  );
+  console.log(`Slice sprite position: (${sliceSprite.x}, ${sliceSprite.y})`);
+  console.log(`Slice offset: (${sliceOffsetX}, ${sliceOffsetY})`);
 
   // Determine the content bounds (non-transparent area) of the base sprite
   let contentLeft = baseSprite.width;
@@ -121,68 +121,65 @@ export function generateFrames(
   const contentWidth = contentRight - contentLeft + 1;
   const contentHeight = contentBottom - contentTop + 1;
 
+  console.log(
+    `Content bounds: (${contentLeft}, ${contentTop}) to (${contentRight}, ${contentBottom})`
+  );
+  console.log(`Content dimensions: ${contentWidth}x${contentHeight}`);
+
   // Find all slice markers in the slice data
   const slicePositionsX: Set<number> = new Set();
   const slicePositionsY: Set<number> = new Set();
 
   // Add content bounds as initial slice positions
-  slicePositionsX.add(contentLeft);
-  slicePositionsX.add(contentRight + 1); // +1 because right edge is exclusive
-  slicePositionsY.add(contentTop);
-  slicePositionsY.add(contentBottom + 1); // +1 because bottom edge is exclusive
+  // These positions should be in the global coordinate space
+  slicePositionsX.add(baseSprite.x + contentLeft);
+  slicePositionsX.add(baseSprite.x + contentRight + 1); // +1 because right edge is exclusive
+  slicePositionsY.add(baseSprite.y + contentTop);
+  slicePositionsY.add(baseSprite.y + contentBottom + 1); // +1 because bottom edge is exclusive
 
-  // Calculate slice dimensions
-  const sliceWidth = sliceSprite.width;
-  const sliceHeight = sliceSprite.height;
+  // Find all cross markers in the slice sprite's local space
+  for (let y = 0; y < sliceSprite.height; y++) {
+    for (let x = 0; x < sliceSprite.width; x++) {
+      if (
+        isSliceMarker(
+          sliceSprite.data,
+          sliceSprite.width,
+          sliceSprite.height,
+          x,
+          y
+        )
+      ) {
+        // Transform marker position to global space
+        const globalX = sliceSprite.x + x;
+        const globalY = sliceSprite.y + y;
 
-  // Find all markers in the slice data
-  const markers: { x: number; y: number }[] = [];
+        slicePositionsX.add(globalX);
+        slicePositionsY.add(globalY);
 
-  // Find all cross markers, adjusting for the offset
-  for (let y = 0; y < sliceHeight; y++) {
-    for (let x = 0; x < sliceWidth; x++) {
-      if (isSliceMarker(sliceSprite.data, sliceWidth, sliceHeight, x, y)) {
-        // Store found marker for visualization
-        markers.push({ x, y });
-
-        // A cross marker creates both horizontal and vertical slice lines
-        // We'll filter them later if they don't intersect with content
-
-        // Transform from slice space to baseSprite space
-        const baseSpriteX = x + sliceOffsetX;
-        const baseSpriteY = y + sliceOffsetY;
-
-        // Transform from baseSprite space to content space
-        const contentX = baseSpriteOriginX + baseSpriteX;
-        const contentY = baseSpriteOriginY + baseSpriteY;
-
-        slicePositionsX.add(contentX);
-        slicePositionsY.add(contentY);
         console.log(
-          `Found slice marker at ${x},${y} (content space: ${contentX},${contentY})`
+          `Found slice marker at local (${x},${y}), global (${globalX},${globalY})`
         );
       }
     }
   }
 
-  // Filter slice positions to only include those that intersect with content area
+  // Filter slice positions to only include those that intersect with content area in global space
   const validSlicePositionsX = Array.from(slicePositionsX)
-    .filter((x) => x >= contentLeft && x <= contentRight + 1)
+    .filter(
+      (x) =>
+        x >= baseSprite.x + contentLeft && x <= baseSprite.x + contentRight + 1
+    )
     .sort((a, b) => a - b);
 
   const validSlicePositionsY = Array.from(slicePositionsY)
-    .filter((y) => y >= contentTop && y <= contentBottom + 1)
+    .filter(
+      (y) =>
+        y >= baseSprite.y + contentTop && y <= baseSprite.y + contentBottom + 1
+    )
     .sort((a, b) => a - b);
 
-  console.log(
-    `Found ${slicePositionsX.size} X slice positions, ${validSlicePositionsX.length} valid`
-  );
-  console.log(
-    `Found ${slicePositionsY.size} Y slice positions, ${validSlicePositionsY.length} valid`
-  );
-
-  // Generate all frames from the valid slice positions
-  const frames: { x: number; y: number; w: number; h: number }[] = [];
+  console.log("Valid slice positions X:", validSlicePositionsX);
+  console.log("Valid slice positions Y:", validSlicePositionsY);
 
   // If there are no valid slices, return a single frame for the content area
   if (validSlicePositionsX.length <= 1 || validSlicePositionsY.length <= 1) {
@@ -197,37 +194,40 @@ export function generateFrames(
   }
 
   // Create frames from the valid slice positions
+  const frames: { x: number; y: number; w: number; h: number }[] = [];
+
   for (let i = 0; i < validSlicePositionsY.length - 1; i++) {
     for (let j = 0; j < validSlicePositionsX.length - 1; j++) {
-      // These positions are relative to the content's local coordinate system
-      const localX = validSlicePositionsX[j];
-      const localY = validSlicePositionsY[i];
-      const w = validSlicePositionsX[j + 1] - localX;
-      const h = validSlicePositionsY[i + 1] - localY;
+      // Get positions in global space
+      const globalX1 = validSlicePositionsX[j];
+      const globalY1 = validSlicePositionsY[i];
+      const globalX2 = validSlicePositionsX[j + 1];
+      const globalY2 = validSlicePositionsY[i + 1];
 
-      // Convert these positions to be relative to the sprite's origin
-      // Since the slice markers were detected in the content's coordinate system,
-      // we need to ensure the frames are correctly positioned relative to the sprite's origin
-      const frameX = localX;
-      const frameY = localY;
+      // Convert global positions to local sprite space
+      const localX = globalX1 - baseSprite.x;
+      const localY = globalY1 - baseSprite.y;
+      const w = globalX2 - globalX1;
+      const h = globalY2 - globalY1;
+
+      console.log(
+        `Creating frame: global (${globalX1},${globalY1}) to (${globalX2},${globalY2})`,
+        `\n  local (${localX},${localY}) ${w}x${h}`
+      );
 
       frames.push({
-        x: frameX,
-        y: frameY,
+        x: localX,
+        y: localY,
         w,
         h,
       });
-
-      console.log(`Created frame: x=${frameX}, y=${frameY}, w=${w}, h=${h}`);
     }
   }
 
   console.log(`Generated ${frames.length} frames for ${baseSprite.name}`);
-
-  // Log all the generated frames for debugging
   frames.forEach((frame, index) => {
     console.log(
-      `Frame ${index}: x=${frame.x}, y=${frame.y}, w=${frame.w}, h=${frame.h}`
+      `Frame ${index}: (${frame.x},${frame.y}) ${frame.w}x${frame.h}`
     );
   });
 
