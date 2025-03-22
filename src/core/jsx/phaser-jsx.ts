@@ -210,7 +210,10 @@ export function setupGameObject<T extends Phaser.GameObjects.GameObject>(
           x: getSignalValue(textProps.x, 0),
           y: getSignalValue(textProps.y, 0),
           text: getSignalValue(textProps.text),
-          style: getSignalValue(textProps.style) || TEXT_STYLE,
+          style: {
+            ...TEXT_STYLE,
+            ...getSignalValue(textProps.style),
+          },
         },
         false
       ) as unknown as T;
