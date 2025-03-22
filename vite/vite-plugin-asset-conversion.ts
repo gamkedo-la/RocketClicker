@@ -13,27 +13,44 @@ interface AssetMetadata {
     margin?: number;
     spacing?: number;
   };
-  atlas?: {
-    jsonPath?: string;
-    texturePath?: string;
+  multiAtlas?: {
+    atlasURL?: string;
   };
-  // Add any other metadata properties you need
 }
 
 interface ConversionConfig {
   input: string;
   output: string;
+  finalOutput?: string;
   executable: string;
   args: string;
   inputFolder?: string;
   outputFolder?: string;
-  metadata?: AssetMetadata; // Add metadata configuration
+  metadata?: AssetMetadata;
 }
 
 interface AssetConversionConfig {
   conversions: ConversionConfig[];
   inputFolder?: string;
   outputFolder?: string;
+}
+
+function validateConversionConfig(conversion: ConversionConfig): void {
+  if (!conversion.input) {
+    throw new Error(
+      "Error: Missing required 'input' field in conversion config"
+    );
+  }
+  if (!conversion.output && !conversion.metadata?.type) {
+    throw new Error(
+      "Error: Either 'output' or 'metadata.type' must be specified in conversion config"
+    );
+  }
+  if (conversion.executable && !conversion.args) {
+    throw new Error(
+      `Error: 'args' field is required when specifying executable '${conversion.executable}'`
+    );
+  }
 }
 
 function applyDefaultFolders(
@@ -62,10 +79,19 @@ function checkExecutable(executable: string): boolean {
 
 function assetConversionPlugin(config: AssetConversionConfig): Plugin {
   const convertAsset = (conversion: ConversionConfig) => {
+    // Validate conversion config
+    validateConversionConfig(conversion);
+
     let { input, output, executable, args } = applyDefaultFolders(
       config,
       conversion
     );
+
+    if (conversion.metadata?.type === "multiatlas") {
+      // npm run packer -- -i assets/ui-test-copy.aseprite -o tmp -n wololo
+      executable = "npm run packer";
+      args = `-- -i \${input} -o \${output} -n ${conversion.output}`;
+    }
 
     if (executable === undefined) {
       executable = "cp";
@@ -106,6 +132,7 @@ function assetConversionPlugin(config: AssetConversionConfig): Plugin {
         return {
           input: path.relative(process.cwd(), input),
           output: path.relative(process.cwd(), output),
+          finalOutput: conversion.finalOutput,
           ...metadata,
         };
       }),
