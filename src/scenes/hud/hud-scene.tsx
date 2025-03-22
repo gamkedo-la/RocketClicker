@@ -66,7 +66,7 @@ export class HudScene extends AbstractScene {
         margin={0}
         width={width}
         height={height}
-        align={ALIGN_ITEMS.STRETCH}
+        alignContent={ALIGN_ITEMS.STRETCH}
         direction={DIRECTION.COLUMN}
       >
         {topBar}
@@ -93,7 +93,7 @@ export class HudScene extends AbstractScene {
         margin={0}
         width={width}
         height={height}
-        align={ALIGN_ITEMS.STRETCH}
+        alignContent={ALIGN_ITEMS.STRETCH}
       >
         <LeftPanel width={sidebarWidth} gameState={this.gameState} />
         <Spacer />

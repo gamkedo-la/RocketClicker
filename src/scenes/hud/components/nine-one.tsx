@@ -5,7 +5,7 @@ import { FlexItem, Spacer } from "@game/core/ui/FlexItem";
 
 export const NineOne = () => {
   const bg = (
-    <Flex margin={0} padding={18} align={ALIGN_ITEMS.STRETCH}>
+    <Flex margin={0} padding={18} alignContent={ALIGN_ITEMS.STRETCH}>
       <FlexItem grow={1}>
         <tileSprite texture={RESOURCES["bg"]} />
       </FlexItem>
@@ -15,7 +15,7 @@ export const NineOne = () => {
   return (
     <Flex
       direction={DIRECTION.COLUMN}
-      align={ALIGN_ITEMS.STRETCH}
+      alignContent={ALIGN_ITEMS.STRETCH}
       backgroundElement={bg}
       margin={0}
     >
@@ -27,7 +27,7 @@ export const NineOne = () => {
         <image texture={RESOURCES["nine.one"]} frame={2} />
       </Flex>
       <FlexItem grow={1}>
-        <Flex margin={0} padding={0} align={ALIGN_ITEMS.STRETCH}>
+        <Flex margin={0} padding={0} alignContent={ALIGN_ITEMS.STRETCH}>
           <tileSprite texture={RESOURCES["nine.one"]} frame={3} />
           <Spacer grow={1} />
           <tileSprite texture={RESOURCES["nine.one"]} frame={5} />

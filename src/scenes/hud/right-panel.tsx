@@ -22,7 +22,7 @@ export const RightPanel = ({
       <Flex
         direction={DIRECTION.COLUMN}
         padding={2}
-        align={ALIGN_ITEMS.FLEX_END}
+        alignContent={ALIGN_ITEMS.FLEX_END}
       >
         {...Object.keys(MATERIALS).map((material) => (
           // TODO: add material icons
