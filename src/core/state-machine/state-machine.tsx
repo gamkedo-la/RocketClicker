@@ -128,11 +128,18 @@ export class FiniteStateMachine<S extends StateId, E extends EventId> {
 
     const transition = currentState.transitions.find((t) => t.event === event);
 
-    if (import.meta.env.DEV && !transition) {
-      console.warn(`No transition found for event ${event}`);
-      return false;
-    }
+    if (import.meta.env.DEV) {
+      console.log(`Current state: ${currentState.id}`, `Event: ${event}`);
 
+      if (!transition) {
+        console.log(
+          "Available events:",
+          currentState.transitions.map((t) => t.event)
+        );
+        console.warn(`No transition found for event ${event}`);
+        return false;
+      }
+    }
     if (!transition) return false;
 
     if (import.meta.env.DEV && transition.guard && !transition.guard()) {
@@ -148,6 +155,15 @@ export class FiniteStateMachine<S extends StateId, E extends EventId> {
     this.previousState.set(this.currentState.get());
     this.currentState.set(transition.target);
     return true;
+  }
+
+  setState(state: S) {
+    const nextState = this.states.get(state);
+    assert(nextState, `State ${state} not found`);
+
+    this.lastTriggeredEvent.set(null);
+    this.previousState.set(this.currentState.get());
+    this.currentState.set(state);
   }
 
   get current(): Signal<S> {
