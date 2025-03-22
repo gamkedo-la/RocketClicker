@@ -1,4 +1,5 @@
 import type Aseprite from "../lib/ase-parser.ts";
+import { AsepriteTypes } from "../lib/ase-parser.ts";
 import type { ExtractedSprite } from "../types.ts";
 
 interface AtlasFrame {
@@ -32,7 +33,7 @@ interface AtlasConfig {
 }
 
 /**
- * Extract sprites from an Aseprite file's first frame
+ * Extract sprites from an Aseprite file's frames
  */
 export async function extractSprites(
   asepriteFile: Aseprite
@@ -53,19 +54,55 @@ export async function extractSprites(
     };
   }
 
-  console.log(`Extracting sprites from first frame...`);
-  const firstFrame = asepriteFile.frames[0];
-  const cels = firstFrame.cels
-    .map((cel) => cel)
-    .sort((a, b) => a.layerIndex - b.layerIndex);
+  console.log(`Extracting sprites from all frames...`);
+  const extractedSprites: ExtractedSprite[] = [];
+  const layerFrames = new Map<number, ExtractedSprite[]>();
 
-  const extractionPromises = cels.map((cel) =>
-    extractSprite(cel, asepriteFile)
-  );
+  // First, extract all frames for each layer
+  for (
+    let frameIndex = 0;
+    frameIndex < asepriteFile.frames.length;
+    frameIndex++
+  ) {
+    const frame = asepriteFile.frames[frameIndex];
+    const cels = frame.cels
+      .map((cel) => cel)
+      .sort((a, b) => a.layerIndex - b.layerIndex);
 
-  const extractedSprites = (await Promise.all(extractionPromises)).filter(
-    (sprite): sprite is ExtractedSprite => sprite !== null
-  );
+    for (const cel of cels) {
+      const sprite = await extractSprite(cel, asepriteFile);
+      if (sprite) {
+        // Store the frame index in the sprite
+        sprite.frameIndex = frameIndex;
+
+        // Group sprites by layer
+        if (!layerFrames.has(cel.layerIndex)) {
+          layerFrames.set(cel.layerIndex, []);
+        }
+        layerFrames.get(cel.layerIndex)!.push(sprite);
+      }
+    }
+  }
+
+  // Now process each layer's frames
+  for (const [layerIndex, frames] of layerFrames.entries()) {
+    const layer = asepriteFile.layers[layerIndex];
+    if (!layer) continue;
+
+    // Skip if layer name starts with _ or is "Layer"
+    if (layer.name.startsWith("_") || layer.name.startsWith("Layer")) continue;
+
+    // For slice layers, just use the first frame
+    if (layer.name.endsWith("-slices")) {
+      if (frames.length > 0) {
+        extractedSprites.push(frames[0]);
+      }
+      continue;
+    }
+
+    // For content layers, include all frames
+    extractedSprites.push(...frames);
+  }
 
   // Create a map of slice layers for easier lookup
   const sliceLayers = new Map<string, ExtractedSprite>();
@@ -105,8 +142,14 @@ export async function extractSprites(
       );
     }
 
-    // Add an empty placeholder in atlas config (we'll generate the actual frames later)
-    atlasConfig.frames[sprite.name] = {
+    // Generate frame name with animation frame index if applicable
+    const frameName =
+      sprite.frameIndex !== undefined
+        ? `${sprite.name}#${sprite.frameIndex}`
+        : sprite.name;
+
+    // Add frame to atlas config
+    atlasConfig.frames[frameName] = {
       frame: {
         x: sprite.x,
         y: sprite.y,
@@ -130,11 +173,12 @@ export async function extractSprites(
   console.log(
     `Generated atlas with ${Object.keys(atlasConfig.frames).length} frames`
   );
+
   return { sprites: extractedSprites, atlasConfig };
 }
 
 async function extractSprite(
-  cel: any,
+  cel: AsepriteTypes.Cel,
   asepriteFile: Aseprite
 ): Promise<ExtractedSprite | null> {
   const layer = asepriteFile.layers[cel.layerIndex];

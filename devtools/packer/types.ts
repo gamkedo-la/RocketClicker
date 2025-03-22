@@ -15,11 +15,12 @@ export interface ExtractedSprite {
   y: number;
   data: Uint8Array;
   sliceSprite?: ExtractedSprite; // Reference to the slice layer sprite if it exists
+  frameIndex?: number; // The frame index in the animation sequence
 }
 
 // Modified for Phaser 3 MultiAtlas format
 export interface AtlasFrame {
-  filename: string; // The name of the frame (numeric index as string)
+  filename: string; // Now in format "spriteName#frameIndex" or "spriteName#frameIndex.sliceIndex"
   frame: {
     x: number;
     y: number;
@@ -42,14 +43,14 @@ export interface AtlasFrame {
 
 // Single texture within a MultiAtlas
 export interface AtlasTexture {
-  image: string; // The image filename
-  format: string; // Usually "RGBA8888"
+  image: string;
+  format: string;
   size: {
     w: number;
     h: number;
   };
   scale: number;
-  frames: AtlasFrame[]; // Array of frames in this texture
+  frames: AtlasFrame[];
 }
 
 // MultiAtlas compatible format
@@ -58,6 +59,6 @@ export interface AtlasMetadata {
   meta: {
     app: string;
     version: string;
-    format: string; // "multiatlas"
+    format: string;
   };
 }

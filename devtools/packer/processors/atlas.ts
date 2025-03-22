@@ -1,12 +1,7 @@
 import * as path from "path";
 import sharp from "sharp";
 
-import type {
-  AtlasMetadata,
-  ExtractedSprite,
-  AtlasFrame,
-  AtlasTexture,
-} from "../types.ts";
+import type { AtlasFrame, AtlasMetadata, ExtractedSprite } from "../types.ts";
 import { generateFrames } from "./slices.ts";
 
 interface TrimInfo {
@@ -16,9 +11,27 @@ interface TrimInfo {
   height: number;
 }
 
+interface Box {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  sprite: ExtractedSprite;
+}
+
+interface Space {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
+const BLEED_MARGIN = 1; // 1px bleed margin
+
 export class Atlas {
   private sprites: ExtractedSprite[] = [];
   private trimInfo: Map<string, TrimInfo> = new Map();
+  private packedSprites: Map<string, Box[]> = new Map();
 
   /**
    * Add sprites to the atlas
@@ -38,6 +51,130 @@ export class Atlas {
   }
 
   /**
+   * Pack sprites into a texture atlas using a simple rectangle packing algorithm
+   */
+  private packSprites(sprites: ExtractedSprite[]): Box[] {
+    // Group sprites by base name (without frame number)
+    const spriteGroups = new Map<string, ExtractedSprite[]>();
+    for (const sprite of sprites) {
+      const baseName = sprite.name.split("#")[0];
+      if (!spriteGroups.has(baseName)) {
+        spriteGroups.set(baseName, []);
+      }
+      spriteGroups.get(baseName)!.push(sprite);
+    }
+
+    // Convert sprites to boxes with their dimensions
+    const boxes: Box[] = [];
+    for (const [_baseName, groupSprites] of spriteGroups) {
+      // Find the maximum dimensions for this sprite group
+      let maxWidth = 0;
+      let maxHeight = 0;
+      for (const sprite of groupSprites) {
+        const trimInfo = this.trimInfo.get(sprite.name);
+        if (trimInfo) {
+          maxWidth = Math.max(maxWidth, trimInfo.width);
+          maxHeight = Math.max(maxHeight, trimInfo.height);
+        }
+      }
+
+      // Create boxes for each sprite in the group, adding bleed margin
+      for (const sprite of groupSprites) {
+        boxes.push({
+          x: 0,
+          y: 0,
+          w: maxWidth + BLEED_MARGIN * 2,
+          h: maxHeight + BLEED_MARGIN * 2,
+          sprite,
+        });
+      }
+    }
+
+    // Calculate total area and maximum width
+    let area = 0;
+    let maxWidth = 0;
+    for (const box of boxes) {
+      area += box.w * box.h;
+      maxWidth = Math.max(maxWidth, box.w);
+    }
+
+    // Sort boxes by height, descending
+    boxes.sort((a, b) => b.h - a.h);
+
+    // Calculate initial width for a roughly square packing
+    const startWidth = Math.max(Math.ceil(Math.sqrt(area / 0.95)), maxWidth);
+
+    // Initialize spaces with a single space
+    const spaces: Space[] = [{ x: 0, y: 0, w: startWidth, h: Infinity }];
+    const packed: Box[] = [];
+
+    // Pack each box
+    for (const box of boxes) {
+      // Look through spaces backwards
+      for (let i = spaces.length - 1; i >= 0; i--) {
+        const space = spaces[i];
+
+        // Check if box fits in this space
+        if (box.w > space.w || box.h > space.h) continue;
+
+        // Place box in this space
+        box.x = space.x;
+        box.y = space.y;
+        packed.push(box);
+
+        // Update or split the space
+        if (box.w === space.w && box.h === space.h) {
+          // Space matches exactly - remove it
+          const last = spaces.pop();
+          if (i < spaces.length) spaces[i] = last!;
+        } else if (box.h === space.h) {
+          // Space matches height - update width
+          space.x += box.w;
+          space.w -= box.w;
+        } else if (box.w === space.w) {
+          // Space matches width - update height
+          space.y += box.h;
+          space.h -= box.h;
+        } else {
+          // Split space into two
+          spaces.push({
+            x: space.x + box.w,
+            y: space.y,
+            w: space.w - box.w,
+            h: box.h,
+          });
+          space.y += box.h;
+          space.h -= box.h;
+        }
+        break;
+      }
+    }
+
+    return packed;
+  }
+
+  /**
+   * Get pixel color from sprite data with bounds checking
+   */
+  private getPixel(
+    sprite: ExtractedSprite,
+    x: number,
+    y: number
+  ): [number, number, number, number] {
+    // Clamp coordinates to sprite bounds
+    x = Math.max(0, Math.min(x, sprite.width - 1));
+    y = Math.max(0, Math.min(y, sprite.height - 1));
+
+    const index = (y * sprite.width + x) * 4;
+    return [
+      sprite.data[index],
+      sprite.data[index + 1],
+      sprite.data[index + 2],
+      sprite.data[index + 3],
+    ];
+  }
+
+  /**
    * Save each layer as a separate image file, cropped to content
    */
   async save(outputBasePath: string): Promise<string[]> {
@@ -45,20 +182,8 @@ export class Atlas {
       throw new Error("No sprites to process");
     }
 
-    const { dir, name, ext } = path.parse(outputBasePath);
-    const outputPaths: string[] = [];
-
-    // Process each content layer
-    for (let i = 0; i < this.sprites.length; i++) {
-      const sprite = this.sprites[i];
-      // Create a unique filename for each layer
-      const outputPath = path.join(dir, `${name}_${sprite.name}${ext}`);
-      outputPaths.push(outputPath);
-
-      console.log(
-        `Creating image for layer "${sprite.name}" (${sprite.width}x${sprite.height})...`
-      );
-
+    // First pass: calculate trim info for each sprite
+    for (const sprite of this.sprites) {
       // Find the content bounds by scanning for non-transparent pixels
       let left = sprite.width;
       let top = sprite.height;
@@ -87,167 +212,184 @@ export class Atlas {
       const width = right - left + 1;
       const height = bottom - top + 1;
 
-      // Create a new buffer with only the visible content
-      const croppedBuffer = Buffer.alloc(width * height * 4);
-
-      // Copy only the visible pixels to the new buffer
-      for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; x++) {
-          const sourceIndex = ((y + top) * sprite.width + (x + left)) * 4;
-          const targetIndex = (y * width + x) * 4;
-
-          // Copy all 4 channels (RGBA)
-          croppedBuffer[targetIndex] = sprite.data[sourceIndex]; // R
-          croppedBuffer[targetIndex + 1] = sprite.data[sourceIndex + 1]; // G
-          croppedBuffer[targetIndex + 2] = sprite.data[sourceIndex + 2]; // B
-          croppedBuffer[targetIndex + 3] = sprite.data[sourceIndex + 3]; // A
-        }
-      }
-
       // Store the trim information
-      const trimInfo: TrimInfo = {
+      this.trimInfo.set(sprite.name, {
         left,
         top,
         width,
         height,
-      };
-
-      // Store the trim info for this sprite
-      this.trimInfo.set(sprite.name, trimInfo);
-
-      try {
-        // Create and save the image using the cropped data
-        await sharp(croppedBuffer, {
-          raw: {
-            width,
-            height,
-            channels: 4,
-          },
-        })
-          .png()
-          .toFile(outputPath);
-
-        console.log(`Image saved to ${outputPath} (${width}x${height})`);
-      } catch (error) {
-        console.error(
-          `Error creating image for layer "${sprite.name}":`,
-          error
-        );
-        throw error;
-      }
+      });
     }
 
-    return outputPaths;
+    // Pack the sprites
+    const packedBoxes = this.packSprites(this.sprites);
+
+    // Find atlas dimensions
+    let atlasWidth = 0;
+    let atlasHeight = 0;
+    for (const box of packedBoxes) {
+      atlasWidth = Math.max(atlasWidth, box.x + box.w);
+      atlasHeight = Math.max(atlasHeight, box.y + box.h);
+    }
+
+    // Create atlas buffer
+    const atlasBuffer = Buffer.alloc(atlasWidth * atlasHeight * 4);
+
+    // Copy each sprite to its position in the atlas
+    for (const box of packedBoxes) {
+      const sprite = box.sprite;
+      const trimInfo = this.trimInfo.get(sprite.name);
+      if (!trimInfo) continue;
+
+      // Copy sprite data to atlas with bleed margin
+      for (let y = -BLEED_MARGIN; y < trimInfo.height + BLEED_MARGIN; y++) {
+        for (let x = -BLEED_MARGIN; x < trimInfo.width + BLEED_MARGIN; x++) {
+          // Get source pixel coordinates (with bleed)
+          const srcX = x + trimInfo.left;
+          const srcY = y + trimInfo.top;
+
+          // Get the pixel color (will be clamped to edges)
+          const [r, g, b, a] = this.getPixel(sprite, srcX, srcY);
+
+          // Calculate target position in atlas (including bleed margin)
+          const targetX = box.x + x + BLEED_MARGIN;
+          const targetY = box.y + y + BLEED_MARGIN;
+          const targetIndex = (targetY * atlasWidth + targetX) * 4;
+
+          // Copy pixel to atlas
+          atlasBuffer[targetIndex] = r;
+          atlasBuffer[targetIndex + 1] = g;
+          atlasBuffer[targetIndex + 2] = b;
+          atlasBuffer[targetIndex + 3] = a;
+        }
+      }
+
+      // Store the packed position for metadata generation
+      const baseName = sprite.name.split("#")[0];
+      if (!this.packedSprites.has(baseName)) {
+        this.packedSprites.set(baseName, []);
+      }
+      this.packedSprites.get(baseName)!.push(box);
+    }
+
+    // Save the atlas
+    const outputPath = outputBasePath;
+    try {
+      await sharp(atlasBuffer, {
+        raw: {
+          width: atlasWidth,
+          height: atlasHeight,
+          channels: 4,
+        },
+      })
+        .png()
+        .toFile(outputPath);
+
+      console.log(
+        `Atlas saved to ${outputPath} (${atlasWidth}x${atlasHeight})`
+      );
+      return [outputPath];
+    } catch (error) {
+      console.error("Error creating atlas:", error);
+      throw error;
+    }
   }
 
   /**
    * Generate metadata for the layers in Phaser MultiAtlas format
    */
   generateMetadata(imagePaths: string[]): AtlasMetadata {
-    const textures: AtlasTexture[] = [];
-
-    for (let i = 0; i < this.sprites.length; i++) {
-      const sprite = this.sprites[i];
-      // Skip if we don't have a corresponding image path (might have been skipped)
-      if (i >= imagePaths.length) continue;
-
-      const imagePath = imagePaths[i];
-      const baseName = path.basename(imagePath);
-      const trimInfo = this.trimInfo.get(sprite.name) || {
-        left: 0,
-        top: 0,
-        width: sprite.width,
-        height: sprite.height,
+    if (imagePaths.length === 0)
+      return {
+        textures: [],
+        meta: { app: "Aseprite Packer", version: "1.0", format: "multiatlas" },
       };
 
-      // Find the corresponding slice layer if it exists
-      if (!sprite.sliceSprite) {
-        // No slice data, create a single frame for the whole layer
-        textures.push({
-          image: baseName,
-          format: "RGBA8888",
-          size: {
-            w: trimInfo.width,
-            h: trimInfo.height,
-          },
-          scale: 1,
-          frames: [
-            {
-              filename: sprite.name,
+    const baseName = path.basename(imagePaths[0]);
+    const frames: AtlasFrame[] = [];
+
+    // Generate frames for each sprite group
+    for (const [spriteName, boxes] of this.packedSprites) {
+      // If there's a slice sprite, generate sliced frames
+      const sliceSprite = boxes[0].sprite.sliceSprite;
+      if (sliceSprite) {
+        const sliceFrames = generateFrames(boxes[0].sprite);
+        boxes.forEach((box, frameIndex) => {
+          sliceFrames.forEach((slice, sliceIndex) => {
+            // Adjust slice coordinates relative to the packed position, accounting for bleed margin
+            const adjustedX =
+              box.x +
+              BLEED_MARGIN +
+              (slice.x - this.trimInfo.get(box.sprite.name)!.left);
+            const adjustedY =
+              box.y +
+              BLEED_MARGIN +
+              (slice.y - this.trimInfo.get(box.sprite.name)!.top);
+
+            frames.push({
+              filename: `${spriteName}#${frameIndex}.${sliceIndex}`,
               frame: {
-                x: 0,
-                y: 0,
-                w: trimInfo.width,
-                h: trimInfo.height,
+                x: adjustedX,
+                y: adjustedY,
+                w: slice.w,
+                h: slice.h,
               },
               rotated: false,
               trimmed: false,
               spriteSourceSize: {
                 x: 0,
                 y: 0,
-                w: trimInfo.width,
-                h: trimInfo.height,
+                w: slice.w,
+                h: slice.h,
               },
               sourceSize: {
-                w: trimInfo.width,
-                h: trimInfo.height,
+                w: slice.w,
+                h: slice.h,
               },
-            },
-          ],
+            });
+          });
         });
-        continue;
+      } else {
+        // No slices, just create frames for each animation frame
+        boxes.forEach((box, frameIndex) => {
+          frames.push({
+            filename: `${spriteName}#${frameIndex}`,
+            frame: {
+              x: box.x + BLEED_MARGIN,
+              y: box.y + BLEED_MARGIN,
+              w: box.w - BLEED_MARGIN * 2,
+              h: box.h - BLEED_MARGIN * 2,
+            },
+            rotated: false,
+            trimmed: false,
+            spriteSourceSize: {
+              x: 0,
+              y: 0,
+              w: box.w - BLEED_MARGIN * 2,
+              h: box.h - BLEED_MARGIN * 2,
+            },
+            sourceSize: {
+              w: box.w - BLEED_MARGIN * 2,
+              h: box.h - BLEED_MARGIN * 2,
+            },
+          });
+        });
       }
-
-      // Generate frames for sliced sprites
-      const sliceFrames = generateFrames(sprite);
-
-      // Adjust frame coordinates based on trim
-      const frames: AtlasFrame[] = sliceFrames.map((frame, index) => {
-        // Adjust frame position relative to the trimmed image
-        const adjustedX = Math.max(0, frame.x - trimInfo.left);
-        const adjustedY = Math.max(0, frame.y - trimInfo.top);
-
-        // Ensure frame doesn't extend beyond the trimmed image bounds
-        const adjustedWidth = Math.min(frame.w, trimInfo.width - adjustedX);
-        const adjustedHeight = Math.min(frame.h, trimInfo.height - adjustedY);
-
-        return {
-          filename: `${sprite.name}#${index}`,
-          frame: {
-            x: adjustedX,
-            y: adjustedY,
-            w: adjustedWidth,
-            h: adjustedHeight,
-          },
-          rotated: false,
-          trimmed: false,
-          spriteSourceSize: {
-            x: 0,
-            y: 0,
-            w: adjustedWidth,
-            h: adjustedHeight,
-          },
-          sourceSize: {
-            w: adjustedWidth,
-            h: adjustedHeight,
-          },
-        };
-      });
-
-      textures.push({
-        image: baseName,
-        format: "RGBA8888",
-        size: {
-          w: trimInfo.width,
-          h: trimInfo.height,
-        },
-        scale: 1,
-        frames,
-      });
     }
 
     return {
-      textures,
+      textures: [
+        {
+          image: baseName,
+          format: "RGBA8888",
+          size: {
+            w: 0, // Will be set by the image dimensions
+            h: 0,
+          },
+          scale: 1,
+          frames,
+        },
+      ],
       meta: {
         app: "Aseprite Packer",
         version: "1.0",

@@ -28,7 +28,7 @@ SOFTWARE.
 import * as zlib from "zlib";
 
 // Define interfaces for the Aseprite parser
-namespace AsepriteTypes {
+export namespace AsepriteTypes {
   export interface Palette {
     paletteSize: number;
     firstColor: number;
