@@ -5,6 +5,13 @@
       "output": "public/assets/jersey15.ttf"
     },
     {
+      "input": "assets/ui/left-panel-ui.aseprite",
+      "output": "public/assets/ui-left-panel",
+      "finalOutput": "ui-left-panel/ui-left-panel.png",
+      "type": "multiatlas",
+      "atlasURL": "ui-left-panel.json"
+    },
+    {
       "input": "assets/ui/bg-dark-1.aseprite",
       "output": "public/assets/bg.png"
     },

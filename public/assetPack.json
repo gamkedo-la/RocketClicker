@@ -241,6 +241,12 @@
           "frameHeight": 32
         },
         "normalMapUrl": "assets/nine/one-normal.png"
+      },
+      {
+        "type": "multiatlas",
+        "key": "ui-left-panel",
+        "atlasURL": "assets/ui-left-panel/ui-left-panel.json",
+        "path": "assets/ui-left-panel"
       }
     ]
   },

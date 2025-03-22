@@ -16,6 +16,15 @@ const config = {
       output: "jersey15.ttf",
     },
     {
+      input: "ui/left-panel-ui.aseprite",
+      output: "ui-left-panel",
+      finalOutput: "ui-left-panel/ui-left-panel.png",
+      metadata: {
+        type: "multiatlas",
+        atlasURL: "ui-left-panel.json",
+      },
+    },
+    {
       input: "ui/bg-dark-1.aseprite",
       output: "bg.png",
       executable: "aseprite",

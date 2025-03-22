@@ -50,4 +50,5 @@ export const RESOURCES = {
   "martin": "martin",
   "jersey15": "jersey15",
   "nine.one": "nine/one",
+  "ui-left-panel": "ui-left-panel",
 } as const;
