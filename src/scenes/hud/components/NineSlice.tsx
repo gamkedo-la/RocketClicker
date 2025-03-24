@@ -19,10 +19,10 @@ export const NineSlice = ({
   width?: number;
   height?: number;
 }) => {
-  x = Math.round(x);
-  y = Math.round(y);
-  width = Math.round(width);
-  height = Math.round(height);
+  x = Math.floor(x);
+  y = Math.floor(y);
+  width = Math.floor(width);
+  height = Math.floor(height);
 
   return (
     <Flex
