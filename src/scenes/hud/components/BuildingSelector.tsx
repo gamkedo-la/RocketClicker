@@ -2,16 +2,22 @@ import { RESOURCES } from "@game/assets";
 
 import { FiniteStateMachine } from "@game/core/state-machine/state-machine";
 
-import { ALIGN_ITEMS, DIRECTION, JUSTIFY } from "@game/core/ui/AbstractFlex";
+import {
+  ALIGN_ITEMS,
+  DIRECTION,
+  FlexElement,
+  JUSTIFY,
+} from "@game/core/ui/AbstractFlex";
 import { Flex } from "@game/core/ui/Flex";
 import { FlexColumn } from "@game/core/ui/FlexColumn";
 
-import { STRING_COLORS_NAMES } from "@game/consts";
+import { COLORS_NAMES, STRING_COLORS_NAMES } from "@game/consts";
 import { signal } from "@game/core/signals/signals";
 import { Building } from "@game/entities/buildings/types";
 
 import { NineSlice } from "./nineslice";
 import { GameStateManager } from "@game/state/game-state";
+import { FlexItem } from "../../../core/ui/FlexItem";
 
 export const Button = ({
   building,
@@ -47,14 +53,39 @@ export const Button = ({
 
   const image = (
     <image
-      interactive
       texture={RESOURCES["ui-left-panel"]}
       frame={"button-building#0"}
-      onPointerover={() => state.transition("mouseenter")}
-      onPointerout={() => state.transition("mouseleave")}
-      onPointerdown={() => state.transition("mousedown")}
-      onPointerup={() => state.transition("mouseup")}
+      origin={0}
     />
+  );
+
+  const status: Phaser.GameObjects.Image = (
+    <image
+      texture={RESOURCES["ui-left-panel"]}
+      frame={"button-ring#2"}
+      tint={COLORS_NAMES["vaporwave-blue"]}
+      width={image.width}
+      height={image.height}
+    />
+  );
+
+  const button = (
+    <Flex
+      containerElement={
+        <container
+          interactive
+          onPointerover={() => state.transition("mouseenter")}
+          onPointerout={() => state.transition("mouseleave")}
+          onPointerdown={() => state.transition("mousedown")}
+          onPointerup={() => state.transition("mouseup")}
+        />
+      }
+    >
+      {image}
+      <FlexItem attach offsetX={0}>
+        {status}
+      </FlexItem>
+    </Flex>
   );
 
   <stateObserver fsm={state}>
@@ -84,7 +115,7 @@ export const Button = ({
     />
   </stateObserver>;
 
-  return image;
+  return button;
 };
 
 export function BuildingSelector({

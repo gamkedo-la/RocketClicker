@@ -396,7 +396,7 @@
             "h": 43
           },
           "rotated": false,
-          "trimmed": false,
+          "trimmed": true,
           "spriteSourceSize": {
             "x": 0,
             "y": 0,
@@ -417,7 +417,7 @@
             "h": 43
           },
           "rotated": false,
-          "trimmed": false,
+          "trimmed": true,
           "spriteSourceSize": {
             "x": 0,
             "y": 0,
@@ -438,7 +438,7 @@
             "h": 43
           },
           "rotated": false,
-          "trimmed": false,
+          "trimmed": true,
           "spriteSourceSize": {
             "x": 0,
             "y": 0,
@@ -640,104 +640,62 @@
           }
         },
         {
-          "filename": "button-building-status#0",
+          "filename": "button-ring#0",
           "frame": {
             "x": 95,
             "y": 104,
-            "w": 31,
-            "h": 22
+            "w": 17,
+            "h": 17
           },
           "rotated": false,
-          "trimmed": false,
+          "trimmed": true,
           "spriteSourceSize": {
             "x": 0,
             "y": 0,
-            "w": 31,
-            "h": 22
+            "w": 17,
+            "h": 17
           },
           "sourceSize": {
-            "w": 31,
-            "h": 22
-          }
-        },
-        {
-          "filename": "button-building-status#1",
-          "frame": {
-            "x": 1,
-            "y": 149,
-            "w": 31,
-            "h": 22
-          },
-          "rotated": false,
-          "trimmed": false,
-          "spriteSourceSize": {
-            "x": 0,
-            "y": 0,
-            "w": 31,
-            "h": 22
-          },
-          "sourceSize": {
-            "w": 31,
-            "h": 22
-          }
-        },
-        {
-          "filename": "button-ring#0",
-          "frame": {
-            "x": 34,
-            "y": 149,
-            "w": 15,
-            "h": 15
-          },
-          "rotated": false,
-          "trimmed": false,
-          "spriteSourceSize": {
-            "x": 0,
-            "y": 0,
-            "w": 15,
-            "h": 15
-          },
-          "sourceSize": {
-            "w": 15,
-            "h": 15
+            "w": 17,
+            "h": 17
           }
         },
         {
           "filename": "button-ring#1",
           "frame": {
-            "x": 51,
-            "y": 149,
-            "w": 15,
-            "h": 15
+            "x": 114,
+            "y": 104,
+            "w": 11,
+            "h": 11
           },
           "rotated": false,
-          "trimmed": false,
+          "trimmed": true,
           "spriteSourceSize": {
             "x": 0,
             "y": 0,
-            "w": 15,
-            "h": 15
+            "w": 17,
+            "h": 17
           },
           "sourceSize": {
-            "w": 15,
-            "h": 15
+            "w": 11,
+            "h": 11
           }
         },
         {
           "filename": "button-ring#2",
           "frame": {
-            "x": 68,
-            "y": 149,
+            "x": 125,
+            "y": 1,
             "w": 15,
             "h": 15
           },
           "rotated": false,
-          "trimmed": false,
+          "trimmed": true,
           "spriteSourceSize": {
             "x": 0,
             "y": 0,
-            "w": 15,
-            "h": 15
+            "w": 17,
+            "h": 17
           },
           "sourceSize": {
             "w": 15,
@@ -745,9 +703,30 @@
           }
         },
         {
+          "filename": "button-ring#3",
+          "frame": {
+            "x": 125,
+            "y": 20,
+            "w": 17,
+            "h": 17
+          },
+          "rotated": false,
+          "trimmed": true,
+          "spriteSourceSize": {
+            "x": 0,
+            "y": 0,
+            "w": 17,
+            "h": 17
+          },
+          "sourceSize": {
+            "w": 17,
+            "h": 17
+          }
+        },
+        {
           "filename": "title-bg-buildings#0.0",
           "frame": {
-            "x": 85,
+            "x": 1,
             "y": 149,
             "w": 3,
             "h": 6
@@ -768,7 +747,7 @@
         {
           "filename": "title-bg-buildings#0.1",
           "frame": {
-            "x": 88,
+            "x": 4,
             "y": 149,
             "w": 43,
             "h": 6
@@ -789,7 +768,7 @@
         {
           "filename": "title-bg-buildings#0.2",
           "frame": {
-            "x": 131,
+            "x": 47,
             "y": 149,
             "w": 5,
             "h": 6
@@ -810,7 +789,7 @@
         {
           "filename": "title-bg-buildings#0.3",
           "frame": {
-            "x": 85,
+            "x": 1,
             "y": 155,
             "w": 3,
             "h": 3
@@ -831,7 +810,7 @@
         {
           "filename": "title-bg-buildings#0.4",
           "frame": {
-            "x": 88,
+            "x": 4,
             "y": 155,
             "w": 43,
             "h": 3
@@ -852,7 +831,7 @@
         {
           "filename": "title-bg-buildings#0.5",
           "frame": {
-            "x": 131,
+            "x": 47,
             "y": 155,
             "w": 5,
             "h": 3
@@ -873,7 +852,7 @@
         {
           "filename": "title-bg-buildings#0.6",
           "frame": {
-            "x": 85,
+            "x": 1,
             "y": 158,
             "w": 3,
             "h": 5
@@ -894,7 +873,7 @@
         {
           "filename": "title-bg-buildings#0.7",
           "frame": {
-            "x": 88,
+            "x": 4,
             "y": 158,
             "w": 43,
             "h": 5
@@ -915,7 +894,7 @@
         {
           "filename": "title-bg-buildings#0.8",
           "frame": {
-            "x": 131,
+            "x": 47,
             "y": 158,
             "w": 5,
             "h": 5
@@ -934,15 +913,99 @@
           }
         },
         {
+          "filename": "button-building-status#0",
+          "frame": {
+            "x": 54,
+            "y": 149,
+            "w": 31,
+            "h": 7
+          },
+          "rotated": false,
+          "trimmed": true,
+          "spriteSourceSize": {
+            "x": 0,
+            "y": 0,
+            "w": 31,
+            "h": 7
+          },
+          "sourceSize": {
+            "w": 31,
+            "h": 7
+          }
+        },
+        {
+          "filename": "button-building-status#1",
+          "frame": {
+            "x": 87,
+            "y": 149,
+            "w": 31,
+            "h": 7
+          },
+          "rotated": false,
+          "trimmed": true,
+          "spriteSourceSize": {
+            "x": 0,
+            "y": 0,
+            "w": 31,
+            "h": 7
+          },
+          "sourceSize": {
+            "w": 31,
+            "h": 7
+          }
+        },
+        {
+          "filename": "button-building-status#2",
+          "frame": {
+            "x": 95,
+            "y": 123,
+            "w": 31,
+            "h": 7
+          },
+          "rotated": false,
+          "trimmed": true,
+          "spriteSourceSize": {
+            "x": 0,
+            "y": 0,
+            "w": 31,
+            "h": 7
+          },
+          "sourceSize": {
+            "w": 31,
+            "h": 7
+          }
+        },
+        {
+          "filename": "button-building-status#3",
+          "frame": {
+            "x": 36,
+            "y": 139,
+            "w": 31,
+            "h": 7
+          },
+          "rotated": false,
+          "trimmed": true,
+          "spriteSourceSize": {
+            "x": 0,
+            "y": 0,
+            "w": 31,
+            "h": 7
+          },
+          "sourceSize": {
+            "w": 31,
+            "h": 7
+          }
+        },
+        {
           "filename": "building-arrow#0",
           "frame": {
-            "x": 128,
-            "y": 104,
+            "x": 69,
+            "y": 139,
             "w": 5,
             "h": 6
           },
           "rotated": false,
-          "trimmed": false,
+          "trimmed": true,
           "spriteSourceSize": {
             "x": 0,
             "y": 0,
