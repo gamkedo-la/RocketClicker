@@ -25,6 +25,9 @@ export const DIRECTION = {
   COLUMN: "column",
 } as const;
 
+// Special value to indicate attachment to the parent flex container
+export const ATTACH_TO_PARENT = -1;
+
 export type AlignmentItems = (typeof ALIGN_ITEMS)[keyof typeof ALIGN_ITEMS];
 export type Justify = (typeof JUSTIFY)[keyof typeof JUSTIFY];
 export type Direction = (typeof DIRECTION)[keyof typeof DIRECTION];
@@ -40,6 +43,13 @@ export interface FlexElement {
   flexGrow: number;
   flexShrink: number;
   selfAlign: AlignmentItems;
+
+  // For attaching to other flex items
+  attachToIndex?: number;
+  attachOffsetX?: number | string;
+  attachOffsetY?: number | string;
+  stretchWidth?: number | string;
+  stretchHeight?: number | string;
 
   containerElement: Phaser.GameObjects.Container | null;
 
@@ -221,10 +231,13 @@ export abstract class AbstractFlex implements FlexElement {
 
     child.basis = this.direction === DIRECTION.ROW ? child.width : child.height;
 
-    this.axisSizeSum += child.basis;
-    this.growSum += child.flexGrow;
-    this.minFlexGrow += child.flexGrow ? child.basis : 0;
-    // this.shrinkSum += child.flexShrink * child.basis;
+    // Only add to layout calculations if not attached to another item
+    if (child.attachToIndex === undefined) {
+      this.axisSizeSum += child.basis;
+      this.growSum += child.flexGrow;
+      this.minFlexGrow += child.flexGrow ? child.basis : 0;
+      // this.shrinkSum += child.flexShrink * child.basis;
+    }
 
     child._flexWidth = child.width;
     child._flexHeight = child.height;
@@ -238,6 +251,103 @@ export abstract class AbstractFlex implements FlexElement {
     this.updateBounds();
     this.updateJustify(this.justify);
     this.updateCrossAxis();
+
+    // After the regular layout is done, position any attached items
+    this.positionAttachedItems();
+  }
+
+  /**
+   * Positions items that are attached to other items
+   * Called after the main layout is complete
+   */
+  positionAttachedItems(): void {
+    this.children.forEach((child) => {
+      if (child.attachToIndex === undefined) {
+        return;
+      }
+
+      // Reference target - either a sibling or the parent container
+      let targetBounds: { width: number; height: number; x: number; y: number };
+
+      // Special case for attaching to the parent container
+      if (child.attachToIndex === -1) {
+        targetBounds = {
+          x: this.containerElement ? 0 : this.innerBounds.left,
+          y: this.containerElement ? 0 : this.innerBounds.top,
+          width: this.innerBounds.width,
+          height: this.innerBounds.height,
+        };
+      } else {
+        // Skip if the attachment target doesn't exist
+        if (
+          child.attachToIndex < 0 ||
+          child.attachToIndex >= this.children.length
+        ) {
+          console.warn(
+            "Flex: attachToIndex out of range:",
+            child.attachToIndex
+          );
+          return;
+        }
+
+        const targetChild = this.children[child.attachToIndex];
+        targetBounds = {
+          x: targetChild.x,
+          y: targetChild.y,
+          width: targetChild.width,
+          height: targetChild.height,
+        };
+      }
+
+      // Calculate x position
+      let offsetX = 0;
+      if (child.attachOffsetX !== undefined) {
+        if (typeof child.attachOffsetX === "string") {
+          // Handle percentage values
+          const percentage = parseFloat(child.attachOffsetX) / 100;
+          offsetX = targetBounds.width * percentage;
+        } else {
+          offsetX = child.attachOffsetX;
+        }
+      }
+
+      // Calculate y position
+      let offsetY = 0;
+      if (child.attachOffsetY !== undefined) {
+        if (typeof child.attachOffsetY === "string") {
+          // Handle percentage values
+          const percentage = parseFloat(child.attachOffsetY) / 100;
+          offsetY = targetBounds.height * percentage;
+        } else {
+          offsetY = child.attachOffsetY;
+        }
+      }
+
+      // Set position relative to the target
+      child.setPosition(targetBounds.x + offsetX, targetBounds.y + offsetY);
+
+      // Handle percentage-based width if specified
+      if (child.stretchWidth !== undefined) {
+        if (typeof child.stretchWidth === "string") {
+          // Handle percentage values
+          const percentage = parseFloat(child.stretchWidth) / 100;
+          child.setWidth(targetBounds.width * percentage);
+        } else {
+          child.setWidth(child.stretchWidth);
+        }
+      }
+
+      // Handle percentage-based height if specified
+      if (child.stretchHeight !== undefined) {
+        if (typeof child.stretchHeight === "string") {
+          // Handle percentage values
+          const percentage = parseFloat(child.stretchHeight) / 100;
+          child.setHeight(targetBounds.height * percentage);
+        } else {
+          child.setHeight(child.stretchHeight);
+        }
+      }
+    });
   }
 
   trashLayout(): void {
@@ -246,6 +356,11 @@ export abstract class AbstractFlex implements FlexElement {
     this.shrinkSum = 0;
 
     this.children.forEach((child) => {
+      // Skip attached items in layout calculations
+      if (child.attachToIndex !== undefined) {
+        return;
+      }
+
       child.basis =
         this.direction === DIRECTION.ROW ? child.width : child.height;
 

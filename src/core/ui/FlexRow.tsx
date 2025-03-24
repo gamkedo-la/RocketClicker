@@ -154,6 +154,11 @@ export class FlexRow extends AbstractFlex {
     }
 
     this.children.forEach((item) => {
+      // Skip items that are attached to other items
+      if (item.attachToIndex !== undefined) {
+        return;
+      }
+
       if (considerGrow && item.flexGrow) {
         item.width = item.basis + (item.flexGrow / this.growSum) * freeSpace;
       } else {
@@ -212,6 +217,11 @@ export class FlexRow extends AbstractFlex {
     };
 
     this.children.forEach((item) => {
+      // Skip items that are attached to other items
+      if (item.attachToIndex !== undefined) {
+        return;
+      }
+
       const alignment = this.getAlignPosition(
         item.selfAlign
       ) as keyof typeof alignmentDimensions;

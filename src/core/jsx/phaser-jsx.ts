@@ -281,8 +281,8 @@ export function setupGameObject<T extends Phaser.GameObjects.GameObject>(
       );
 
       container.setSize(
-        getSignalValue(containerProps.width),
-        getSignalValue(containerProps.height)
+        getSignalValue(containerProps.width, 1),
+        getSignalValue(containerProps.height, 1)
       );
 
       if (import.meta.env.DEV) {
