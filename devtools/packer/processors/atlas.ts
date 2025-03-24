@@ -64,27 +64,19 @@ export class Atlas {
       spriteGroups.get(baseName)!.push(sprite);
     }
 
-    // Convert sprites to boxes with their dimensions
+    // Convert sprites to boxes with their ACTUAL TRIMMED dimensions
     const boxes: Box[] = [];
     for (const [_baseName, groupSprites] of spriteGroups) {
-      // Find the maximum dimensions for this sprite group
-      let maxWidth = 0;
-      let maxHeight = 0;
       for (const sprite of groupSprites) {
         const trimInfo = this.trimInfo.get(sprite.name);
-        if (trimInfo) {
-          maxWidth = Math.max(maxWidth, trimInfo.width);
-          maxHeight = Math.max(maxHeight, trimInfo.height);
-        }
-      }
+        if (!trimInfo) continue;
 
-      // Create boxes for each sprite in the group, adding bleed margin
-      for (const sprite of groupSprites) {
+        // Use individual trimmed dimensions for each sprite
         boxes.push({
           x: 0,
           y: 0,
-          w: maxWidth + BLEED_MARGIN * 2,
-          h: maxHeight + BLEED_MARGIN * 2,
+          w: trimInfo.width + BLEED_MARGIN * 2,
+          h: trimInfo.height + BLEED_MARGIN * 2,
           sprite,
         });
       }
@@ -352,25 +344,28 @@ export class Atlas {
       } else {
         // No slices, just create frames for each animation frame
         boxes.forEach((box, frameIndex) => {
+          const trimInfo = this.trimInfo.get(box.sprite.name);
+          if (!trimInfo) return;
+
           frames.push({
             filename: `${spriteName}#${frameIndex}`,
             frame: {
               x: box.x + BLEED_MARGIN,
               y: box.y + BLEED_MARGIN,
-              w: box.w - BLEED_MARGIN * 2,
-              h: box.h - BLEED_MARGIN * 2,
+              w: box.sprite.width,
+              h: box.sprite.height,
             },
             rotated: false,
-            trimmed: false,
+            trimmed: true,
             spriteSourceSize: {
-              x: 0,
-              y: 0,
-              w: box.w - BLEED_MARGIN * 2,
-              h: box.h - BLEED_MARGIN * 2,
+              x: trimInfo.left,
+              y: trimInfo.top,
+              w: trimInfo.width,
+              h: trimInfo.height,
             },
             sourceSize: {
-              w: box.w - BLEED_MARGIN * 2,
-              h: box.h - BLEED_MARGIN * 2,
+              w: box.sprite.width,
+              h: box.sprite.height,
             },
           });
         });

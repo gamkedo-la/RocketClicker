@@ -240,7 +240,7 @@ async function extractSprite(
   return {
     index: cel.layerIndex,
     name: spriteName,
-    path: "", // No longer need physical files
+    path: "",
     width: cel.w,
     height: cel.h,
     x: cel.xpos,
