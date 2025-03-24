@@ -180,6 +180,7 @@ export class ThreeCometScene extends AbstractScene {
     const modelLoaders = new Map([
       ["h2-compressor", RESOURCES.compressor],
       ["condenser", RESOURCES.condenser],
+      ["generator", RESOURCES.generator],
     ]);
 
     buildingTypes.forEach((type, index) => {
@@ -374,13 +375,12 @@ export class ThreeCometScene extends AbstractScene {
           const { grid, cellId } = this.hoveredObject.userData;
           this.pointer.set(grid.x, grid.y);
 
-          if (!this.gameState.getBuildingAtCell(cellId)) {
-            this.gameState.addBuildingToCell(
-              cellId,
-              getBuildingById(
-                Math.random() > 0.5 ? "h2-compressor" : "condenser"
-              )
-            );
+          const selectedBuilding = this.gameState.state
+            .get()
+            ?.mouse_selected_building.get()?.building;
+
+          if (!this.gameState.getBuildingAtCell(cellId) && selectedBuilding) {
+            this.gameState.addBuildingToCell(cellId, selectedBuilding);
           }
         } else if (this.hoveredObject.userData.id === "comet") {
           this.showFloatingChange(pointer.x, pointer.y, 100);
