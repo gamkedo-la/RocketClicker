@@ -34,19 +34,19 @@ export const Button = ({
   > = (
     <stateMachine initialState="available">
       <state id="unavailable">
-        <transition event="resourceAvailable" target="available" />
+        <transition on="resourceAvailable" target="available" />
       </state>
       <state id="available">
-        <transition event="mouseenter" target="hovered" />
+        <transition on="mouseenter" target="hovered" />
       </state>
       <state id="hovered">
-        <transition event="mouseleave" target="available" />
+        <transition on="mouseleave" target="available" />
         {/* Guard for mousedown if resource is available */}
-        <transition event="mousedown" target="pressed" />
+        <transition on="mousedown" target="pressed" />
       </state>
       <state id="pressed">
-        <transition event="mouseleave" target="available" />
-        <transition event="mouseup" target="hovered" />
+        <transition on="mouseleave" target="available" />
+        <transition on="mouseup" target="hovered" />
       </state>
     </stateMachine>
   );

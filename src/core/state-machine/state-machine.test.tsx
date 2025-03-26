@@ -8,7 +8,7 @@ describe("FiniteStateMachine", () => {
     const fsm: FiniteStateMachine<"A" | "B", "NEXT"> = (
       <stateMachine initialState="A">
         <state id="A">
-          <transition event="NEXT" target="B" />
+          <transition on="NEXT" target="B" />
         </state>
         <state id="B" />
       </stateMachine>
@@ -25,7 +25,7 @@ describe("FiniteStateMachine", () => {
     const fsm: FiniteStateMachine<"A" | "B", "NEXT"> = (
       <stateMachine initialState="A">
         <state id="A">
-          <transition event="NEXT" target="B" guard={guard} />
+          <transition on="NEXT" target="B" guard={guard} />
         </state>
         <state id="B" />
       </stateMachine>
@@ -72,7 +72,7 @@ describe("FiniteStateMachine", () => {
     const fsm: FiniteStateMachine<"A" | "B", "NEXT"> = (
       <stateMachine initialState="A">
         <state id="A">
-          <transition event="NEXT" target="B" />
+          <transition on="NEXT" target="B" />
         </state>
         <state id="B" />
       </stateMachine>
@@ -113,10 +113,10 @@ describe("FiniteStateMachine", () => {
     const fsm: FiniteStateMachine<"A" | "B" | "C", "NEXT"> = (
       <stateMachine initialState="A">
         <state id="A">
-          <transition event="NEXT" target="B" />
+          <transition on="NEXT" target="B" />
         </state>
         <state id="B">
-          <transition event="NEXT" target="C" />
+          <transition on="NEXT" target="C" />
         </state>
         <state id="C" />
       </stateMachine>
@@ -136,7 +136,7 @@ describe("FiniteStateMachine", () => {
     const fsm: FiniteStateMachine<"A" | "B", "NEXT"> = (
       <stateMachine initialState="A">
         <state id="A">
-          <transition event="NEXT" target="B" />
+          <transition on="NEXT" target="B" />
         </state>
         <state id="B" />
       </stateMachine>
@@ -150,10 +150,10 @@ describe("FiniteStateMachine", () => {
     const fsm: FiniteStateMachine<"A" | "B" | "C", "NEXT"> = (
       <stateMachine initialState="A">
         <state id="A">
-          <transition event="NEXT" target="B" />
+          <transition on="NEXT" target="B" />
         </state>
         <state id="B">
-          <transition event="NEXT" target="C" />
+          <transition on="NEXT" target="C" />
         </state>
         <state id="C" />
       </stateMachine>
@@ -174,10 +174,10 @@ describe("FiniteStateMachine", () => {
     const fsm: FiniteStateMachine<"A" | "B", "NEXT"> = (
       <stateMachine initialState="A">
         <state id="A">
-          <transition event="NEXT" target="B" />
+          <transition on="NEXT" target="B" />
         </state>
         <state id="B">
-          <transition event="NEXT" target="C" />
+          <transition on="NEXT" target="C" />
         </state>
         <state id="C" />
       </stateMachine>
@@ -213,10 +213,10 @@ describe("FiniteStateMachine", () => {
     const fsm: FiniteStateMachine<"A" | "B" | "C", "NEXT"> = (
       <stateMachine initialState="A">
         <state id="A">
-          <transition event="NEXT" target="B" />
+          <transition on="NEXT" target="B" />
         </state>
         <state id="B">
-          <transition event="NEXT" target="C" />
+          <transition on="NEXT" target="C" />
         </state>
         <state id="C" />
       </stateMachine>
@@ -260,7 +260,7 @@ describe("FiniteStateMachine", () => {
     const fsm: FiniteStateMachine<"A" | "B", "NEXT"> = (
       <stateMachine initialState="A">
         <state id="A">
-          <transition event="NEXT" target="B" guard={() => condition.get()} />
+          <transition on="NEXT" target="B" guard={() => condition.get()} />
         </state>
         <state id="B" />
       </stateMachine>

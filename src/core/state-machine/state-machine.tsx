@@ -31,7 +31,7 @@ declare global {
       /**
        * Creates a transition.
        *
-       * @param event - The event of the transition
+       * @param on - The event of the transition
        * @param target - The target state of the transition
        */
       transition: TransitionElement;
@@ -51,18 +51,21 @@ declare global {
 export const stateMachineIntrinsicElements: (keyof JSX.StateMachineElements)[] =
   ["stateMachine", "state", "transition"];
 
-interface TransitionElement {
-  event: EventId;
+export interface TransitionElement {
+  type?: "transition";
+  on: EventId;
   target: StateId;
   guard?: () => boolean;
 }
 
-interface StateMachineElement {
+export interface StateMachineElement {
+  type?: "stateMachine";
   initialState: StateId;
   children?: StateElement | StateElement[];
 }
 
-interface StateElement {
+export interface StateElement {
+  type?: "state";
   id: StateId;
   children?: TransitionElement | TransitionElement[];
 }
@@ -70,13 +73,13 @@ interface StateElement {
 export type StateId = string;
 export type EventId = string;
 
-interface TransitionConfig<S extends StateId, E extends EventId> {
-  event: E;
+export interface TransitionConfig<S extends StateId, E extends EventId> {
+  on: E;
   target: S;
   guard?: () => boolean;
 }
 
-interface StateConfig<S extends StateId, E extends EventId> {
+export interface StateConfig<S extends StateId, E extends EventId> {
   id: S;
   transitions: TransitionConfig<S, E>[];
 }
@@ -89,7 +92,7 @@ export function setupStateMachineElement(
     return createStateMachine(props as StateMachineElement);
   }
 
-  return props;
+  return { ...props, type };
 }
 
 // TODO: At some point there was something to keep track of available events, but I removed and I don't know if it's needed
@@ -126,7 +129,7 @@ export class FiniteStateMachine<S extends StateId, E extends EventId> {
     const currentState = this.states.get(this.currentState.get());
     assert(currentState, "Current state is not defined");
 
-    const transition = currentState.transitions.find((t) => t.event === event);
+    const transition = currentState.transitions.find((t) => t.on === event);
 
     if (import.meta.env.DEV) {
       console.log(`Current state: ${currentState.id}`, `Event: ${event}`);
@@ -134,7 +137,7 @@ export class FiniteStateMachine<S extends StateId, E extends EventId> {
       if (!transition) {
         console.log(
           "Available events:",
-          currentState.transitions.map((t) => t.event)
+          currentState.transitions.map((t) => t.on)
         );
         console.warn(`No transition found for event ${event}`);
         return false;
@@ -151,17 +154,15 @@ export class FiniteStateMachine<S extends StateId, E extends EventId> {
 
     if (transition.guard && !transition.guard()) return false;
 
-    this.lastTriggeredEvent.set(event);
-    this.previousState.set(this.currentState.get());
-    this.currentState.set(transition.target);
+    this.setState(transition.target, event);
     return true;
   }
 
-  setState(state: S) {
+  setState(state: S, lastEvent: E | null = null) {
     const nextState = this.states.get(state);
     assert(nextState, `State ${state} not found`);
 
-    this.lastTriggeredEvent.set(null);
+    this.lastTriggeredEvent.set(lastEvent);
     this.previousState.set(this.currentState.get());
     this.currentState.set(state);
   }
@@ -176,6 +177,10 @@ export class FiniteStateMachine<S extends StateId, E extends EventId> {
 
   get lastEvent(): Signal<E | null> {
     return this.lastTriggeredEvent;
+  }
+
+  get stateIds(): S[] {
+    return Array.from(this.states.keys());
   }
 }
 
@@ -192,7 +197,7 @@ function createStateMachine<S extends StateId, E extends EventId>(
 
     const transitions: TransitionConfig<S, E>[] = stateChildren.map(
       (child) => ({
-        event: child.event as E,
+        on: child.on as E,
         target: child.target as S,
         guard: child.guard,
       })
