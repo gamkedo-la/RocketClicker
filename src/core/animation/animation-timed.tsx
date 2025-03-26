@@ -2,6 +2,7 @@ import { makeArray } from "@game/core/common/arrays";
 import { assert } from "@game/core/common/assert";
 import { EaseMap } from "@game/core/common/easing";
 import { Signal } from "@game/core/signals/types";
+import { MotionMachineLifecycleEvent } from "../motion-machine/types";
 
 // IDEAS/TODO
 //
@@ -84,13 +85,15 @@ type ControlElements = RepeatElement | ParallelElement | SequenceElement;
 type StepsElement = WaitElement | StepElement | TweenElement<any>;
 type AnimationElements = ControlElements | StepsElement;
 
-interface AnimationElement {
+export interface AnimationElement {
   type?: "animation";
   children: AnimationElements[];
   duration?: number;
+
+  on?: MotionMachineLifecycleEvent;
 }
 
-interface SequenceElement {
+export interface SequenceElement {
   type?: "sequence";
   children: AnimationElements[];
   duration?: number;
@@ -98,7 +101,7 @@ interface SequenceElement {
   stepClock?: number;
 }
 
-interface ParallelElement {
+export interface ParallelElement {
   type?: "parallel";
   children: AnimationElements[];
   duration?: number;
@@ -106,7 +109,7 @@ interface ParallelElement {
   stepClock?: number;
 }
 
-interface RepeatElement {
+export interface RepeatElement {
   type?: "repeat";
   children: AnimationElements[];
   duration?: number;
@@ -117,19 +120,19 @@ interface RepeatElement {
   childDuration?: number;
 }
 
-interface WaitElement {
+export interface WaitElement {
   type?: "wait";
   duration?: number;
 }
 
-interface StepElement {
+export interface StepElement {
   type?: "step";
   duration?: number;
   triggered?: boolean;
   run: (ctx: AnimationContext) => void;
 }
 
-interface TweenElement<T> {
+export interface TweenElement<T> {
   type?: "tween";
   signal: Signal<T>;
   from?: T;
@@ -139,7 +142,7 @@ interface TweenElement<T> {
   initialValue?: T;
 }
 
-interface AnimationContext {
+export interface AnimationContext {
   progress: number;
   previousProgress: number;
   direction: "forward" | "backward" | "none";
@@ -237,6 +240,8 @@ export class AnimationPlan {
 
   progress = 0;
   currentStep = 0;
+
+  on?: MotionMachineLifecycleEvent;
 
   constructor(props: AnimationElement) {
     this.steps = props.children;

@@ -1,6 +1,7 @@
 import { SequenceEngine } from "@game/core/animation/animation";
 import PhaserGamebus from "@game/lib/gamebus";
 import { GameStateManager } from "@game/state/game-state";
+import { MotionMachine } from "../core/motion-machine/motion-machine";
 
 export abstract class AbstractScene extends Phaser.Scene {
   // Game plugins
@@ -9,6 +10,8 @@ export abstract class AbstractScene extends Phaser.Scene {
   declare gamebus: PhaserGamebus;
 
   declare animationEngine: SequenceEngine;
+
+  declare motionMachines: MotionMachine<any, any>[];
 
   init() {
     // Required to make JSX magic happen
@@ -20,11 +23,25 @@ export abstract class AbstractScene extends Phaser.Scene {
       window.currentScene = this;
     });
 
+    let z = 0;
+
+    this.events.on("update", (delta: number, time: number) => {
+      for (let i = 0; i < this.motionMachines.length; i++) {
+        this.motionMachines[i].update(delta, time);
+      }
+    });
+
     this.events.once("shutdown", () => {
       console.log("shutdown", this.scene.key, this, window.currentScene);
 
       this.shutdown();
     });
+
+    this.motionMachines = [];
+  }
+
+  addMotionMachine(motionMachine: MotionMachine<any, any>) {
+    this.motionMachines.push(motionMachine);
   }
 
   /**

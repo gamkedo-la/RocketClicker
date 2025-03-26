@@ -12,7 +12,7 @@ export default defineConfig({
     jsxDev: false,
     jsxFactory: "createElement",
     jsxFragment: "Fragment",
-    jsxInject: `import { createElement } from '@game/ui/lib'`,
+    jsxInject: `import { createElement } from '@game/core/jsx/jsx-runtime'`,
     jsxSideEffects: true,
   },
   resolve: {

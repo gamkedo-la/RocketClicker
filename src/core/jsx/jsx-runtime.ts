@@ -15,6 +15,8 @@ import {
   setupStateObserverElement,
   stateObserverIntrinsicElements,
 } from "@game/core/state-machine/state-observer";
+import { createMotionMachine } from "@game/core/motion-machine/motion-machine";
+import { motionMachineIntrinsicElements } from "@game/core/motion-machine/motion-machine";
 
 /*
   JSX runtime
@@ -39,6 +41,16 @@ export function jsx(
   // Handle functional components
   if (typeof type === "function") {
     return type(props);
+  }
+
+  if (
+    motionMachineIntrinsicElements.includes(
+      type as keyof JSX.MotionMachineElements
+    )
+  ) {
+    return createMotionMachine(
+      props as JSX.MotionMachineElements[keyof JSX.MotionMachineElements]
+    );
   }
 
   if (
