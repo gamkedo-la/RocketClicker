@@ -1,8 +1,9 @@
 import { SignalValue, Signal } from "@game/core/signals/types";
+import { AbstractScene } from "@game/scenes/index";
 
 declare global {
   interface Window {
-    currentScene: Phaser.Scene;
+    currentScene: AbstractScene;
   }
 
   namespace JSX {
