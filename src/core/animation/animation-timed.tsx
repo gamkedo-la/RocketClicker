@@ -246,6 +246,18 @@ export class AnimationPlan {
   constructor(props: AnimationElement) {
     this.steps = props.children;
     this.duration = props.duration ?? 0;
+    this.on = props.on;
+  }
+
+  reset() {
+    this.clock = 0;
+    this.stepClock = 0;
+    this.progress = 0;
+    this.currentStep = 0;
+
+    this.state = "pristine";
+
+    return this;
   }
 
   private initializeStepState(step: AnimationElements) {
