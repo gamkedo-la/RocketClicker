@@ -57,8 +57,11 @@ export interface MotionStateElement<
   S extends string = string,
   E extends string = string
 > {
+  type?: "state";
   id: S;
-  children?: Array<MotionAnimationElement | TransitionElement>;
+  children?: Array<
+    MotionStateElement<S, E> | AnimationElement | TransitionElement<E>
+  >;
 }
 
 export interface MotionStateConfig<S extends StateId, E extends EventId> {
@@ -72,6 +75,13 @@ export interface MotionStateConfig<S extends StateId, E extends EventId> {
   states?: MotionStateConfig<S, E>[];
 }
 
+interface MotionMachineAnimationStack<S extends StateId> {
+  state: S;
+  phase: MotionMachineLifecycle;
+  duration: number;
+  goal: boolean;
+}
+
 export const motionMachineIntrinsicElements = ["motionMachine"] as const;
 
 export class MotionMachine<
@@ -80,12 +90,13 @@ export class MotionMachine<
 > extends FiniteStateMachine<S, E> {
   private stateAnimations: Map<S, StateAnimations> = new Map();
 
+  private stateLifecycle: MotionMachineLifecycle = "entering";
+
+  private targetState: S | null = null;
+  private targetEvent: E | null = null;
+
   private currentAnimations: AnimationPlan[] = [];
-
-  private nextState: S | null = null;
-  private nextEvent: E | null = null;
-
-  private lifecycleState: MotionMachineLifecycle = "entering";
+  private transitionStack: MotionMachineAnimationStack<S>[] = [];
 
   constructor(initialState: S) {
     super(initialState);
@@ -105,78 +116,208 @@ export class MotionMachine<
     });
 
     if (state.id === this.current.get()) {
-      this.setLifecycleState("entering");
+      this.setStateLifecycle("entering", state.id);
     }
   }
 
+  private getAnimationsFor(
+    state: S,
+    phase: "enter" | "exit" | "active"
+  ): AnimationPlan[] {
+    return (
+      this.stateAnimations.get(state)?.[phase]?.map((anim) => {
+        anim.reset();
+        anim.update(0);
+        return anim;
+      }) || []
+    );
+  }
+
+  getAnimationDuration(state: S, phase: "enter" | "exit" | "active") {
+    return (
+      this.stateAnimations.get(state)?.[phase]?.reduce((acc, anim) => {
+        return Math.max(acc, anim.duration);
+      }, 0) || 0
+    );
+  }
+
+  collectAnimationTasks(current: S, goal: S) {
+    const currentPath = current.split(".");
+    const goalPath = goal.split(".");
+
+    // Find the common ancestor level
+    let commonAncestorIndex = 0;
+    while (
+      commonAncestorIndex < Math.min(currentPath.length, goalPath.length) &&
+      currentPath[commonAncestorIndex] === goalPath[commonAncestorIndex]
+    ) {
+      commonAncestorIndex++;
+    }
+
+    const tasks: {
+      state: S;
+      phase: MotionMachineLifecycle;
+      duration: number;
+      goal: boolean;
+    }[] = [];
+
+    // Generate exit tasks from current state up to common ancestor
+    for (let i = currentPath.length - 1; i >= commonAncestorIndex; i--) {
+      const state = currentPath.slice(0, i + 1).join(".") as S;
+      tasks.push({
+        state,
+        phase: "exiting",
+        duration: this.getAnimationDuration(state, "exit"),
+        goal: false,
+      });
+    }
+
+    // Generate enter tasks from common ancestor to goal
+    for (let i = commonAncestorIndex; i < goalPath.length; i++) {
+      const state = goalPath.slice(0, i + 1).join(".") as S;
+      tasks.push({
+        state,
+        phase: "entering",
+        duration: this.getAnimationDuration(state, "enter"),
+        // Only mark the final state as the goal
+        goal: i === goalPath.length - 1,
+      });
+    }
+
+    /*console.log("collectAnimationTasks", {
+      current,
+      goal,
+      commonAncestorIndex,
+      tasks,
+    });*/
+
+    return tasks;
+  }
+
   setState(state: S, lastEvent: E | null = null) {
-    if (this.lifecycleState !== "active") {
+    if (this.stateLifecycle !== "active") {
       // TODO: At some point this will never happen and it will be an error
       // The transition should handle enqueuing the state transitions
       //throw new Error("Cannot set state while not in active state");
     }
 
-    const stateAnimations = this.stateAnimations.get(this.current.get());
-    const nextStateAnimations = this.stateAnimations.get(state)!;
+    // console.log("\n> setState!", lastEvent);
 
-    if (!stateAnimations) {
-      throw new Error(`State ${state} not found`);
-    }
+    this.transitionStack = this.collectAnimationTasks(
+      this.current.get(),
+      state
+    );
 
-    // Future me, remember when I though that jumping states outside of update was a good idea?
-    if (stateAnimations.exit.length > 0) {
-      this.setLifecycleState("exiting");
-      this.nextState = state;
-      this.nextEvent = lastEvent;
-    } else if (nextStateAnimations?.enter.length > 0) {
-      super.setState(state, lastEvent);
-      this.setLifecycleState("entering");
-    } else {
-      super.setState(state, lastEvent);
-      this.setLifecycleState("active");
-    }
+    /* console.log({
+      transitionStack: this.transitionStack.length,
+      current: this.current.get(),
+      state,
+      lastEvent,
+    });*/
+
+    this.targetState = state;
+    this.targetEvent = lastEvent;
+
+    this.transitionStack.shift()!;
+    this.setStateLifecycle("exiting", this.current.get());
+    // console.log("< setState!");
   }
 
-  setLifecycleState(state: MotionMachineLifecycle) {
-    this.lifecycleState = state;
+  animationsCompleted() {
+    // Animations are done! Where should I be going next?
+    // console.log("animationsCompleted", this.transitionStack.length);
 
-    this.currentAnimations =
-      this.stateAnimations
-        .get(this.current.get())
-        ?.[MotionMachineLifecycleMap[state]]?.map((anim) => {
-          anim.reset();
-          anim.update(0);
-          return anim;
-        }) || [];
-  }
+    if (this.transitionStack.length > 0) {
+      const next = this.transitionStack.shift();
 
-  update(delta: number, _time?: number) {
-    let anim;
+      // console.log("next", next);
 
-    // TODO: There must be a while here consuming the delta until the animations are finished and the state transitions are completed
+      if (next) {
+        if (next.goal) {
+          //          console.log("!!!! goal", next.state);
+          super.setState(next.state, this.targetEvent);
+          this.targetState = null;
+          this.targetEvent = null;
+        }
 
-    for (let i = 0; i < this.currentAnimations.length; i++) {
-      anim = this.currentAnimations[i];
-      anim.update(delta);
-      if (anim.progress >= 1 && anim.duration !== Infinity) {
-        this.currentAnimations.splice(i, 1);
+        this.setStateLifecycle(next.phase, next.state);
+        return;
       }
     }
 
-    if (this.lifecycleState === "active" || this.currentAnimations.length > 0) {
-      return;
+    // console.log("done!!");
+
+    if (this.stateLifecycle === "entering") {
+      // console.log("entering", this.current.get());
+      this.setStateLifecycle("active", this.current.get());
     }
 
-    if (this.lifecycleState === "entering") {
-      this.setLifecycleState("active");
+    if (this.stateLifecycle === "exiting") {
+      //    console.log("exiting", this.current.get());
+      assert(this.targetState, "Next state is not set");
+      super.setState(this.targetState, this.targetEvent);
+      this.setStateLifecycle("entering", this.targetState);
+      this.targetState = null;
+      this.targetEvent = null;
     }
+  }
 
-    if (this.lifecycleState === "exiting") {
-      assert(this.nextState, "Next state is not set");
-      super.setState(this.nextState, this.nextEvent);
-      this.setLifecycleState("entering");
-      this.nextState = null;
-      this.nextEvent = null;
+  setStateLifecycle(lifecycle: MotionMachineLifecycle, state: string) {
+    this.stateLifecycle = lifecycle;
+
+    this.currentAnimations = this.getAnimationsFor(
+      state as S,
+      MotionMachineLifecycleMap[lifecycle]
+    );
+  }
+
+  j = 0;
+
+  update(_time: number, delta: number) {
+    //console.log(`-------## ${this.j++} update`, { delta });
+
+    let infiniteLoopProtection = 0;
+
+    let anim;
+    let frameBudget = delta;
+
+    while (frameBudget > 0) {
+      // Find the maximum consumable frame budget
+      let consumed = 0;
+
+      for (let i = 0; i < this.currentAnimations.length; i++) {
+        anim = this.currentAnimations[i];
+        //anim.clock - anim.duration;
+        consumed = Math.max(consumed, anim.update(frameBudget));
+
+        /*console.log("anim", {
+          progress: anim.progress,
+          duration: anim.duration,
+          clock: anim.clock,
+        });*/
+
+        if (anim.progress >= 1 && anim.duration !== Infinity) {
+          this.currentAnimations.splice(i, 1);
+        }
+      }
+
+      // console.log("update", { consumed, frameBudget, i });
+
+      frameBudget -= consumed;
+
+      if (
+        this.stateLifecycle === "active" ||
+        this.currentAnimations.length > 0
+      ) {
+        return;
+      }
+
+      this.animationsCompleted();
+
+      infiniteLoopProtection++;
+      if (infiniteLoopProtection > 1000) {
+        throw new Error("Animation loop");
+      }
     }
   }
 }
@@ -189,11 +330,36 @@ export function createMotionMachine<S extends StateId, E extends EventId>(
   );
 
   const children = makeArray(props.children);
+  const states: MotionStateElement<S, E>[] = [];
+
+  function processNestedStates(
+    state: MotionStateElement<S, E>,
+    parentId?: string
+  ) {
+    const id: S = parentId ? (`${parentId}.${state.id}` as S) : state.id;
+
+    states.push({
+      ...state,
+      id,
+    });
+
+    makeArray(state.children).forEach((child) => {
+      // Recursively process nested state elements
+      if (child && child.type === "state") {
+        processNestedStates(child, id);
+      }
+    });
+  }
+
   for (const state of children) {
-    if (state) {
-      const config = processState<S, E>(state);
-      mm.addState(config);
+    if (state && state.type === "state") {
+      processNestedStates(state);
     }
+  }
+
+  for (const state of states) {
+    const config = processState<S, E>(state);
+    mm.addState(config);
   }
 
   if (!mm.stateIds.includes(props.initialState as S)) {
