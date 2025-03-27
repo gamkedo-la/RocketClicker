@@ -1,8 +1,9 @@
 import { makeArray } from "@game/core/common/arrays";
 import { assert } from "@game/core/common/assert";
 import { EaseMap } from "@game/core/common/easing";
-import { Signal } from "@game/core/signals/types";
+import { Signal, SignalValue } from "@game/core/signals/types";
 import { MotionMachineLifecycleEvent } from "../motion-machine/types";
+import { getSignalValue } from "../signals/signals";
 
 // IDEAS/TODO
 //
@@ -135,11 +136,11 @@ export interface StepElement {
 export interface TweenElement<T> {
   type?: "tween";
   signal: Signal<T>;
-  from?: T;
-  to: T;
+  from?: SignalValue<T>;
+  to: SignalValue<T>;
   duration?: number;
   ease?: (typeof EaseMap)[number];
-  initialValue?: T;
+  initialValue?: SignalValue<T>;
 }
 
 export interface AnimationContext {
@@ -203,7 +204,7 @@ export const setupAnimationElement = (
     const duration = times === -1 ? Infinity : childDuration * times;
 
     if (times === -1 && childDuration === 0) {
-      throw new Error("Infinite repeats are not supported");
+      throw new Error("Empty infinite repeats are not supported");
     }
 
     return {
@@ -263,7 +264,7 @@ export class AnimationPlan {
   private initializeStepState(step: AnimationElements) {
     switch (step.type) {
       case "tween":
-        step.initialValue = step.from ?? step.signal.get();
+        step.initialValue = getSignalValue(step.from) ?? step.signal.get();
         break;
 
       case "step":
@@ -333,7 +334,13 @@ export class AnimationPlan {
   ) {
     switch (step.type) {
       case "tween": {
-        step.signal.set(linear(step.initialValue!, step.to, localProgress));
+        step.signal.set(
+          linear(
+            getSignalValue(step.initialValue),
+            getSignalValue(step.to),
+            localProgress
+          )
+        );
         break;
       }
 
@@ -461,13 +468,16 @@ export class AnimationPlan {
   }
 
   update(dt: number) {
+    let consumed = 0;
+
     if (this.state === "pristine") {
       this.state = "running";
       this.initializeStepState(this.steps[0]);
     }
 
-    if (this.state === "stopped") return;
-    console.log("- #a", {
+    if (this.state === "stopped") return 0;
+
+    consumed = Math.max(0, Math.min(this.duration - this.clock, dt));
       dt,
       clock: this.clock,
       duration: this.duration,
@@ -497,6 +507,8 @@ export class AnimationPlan {
         this.clock - this.stepClock
       );
     }
+
+    return consumed;
   }
 }
 
