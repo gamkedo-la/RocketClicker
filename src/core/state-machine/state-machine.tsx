@@ -13,20 +13,20 @@ declare global {
       // Class components
       | (new (props: any) => ElementClass);
 
-    interface StateMachineElements {
+    interface StateMachineElements<S extends StateId, E extends EventId> {
       /**
        * Creates a finite state machine.
        *
        * @param initialState - The initial state of the state machine
        */
-      stateMachine: StateMachineElement;
+      stateMachine: StateMachineElement<S, E>;
 
       /**
        * Creates a state.
        *
        * @param id - The id of the state
        */
-      state: StateElement;
+      state: StateElement<S, E>;
 
       /**
        * Creates a transition.
@@ -34,10 +34,11 @@ declare global {
        * @param on - The event of the transition
        * @param target - The target state of the transition
        */
-      transition: TransitionElement;
+      transition: TransitionElement<E>;
     }
 
-    interface IntrinsicElements extends StateMachineElements {}
+    interface IntrinsicElements
+      extends StateMachineElements<StateId, EventId> {}
 
     type Element = any;
     type ElementClass = any;
@@ -48,26 +49,28 @@ declare global {
   }
 }
 
-export const stateMachineIntrinsicElements: (keyof JSX.StateMachineElements)[] =
-  ["stateMachine", "state", "transition"];
+export const stateMachineIntrinsicElements: (keyof JSX.StateMachineElements<
+  StateId,
+  EventId
+>)[] = ["stateMachine", "state", "transition"];
 
-export interface TransitionElement {
+export interface TransitionElement<E extends EventId> {
   type?: "transition";
-  on: EventId;
+  on: E;
   target: StateId;
   guard?: () => boolean;
 }
 
-export interface StateMachineElement {
+export interface StateMachineElement<S extends StateId, E extends EventId> {
   type?: "stateMachine";
-  initialState: StateId;
-  children?: StateElement | StateElement[];
+  initialState: S;
+  children?: StateElement<S, E> | StateElement<S, E>[];
 }
 
-export interface StateElement {
+export interface StateElement<S extends StateId, E extends EventId> {
   type?: "state";
-  id: StateId;
-  children?: TransitionElement | TransitionElement[];
+  id: S;
+  children?: Array<TransitionElement<E>>;
 }
 
 export type StateId = string;
@@ -84,12 +87,12 @@ export interface StateConfig<S extends StateId, E extends EventId> {
   transitions: TransitionConfig<S, E>[];
 }
 
-export function setupStateMachineElement(
-  type: keyof JSX.StateMachineElements,
-  props: JSX.StateMachineElements[keyof JSX.StateMachineElements]
+export function setupStateMachineElement<S extends StateId, E extends EventId>(
+  type: keyof JSX.StateMachineElements<S, E>,
+  props: JSX.StateMachineElements<S, E>[keyof JSX.StateMachineElements<S, E>]
 ) {
   if (type === "stateMachine") {
-    return createStateMachine(props as StateMachineElement);
+    return createStateMachine(props as StateMachineElement<S, E>);
   }
 
   return { ...props, type };
@@ -185,7 +188,7 @@ export class FiniteStateMachine<S extends StateId, E extends EventId> {
 }
 
 function createStateMachine<S extends StateId, E extends EventId>(
-  props: StateMachineElement
+  props: StateMachineElement<S, E>
 ): FiniteStateMachine<S, E> {
   const fsm = new FiniteStateMachine<S, E>(props.initialState as S);
   const children = makeArray(props.children);
