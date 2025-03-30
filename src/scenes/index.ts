@@ -2,6 +2,7 @@ import { SequenceEngine } from "@game/core/animation/animation";
 import PhaserGamebus from "@game/lib/gamebus";
 import { GameStateManager } from "@game/state/game-state";
 import { MotionMachine } from "../core/motion-machine/motion-machine";
+import { DebugParameters } from "./debug/debug-panel";
 
 export abstract class AbstractScene extends Phaser.Scene {
   // Game plugins
@@ -21,6 +22,7 @@ export abstract class AbstractScene extends Phaser.Scene {
 
     this.events.on("preupdate", () => {
       window.currentScene = this;
+      DebugParameters.frameBudget = performance.now();
     });
 
     let z = 0;
@@ -29,6 +31,11 @@ export abstract class AbstractScene extends Phaser.Scene {
       for (let i = 0; i < this.motionMachines.length; i++) {
         this.motionMachines[i].update(delta, time);
       }
+    });
+
+    this.events.on("postupdate", () => {
+      DebugParameters.frameBudget =
+        performance.now() - DebugParameters.frameBudget;
     });
 
     this.events.once("shutdown", () => {
