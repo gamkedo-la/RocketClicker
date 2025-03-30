@@ -338,10 +338,14 @@ export class ThreeCometScene extends AbstractScene {
     value: number,
     color: string = "#00ff00"
   ) {
+    const distFromCenter = Math.min(370, Math.max(-370, Math.floor(x - 630)));
+    this.gameState.getCometSpin().update((spin) => {
+      return Math.min(10, Math.max(-10, spin + distFromCenter / 370));
+    });
     const formattedValue = value >= 0 ? `+${value}` : value.toString();
     const text = this.add.text(x, y, formattedValue, {
       fontSize: "32px",
-      color: color,
+      color: distFromCenter > 0 ? color : "#ff0000",
       fontStyle: "bold",
     });
     text.setOrigin(0.5);
@@ -409,16 +413,17 @@ export class ThreeCometScene extends AbstractScene {
       if (intersects.length > 0) {
         const intersection = intersects[0];
 
+        this.hoveredObject = intersection.object as THREE.Mesh;
+        /*
         // Debugging
         if (this.hoveredObject) {
           const material = this.hoveredObject
             .material as THREE.MeshStandardMaterial;
           material.emissive.setHex(0);
         }
-        this.hoveredObject = intersection.object as THREE.Mesh;
         const material = this.hoveredObject
           .material as THREE.MeshStandardMaterial;
-        material.emissive.setHex(0x555555);
+        material.emissive.setHex(0x555555);*/
 
         if (this.hoveredObject.userData.id === "terrain") {
           const { grid, cellId } = this.hoveredObject.userData;
@@ -443,7 +448,7 @@ export class ThreeCometScene extends AbstractScene {
       const position = this.comet.position.clone();
 
       // Rotate position around Z axis
-      const rotationSpeed = 0.001;
+      const rotationSpeed = this.gameState.getCometSpin().get() * 0.001;
       position.applyAxisAngle(this.zAxis, rotationSpeed);
 
       // Add pivot back to get new world position
