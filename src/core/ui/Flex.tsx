@@ -25,6 +25,7 @@ export function Flex({
   y = 0,
   width = 1,
   height = 1,
+  depth = 0,
   padding = 0,
   margin = 0,
   alignContent = ALIGN_ITEMS.CENTER,
@@ -44,6 +45,7 @@ export function Flex({
     y,
     width,
     height,
+    depth,
     padding,
     margin,
     alignContent,
@@ -70,6 +72,10 @@ export function Flex({
 
   if (isSignal(height)) {
     config.height = height.get();
+  }
+
+  if (isSignal(depth)) {
+    config.depth = depth.get();
   }
 
   if (wrapped) {
@@ -101,6 +107,12 @@ export function Flex({
   if (isSignal(height)) {
     height.subscribe((height) => {
       flex.setHeight(height);
+    });
+  }
+
+  if (isSignal(depth)) {
+    depth.subscribe((depth) => {
+      flex.setDepth(depth);
     });
   }
 

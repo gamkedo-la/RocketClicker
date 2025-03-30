@@ -1,12 +1,7 @@
 import { assert } from "@game/core/common/assert";
 
-import {
-  AbstractFlex,
-  AlignmentItems,
-  ATTACH_TO_PARENT,
-  FlexElement,
-} from "./AbstractFlex";
 import { PhaserJsxElement } from "../jsx/types";
+import { AlignmentItems, ATTACH_TO_PARENT, FlexElement } from "./AbstractFlex";
 
 export const FlexItem = ({
   grow,
@@ -14,6 +9,7 @@ export const FlexItem = ({
   children,
   width,
   height,
+  depth,
   attach,
   attachTo,
   offsetX,
@@ -26,13 +22,15 @@ export const FlexItem = ({
   align?: AlignmentItems;
   width?: number;
   height?: number;
+  depth?: number;
+
   attach?: boolean;
   attachTo?: number; // Index of the sibling to attach to, or ATTACH_TO_PARENT
   offsetX?: number | string; // Can be a percentage like "100%" or a number
   offsetY?: number | string; // Can be a percentage like "50%" or a number
   stretchWidth?: number | string; // Width as percentage of target or absolute pixels
   stretchHeight?: number | string; // Height as percentage of target or absolute pixels
-  origin?: { x: number; y: number };
+  origin?: [number, number] | { x: number; y: number };
   children: FlexElement | PhaserJsxElement;
 }) => {
   assert(!(children instanceof Array), "FlexItem must be a single child");
@@ -54,6 +52,10 @@ export const FlexItem = ({
 
   if (height) {
     (children as FlexElement).height = height;
+  }
+
+  if (depth) {
+    (children as FlexElement).depth = depth;
   }
 
   if (attach || attachTo !== undefined) {

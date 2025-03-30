@@ -3,6 +3,7 @@ import {
   TransformablePhaserGameObject,
 } from "@game/core/jsx/types";
 import { SignalValue } from "@game/core/signals/types";
+import { getSignalValue } from "../signals/signals";
 
 export const ALIGN_ITEMS = {
   CENTER: "center",
@@ -43,9 +44,10 @@ export interface FlexElement {
   flexGrow: number;
   flexShrink: number;
   selfAlign: AlignmentItems;
+  depth: number;
 
   // For attaching to other flex items
-  origin?: { x: number; y: number };
+  origin?: [number, number] | { x: number; y: number };
   attachToIndex?: number;
   attachOffsetX?: number | string;
   attachOffsetY?: number | string;
@@ -62,6 +64,7 @@ export interface FlexElement {
   setSize: (width: number, height: number) => void;
   setScrollFactor: (x: number, y: number) => void;
   setOrigin: (x: number, y: number) => void;
+  setDepth: (depth: number) => void;
 }
 
 export interface FlexProps {
@@ -69,6 +72,7 @@ export interface FlexProps {
   y?: SignalValue<number>;
   width?: SignalValue<number>;
   height?: SignalValue<number>;
+  depth?: SignalValue<number>;
   // 4 values like css: top, right, bottom, left
   padding?:
     | number
@@ -125,6 +129,7 @@ export abstract class AbstractFlex implements FlexElement {
   flexShrink: number;
   selfAlign: AlignmentItems;
 
+  depth: number;
   origin: { x: number; y: number };
   scrollFactor: { x: number; y: number };
 
@@ -170,8 +175,9 @@ export abstract class AbstractFlex implements FlexElement {
 
     this.children = [];
 
-    this.origin = new Phaser.Math.Vector2(0, 0);
-    this.scrollFactor = new Phaser.Math.Vector2(0, 0);
+    this.depth = getSignalValue(config.depth);
+    this.origin = { x: 0, y: 0 };
+    this.scrollFactor = { x: 0, y: 0 };
 
     this.axisSizeSum = 0;
     this.minFlexGrow = 0;
@@ -182,12 +188,14 @@ export abstract class AbstractFlex implements FlexElement {
     if (config.containerElement) {
       this.containerElement = config.containerElement;
       this.containerElement.setScrollFactor(0, 0);
+      this.containerElement.setDepth(this.depth);
     }
 
     if (config.backgroundElement) {
       this.backgroundElement = config.backgroundElement;
       this.backgroundElement.setOrigin(0, 0);
       this.backgroundElement.setScrollFactor(0, 0);
+      this.backgroundElement.setDepth(this.depth);
     }
 
     this.outerBounds = new Phaser.Geom.Rectangle(this.x, this.y, 0, 0);
@@ -219,13 +227,24 @@ export abstract class AbstractFlex implements FlexElement {
     }
     */
     if (child.setOrigin) {
-      child.setOrigin(child.origin?.x || 0, child.origin?.y || 0);
+      if (Array.isArray(child.origin)) {
+        child.setOrigin(child.origin[0], child.origin[1]);
+      } else {
+        child.setOrigin(child.origin?.x || 0, child.origin?.y || 0);
+      }
     }
 
     if (this.containerElement) {
       this.containerElement.add(
         child as unknown as Phaser.GameObjects.GameObject
       );
+    }
+
+    if (this.depth && child.setDepth) {
+      if (this.depth !== 0 || child.depth !== 0) {
+        console.log("setting depth", this.depth, child.depth);
+      }
+      child.setDepth(this.depth);
     }
 
     if (!child.flexGrow) {
@@ -508,6 +527,13 @@ export abstract class AbstractFlex implements FlexElement {
     this.height = height;
     this._flexHeight = height;
     this.layout();
+  }
+
+  setDepth(depth: number): void {
+    this.depth = depth;
+    this.children.forEach((child) => {
+      child.setDepth(depth);
+    });
   }
 
   setScrollFactor(x: number, y: number): void {

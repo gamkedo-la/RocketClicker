@@ -27,7 +27,8 @@ export type TransformablePhaserGameObject = Phaser.GameObjects.GameObject & {
   setSize: (width: number, height: number) => void;
 } & Phaser.GameObjects.Components.Transform &
   Phaser.GameObjects.Components.ScrollFactor &
-  Phaser.GameObjects.Components.Origin;
+  Phaser.GameObjects.Components.Origin &
+  Phaser.GameObjects.Components.Depth;
 
 export type ContainerElement =
   PhaserGameObjectProps<Phaser.GameObjects.Container>;
