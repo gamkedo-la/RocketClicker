@@ -2,6 +2,51 @@
   "assetPack": {
     "files": [
       {
+        "type": "binary",
+        "key": "FuelCell",
+        "url": "assets/FuelCell.glb"
+      },
+      {
+        "type": "binary",
+        "key": "SolarPanels",
+        "url": "assets/SolarPanels.glb"
+      },
+      {
+        "type": "binary",
+        "key": "comet-1",
+        "url": "assets/comet-1.glb"
+      },
+      {
+        "type": "binary",
+        "key": "comet-2",
+        "url": "assets/comet-2.glb"
+      },
+      {
+        "type": "binary",
+        "key": "comet-3",
+        "url": "assets/comet-3.glb"
+      },
+      {
+        "type": "binary",
+        "key": "compressor",
+        "url": "assets/compressor.glb"
+      },
+      {
+        "type": "binary",
+        "key": "condenser",
+        "url": "assets/condenser.glb"
+      },
+      {
+        "type": "binary",
+        "key": "generator",
+        "url": "assets/generator.glb"
+      },
+      {
+        "type": "binary",
+        "key": "martin",
+        "url": "assets/martin.glb"
+      },
+      {
         "type": "image",
         "key": "H2",
         "url": "assets/H2.png"
@@ -176,41 +221,6 @@
         "type": "audio",
         "key": "sfx-rocket-launch",
         "url": "assets/sfx-rocket-launch.mp3"
-      },
-      {
-        "type": "binary",
-        "key": "comet-1",
-        "url": "assets/comet-1.glb"
-      },
-      {
-        "type": "binary",
-        "key": "comet-2",
-        "url": "assets/comet-2.glb"
-      },
-      {
-        "type": "binary",
-        "key": "comet-3",
-        "url": "assets/comet-3.glb"
-      },
-      {
-        "type": "binary",
-        "key": "compressor",
-        "url": "assets/compressor.glb"
-      },
-      {
-        "type": "binary",
-        "key": "condenser",
-        "url": "assets/condenser.glb"
-      },
-      {
-        "type": "binary",
-        "key": "generator",
-        "url": "assets/generator.glb"
-      },
-      {
-        "type": "binary",
-        "key": "martin",
-        "url": "assets/martin.glb"
       },
       {
         "type": "font",
