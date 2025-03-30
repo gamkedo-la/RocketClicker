@@ -273,7 +273,7 @@ export class MotionMachine<
 
   j = 0;
 
-  update(_time: number, delta: number) {
+  update(delta: number) {
     //console.log(`-------## ${this.j++} update`, { delta });
 
     let infiniteLoopProtection = 0;

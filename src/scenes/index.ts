@@ -25,11 +25,9 @@ export abstract class AbstractScene extends Phaser.Scene {
       DebugParameters.frameBudget = performance.now();
     });
 
-    let z = 0;
-
-    this.events.on("update", (delta: number, time: number) => {
+    this.events.on("update", (_time: number, delta: number) => {
       for (let i = 0; i < this.motionMachines.length; i++) {
-        this.motionMachines[i].update(delta, time);
+        this.motionMachines[i].update(delta);
       }
     });
 
