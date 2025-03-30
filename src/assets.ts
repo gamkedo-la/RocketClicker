@@ -12,6 +12,7 @@ export const RESOURCES = {
   "condenser": "condenser",
   "generator": "generator",
   "martin": "martin",
+  "rocket-temporary": "rocket-temporary",
   "H2": "H2",
   "H2O": "H2O",
   "LH2": "LH2",

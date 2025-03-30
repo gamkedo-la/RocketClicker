@@ -47,6 +47,11 @@
         "url": "assets/martin.glb"
       },
       {
+        "type": "binary",
+        "key": "rocket-temporary",
+        "url": "assets/rocket-temporary.glb"
+      },
+      {
         "type": "image",
         "key": "H2",
         "url": "assets/H2.png"

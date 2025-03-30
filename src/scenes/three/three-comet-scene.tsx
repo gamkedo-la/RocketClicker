@@ -111,6 +111,7 @@ export class ThreeCometScene extends AbstractScene {
 
       // Load building models
       this.loadBuildingModels();
+      this.loadRocketLauncherModel();
     });
   }
 
@@ -119,6 +120,10 @@ export class ThreeCometScene extends AbstractScene {
 
     for (let x = 0; x < board.boardWidth; x++) {
       for (let y = 0; y < board.boardHeight; y++) {
+        if (x === 2 && y === 2) {
+          // Rocket launcher
+          continue;
+        }
         const terrainMesh = new THREE.Mesh(
           new THREE.BoxGeometry(0.035, 0.0005, 0.035),
           buildingMaterial.clone()
@@ -164,6 +169,48 @@ export class ThreeCometScene extends AbstractScene {
         }
       });
     });
+  }
+
+  private loadRocketLauncherModel() {
+    loader.parse(
+      this.cache.binary.get(RESOURCES["rocket-temporary"]),
+      "",
+      (gltf) => {
+        const mesh = gltf.scene as THREE.Mesh;
+
+        gltf.scene.traverse((node) => {
+          if (node instanceof THREE.Mesh) {
+            if (node instanceof THREE.Mesh) {
+              node.castShadow = true;
+              node.receiveShadow = true;
+            }
+          }
+
+          // Scale and rotate the model as needed
+          gltf.scene.scale.set(0.0033, 0.0033, 0.0033);
+          //gltf.scene.position.set(0, -0.1, 0);
+          gltf.scene.rotateY(Math.PI / 4);
+        });
+
+        // TODO: Shadows or something
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+
+        mesh.userData = {
+          id: "rocket-launcher",
+          grid: { x: 2, y: 2 },
+          cellId: this.gameState.gridToCell(2, 2),
+        };
+
+        // Position the building
+        const position = this.getCellPosition(this.gameState.gridToCell(2, 2));
+        mesh.position.copy(position);
+        mesh.position.y -= 0.008;
+
+        // Add to the scene and track it
+        this.comet.add(mesh);
+      }
+    );
   }
 
   private loadBuildingModels() {
