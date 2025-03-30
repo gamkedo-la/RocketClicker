@@ -31,6 +31,8 @@ export class FlexWrapped extends AbstractFlex {
   private currentLine: FlexColumn | FlexRow;
   private isRowLayout: boolean;
 
+  private lineStartIndex: number[] = [0];
+
   constructor(config: FlexProperties) {
     super(config);
     this.direction = config.direction ?? DIRECTION.ROW;
@@ -105,6 +107,12 @@ export class FlexWrapped extends AbstractFlex {
     if (!this.fitsInCurrentLine(child)) {
       this.currentLine = this.createNewLine();
       this.linesContainer.add(this.currentLine);
+      this.lineStartIndex.push(this.children.length - 1);
+    }
+
+    if (child.attachToIndex !== undefined) {
+      child.attachToIndex -=
+        this.lineStartIndex[this.linesContainer.children.length - 1];
     }
 
     const flex = this.currentLine.add(child, flexGrow);
