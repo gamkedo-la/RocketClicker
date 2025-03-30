@@ -181,6 +181,8 @@ export class ThreeCometScene extends AbstractScene {
       ["h2-compressor", RESOURCES.compressor],
       ["condenser", RESOURCES.condenser],
       ["generator", RESOURCES.generator],
+      ["fuel-cell", RESOURCES.FuelCell],
+      ["solar-panel", RESOURCES.SolarPanels],
     ]);
 
     buildingTypes.forEach((type, index) => {
