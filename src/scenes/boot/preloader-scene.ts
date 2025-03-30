@@ -41,9 +41,6 @@ export class Preloader extends AbstractScene {
   }
 
   create() {
-    // TODO:
-    // Auto animations
-
     const graphics = this.add.graphics();
     graphics.fillStyle(0x927e6a);
     graphics.fillStyle(0xefd8a1);

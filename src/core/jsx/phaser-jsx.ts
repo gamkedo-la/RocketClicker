@@ -55,7 +55,7 @@ function setGameObjectProperty(
     if (typeof value === "object") {
       (gameObject as any).setOrigin(value.x, value.y);
     } else {
-      (gameObject as any).setOrigin(value);
+      (gameObject as any).setOrigin(value[0], value[1]);
     }
   } else if (property === "scrollFactor") {
     if (typeof value === "object") {

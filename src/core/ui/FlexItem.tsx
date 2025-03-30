@@ -20,6 +20,7 @@ export const FlexItem = ({
   offsetY,
   stretchWidth,
   stretchHeight,
+  origin,
 }: {
   grow?: number;
   align?: AlignmentItems;
@@ -31,6 +32,7 @@ export const FlexItem = ({
   offsetY?: number | string; // Can be a percentage like "50%" or a number
   stretchWidth?: number | string; // Width as percentage of target or absolute pixels
   stretchHeight?: number | string; // Height as percentage of target or absolute pixels
+  origin?: { x: number; y: number };
   children: FlexElement | PhaserJsxElement;
 }) => {
   assert(!(children instanceof Array), "FlexItem must be a single child");
@@ -40,6 +42,10 @@ export const FlexItem = ({
   }
   if (align) {
     (children as FlexElement).selfAlign = align;
+  }
+
+  if (origin) {
+    (children as FlexElement).origin = origin;
   }
 
   if (width) {

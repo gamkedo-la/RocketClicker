@@ -45,6 +45,7 @@ export interface FlexElement {
   selfAlign: AlignmentItems;
 
   // For attaching to other flex items
+  origin?: { x: number; y: number };
   attachToIndex?: number;
   attachOffsetX?: number | string;
   attachOffsetY?: number | string;
@@ -124,8 +125,8 @@ export abstract class AbstractFlex implements FlexElement {
   flexShrink: number;
   selfAlign: AlignmentItems;
 
-  protected origin: Phaser.Math.Vector2;
-  protected scrollFactor: Phaser.Math.Vector2;
+  origin: { x: number; y: number };
+  scrollFactor: { x: number; y: number };
 
   protected outerBounds: Phaser.Geom.Rectangle;
   protected innerBounds: Phaser.Geom.Rectangle;
@@ -135,7 +136,7 @@ export abstract class AbstractFlex implements FlexElement {
   protected shrinkSum: number;
 
   constructor(config: FlexProperties) {
-    this.origin = new Phaser.Math.Vector2(0, 0);
+    this.origin = { x: 0, y: 0 };
     this.x = config.x ?? 0;
     this.y = config.y ?? 0;
     this.width = config.width ?? 1;
@@ -211,9 +212,14 @@ export abstract class AbstractFlex implements FlexElement {
     // TODO: flexShrink
     // flexShrink: number = 1
   ): FlexElement {
+    /*
+    ???
+    child.setOrigin(0, 0);
+    child.setScrollFactor(0, 0);
+    }
+    */
     if (child.setOrigin) {
-      child.setOrigin(0, 0);
-      child.setScrollFactor(0, 0);
+      child.setOrigin(child.origin?.x || 0, child.origin?.y || 0);
     }
 
     if (this.containerElement) {
@@ -505,12 +511,12 @@ export abstract class AbstractFlex implements FlexElement {
   }
 
   setScrollFactor(x: number, y: number): void {
-    this.scrollFactor.set(x, y);
+    this.scrollFactor = { x, y };
     // TODO: handle proper scroll factor
   }
 
   setOrigin(x: number, y: number): void {
-    this.origin.set(x, y);
+    this.origin = { x, y };
     // TODO: handle proper origin
   }
 

@@ -112,9 +112,7 @@ export interface PhaserGameObjectProps<
   scaleX?: SignalValue<number>;
   scaleY?: SignalValue<number>;
 
-  origin?: SignalValue<number | { x: number; y: number }>;
-  originX?: SignalValue<number>;
-  originY?: SignalValue<number>;
+  origin?: SignalValue<[number, number] | { x: number; y: number }>;
 
   depth?: SignalValue<number>;
   scrollFactor?: SignalValue<number>;
