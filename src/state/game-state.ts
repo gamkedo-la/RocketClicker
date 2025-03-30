@@ -51,7 +51,7 @@ export class GameStateManager
       grid: Array.from({ length: 5 }, () => Array(5).fill(0)),
       grid_buildings: new Map(),
     },
-    comet_spin: signal(0),
+    comet_spin: signal(1),
     mouse_selected_building: signal<MouseSelectedBuilding>({ building: null }),
   });
 
