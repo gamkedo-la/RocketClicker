@@ -2,12 +2,7 @@ import { RESOURCES } from "@game/assets";
 
 import { FiniteStateMachine } from "@game/core/state-machine/state-machine";
 
-import {
-  ALIGN_ITEMS,
-  DIRECTION,
-  FlexElement,
-  JUSTIFY,
-} from "@game/core/ui/AbstractFlex";
+import { ALIGN_ITEMS, DIRECTION, JUSTIFY } from "@game/core/ui/AbstractFlex";
 import { Flex } from "@game/core/ui/Flex";
 import { FlexColumn } from "@game/core/ui/FlexColumn";
 
@@ -15,16 +10,22 @@ import { COLORS_NAMES, STRING_COLORS_NAMES } from "@game/consts";
 import { signal } from "@game/core/signals/signals";
 import { Building } from "@game/entities/buildings/types";
 
-import { NineSlice } from "./nineslice";
 import { GameStateManager } from "@game/state/game-state";
+import { MotionMachine } from "../../../core/motion-machine/motion-machine";
 import { FlexItem } from "../../../core/ui/FlexItem";
+import { NineSlice } from "./nineslice";
 
 export const Button = ({
   building,
   gameState,
+  motionMachine,
 }: {
   building: Building;
   gameState: GameStateManager;
+  motionMachine: MotionMachine<
+    "hidden" | "visible",
+    "mouseenter" | "mouseleave"
+  >;
 }) => {
   const active = signal<boolean>(false);
 
@@ -55,7 +56,7 @@ export const Button = ({
     <image
       texture={RESOURCES["ui-left-panel"]}
       frame={"button-building#0"}
-      origin={0}
+      origin={[0, 0]}
     />
   );
 
@@ -74,15 +75,21 @@ export const Button = ({
       containerElement={
         <container
           interactive
-          onPointerover={() => state.transition("mouseenter")}
-          onPointerout={() => state.transition("mouseleave")}
+          onPointerover={() => {
+            state.transition("mouseenter");
+            motionMachine.transition("mouseenter");
+          }}
+          onPointerout={() => {
+            state.transition("mouseleave");
+            motionMachine.transition("mouseleave");
+          }}
           onPointerdown={() => state.transition("mousedown")}
           onPointerup={() => state.transition("mouseup")}
         />
       }
     >
       {image}
-      <FlexItem attach offsetX={0}>
+      <FlexItem attachTo={0} offsetX={9} offsetY={16}>
         {status}
       </FlexItem>
     </Flex>
@@ -121,9 +128,14 @@ export const Button = ({
 export function BuildingSelector({
   building,
   gameState,
+  buildingPanelMotionMachine,
 }: {
   building: Building;
   gameState: GameStateManager;
+  buildingPanelMotionMachine: MotionMachine<
+    "hidden" | "visible",
+    "mouseenter" | "mouseleave"
+  >;
 }): FlexColumn {
   return (
     <Flex
@@ -187,7 +199,11 @@ export function BuildingSelector({
             }}
           />
         </Flex>
-        <Button building={building} gameState={gameState} />
+        <Button
+          motionMachine={buildingPanelMotionMachine}
+          building={building}
+          gameState={gameState}
+        />
       </Flex>
     </Flex>
   );

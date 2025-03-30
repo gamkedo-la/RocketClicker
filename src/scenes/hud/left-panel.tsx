@@ -10,6 +10,8 @@ import { BuildingSelector } from "./components/BuildingSelector";
 import { NineSlice } from "./components/nineslice";
 import { FlexItem } from "../../core/ui/FlexItem";
 import { CometSpinMeter } from "./components/CometSpinMeter";
+import { BuildingDetailsPanel } from "./components/BuildingDetailsPanel";
+import { signal } from "@game/core/signals/signals";
 
 const UI_TEXT_STYLE = {
   color: STRING_COLORS_NAMES["cuba-libre"],
@@ -37,6 +39,48 @@ export const LeftPanel = ({
   const button = (
     <Button material={MATERIALS.StarDust} amount={material_storage} />
   );*/
+
+  const x = signal(150);
+  const panelWidth = signal(150);
+
+  const minWidth = 40;
+  const maxWidth = 300;
+
+  const mm = (
+    <motionMachine initial="hidden">
+      <state id="hidden">
+        <animation>
+          <parallel>
+            <tween signal={panelWidth} to={minWidth} duration={300} />
+            <tween signal={x} to={150} duration={300} />
+          </parallel>
+        </animation>
+        <transition on="mouseenter" target="visible" />
+      </state>
+      <state id="visible">
+        <animation>
+          <tween signal={x} to={270} duration={400} />
+          <wait duration={100} />
+          <tween signal={panelWidth} to={maxWidth} duration={300} />
+        </animation>
+        <transition on="mouseleave" target="hidden" />
+      </state>
+    </motionMachine>
+  );
+
+  const buildFlex = (
+    <FlexItem attachTo={-1} offsetX={0} offsetY={10}>
+      <BuildingDetailsPanel
+        building={getBuildingById(BUILDINGS[0].id)}
+        width={panelWidth}
+      />
+    </FlexItem>
+  );
+
+  x.subscribe((x) => {
+    console.log("x", x);
+    buildFlex.setX(x);
+  });
 
   const z: FlexRow = (
     <Flex direction={DIRECTION.COLUMN} width={width}>
@@ -69,47 +113,15 @@ export const LeftPanel = ({
             wrapped
             padding={2}
           >
-            <BuildingSelector
-              building={getBuildingById(BUILDINGS[0].id)}
-              gameState={gameState}
-            />
-            <BuildingSelector
-              building={getBuildingById(BUILDINGS[1].id)}
-              gameState={gameState}
-            />
-            <BuildingSelector
-              building={getBuildingById(BUILDINGS[2].id)}
-              gameState={gameState}
-            />
-            <BuildingSelector
-              building={getBuildingById(BUILDINGS[3].id)}
-              gameState={gameState}
-            />
-            <BuildingSelector
-              building={getBuildingById(BUILDINGS[4].id)}
-              gameState={gameState}
-            />
-            <BuildingSelector
-              building={getBuildingById(BUILDINGS[5].id)}
-              gameState={gameState}
-            />
-            <BuildingSelector
-              building={getBuildingById(BUILDINGS[6].id)}
-              gameState={gameState}
-            />
-            <BuildingSelector
-              building={getBuildingById(BUILDINGS[7].id)}
-              gameState={gameState}
-            />
-            <BuildingSelector
-              building={getBuildingById(BUILDINGS[8].id)}
-              gameState={gameState}
-            />
-            <BuildingSelector
-              building={getBuildingById(BUILDINGS[9].id)}
-              gameState={gameState}
-            />
+            {BUILDINGS.map((building) => (
+              <BuildingSelector
+                buildingPanelMotionMachine={mm}
+                building={building}
+                gameState={gameState}
+              />
+            ))}
           </Flex>
+          {buildFlex}
         </Flex>
       </FlexItem>
     </Flex>
