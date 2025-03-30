@@ -32,6 +32,7 @@ export interface FolderOptions {
 
 export const DebugParameters: any = {
   fps: 0,
+  frameBudget: 0,
   jsxCounts: "",
   jsxTree: "",
 };
@@ -54,6 +55,11 @@ export class DebugPanel {
     DebugPanel.tabApi.pages[0].addBinding(DebugParameters, "fps", {
       readonly: true,
       format: (v: number) => v.toFixed(0),
+    });
+
+    DebugPanel.tabApi.pages[0].addBinding(DebugParameters, "frameBudget", {
+      readonly: true,
+      format: (v: number) => v.toFixed(4),
     });
 
     DebugPanel.tabApi.pages[0].addBinding(DebugParameters, "fps", {
