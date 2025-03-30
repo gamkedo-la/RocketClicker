@@ -137,7 +137,7 @@ export interface TweenElement<T> {
   type?: "tween";
   signal: Signal<T>;
   from?: SignalValue<T>;
-  to: SignalValue<T>;
+  to: SignalValue<T> | (() => T);
   duration?: number;
   ease?: (typeof EaseMap)[number];
   initialValue?: SignalValue<T>;
@@ -337,7 +337,8 @@ export class AnimationPlan {
         step.signal.set(
           linear(
             getSignalValue(step.initialValue),
-            getSignalValue(step.to),
+            // FIXME: this is a hack to get a function working, but it's far from ideal (move it outisde of the step)
+            typeof step.to === "function" ? step.to() : getSignalValue(step.to),
             localProgress
           )
         );
