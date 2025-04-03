@@ -52,8 +52,27 @@ const Dial = ({
   const alphaDial = signal(1);
   const backgroundTint = signal(0x999999);
 
-  const value = signal(20);
-  const targetValue = signal(20);
+  const value = signal(0);
+  const targetValue = signal(0);
+
+  const p = window.currentScene.make.particles(
+    {
+      config: {
+        rotate: { min: 0, max: 360 },
+        gravityY: 800,
+        lifespan: 3000,
+        speed: { min: 100, max: 200 },
+        texture: RESOURCES["ui-left-panel"],
+        frame: "dial-bg-button-breakable#0",
+      },
+    },
+    true
+  );
+
+  p.setDepth(1);
+  p.stop();
+
+  let particle = false;
 
   const dialMachine = (
     <motionMachine initialState="starting">
@@ -82,6 +101,39 @@ const Dial = ({
             <tween signal={value} from={0} to={100} duration={2000} />
             <tween signal={value} from={100} to={0} duration={2000} />
           </repeat>
+        </animation>
+        <transition on="active" target="active" />
+      </state>
+      <state id="active-idle">
+        <transition on="active" target="active" />
+      </state>
+      <state id="active">
+        <animation on="active">
+          <repeat times={10000}>
+            <tween signal={value} to={targetValue} duration={200} />
+          </repeat>
+        </animation>
+        <transition on="idle" target="active-idle" />
+        <transition on="broken" target="broken" />
+      </state>
+      <state id="broken">
+        <animation on="active">
+          <step
+            run={() => {
+              if (!particle) {
+                p.explode(
+                  1,
+                  container.x + dialBackground.x,
+                  container.y + dialBackground.y
+                );
+
+                particle = true;
+              }
+
+              dialBackground.setVisible(false);
+              dial.setVisible(false);
+            }}
+          />
         </animation>
       </state>
     </motionMachine>
@@ -135,17 +187,17 @@ const Dial = ({
         if (building[1].get()) {
           background.tint = 0xffffff;
           gameState.setHoveredBuilding(building[1].get());
+          dialMachine.transition("active");
         }
       }}
       onPointerout={() => {
         if (building[1].get()) {
           background.tint = 0xcccccc;
           gameState.setHoveredBuilding(null);
+          dialMachine.transition("idle");
         }
       }}
       onPointerdown={(t, p, x, y) => {
-        dialMachine.transition("active");
-
         pointerIsDown = true;
         referenceX = p.x;
         referenceY = p.y;
@@ -159,21 +211,30 @@ const Dial = ({
     />
   );
 
-  container.setInteractive({ draggable: true });
-
-  let use = 0;
+  container.setInteractive({ draggable: true, useHandCursor: true });
 
   container.on("drag", (pointer: Phaser.Input.Pointer) => {
     if (pointerIsDown) {
       if (pointer.distance > 100) {
-        use = 0;
         dialMachine.transition("broken");
       }
 
       const m = pointer.x - referenceX;
-      targetValue.set(Math.max(0, Math.min(100, m)));
+      targetValue.update((cur) => Math.max(0, Math.min(100, cur + m / 10)));
     }
   });
+
+  container.on(
+    "wheel",
+    (pointer: Phaser.Input.Pointer, deltaX: number, deltaY: number) => {
+      console.log("wheeel", pointer, deltaX, deltaY);
+      if (Math.abs(deltaY) > 60) {
+        dialMachine.transition("broken");
+      }
+
+      targetValue.update((cur) => Math.max(0, Math.min(100, cur + deltaY)));
+    }
+  );
 
   effect(() => {
     const buildingSignal = building[1];

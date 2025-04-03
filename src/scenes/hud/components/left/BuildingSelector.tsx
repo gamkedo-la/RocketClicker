@@ -11,11 +11,11 @@ import { computed } from "@game/core/signals/signals";
 import { Building } from "@game/entities/buildings/types";
 
 import { MotionMachine } from "@game/core/motion-machine/motion-machine";
+import { Signal } from "@game/core/signals/types";
 import { FlexItem } from "@game/core/ui/FlexItem";
 import { hasResources } from "@game/entities/materials/index";
 import { GameStateManager } from "@game/state/game-state";
 import { NineSlice } from "../nineslice";
-import { Signal } from "@game/core/signals/types";
 
 export const Button = ({
   building,
