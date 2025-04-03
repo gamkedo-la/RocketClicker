@@ -23,7 +23,9 @@ export interface State {
   material_storage: Record<keyof typeof MATERIALS, Signal<number>>;
   board: BoardState;
   mouse_selected_building: Signal<MouseSelectedBuilding>;
-  comet_spin: Signal<number>;
+  comet_spin_velocity: Signal<number>;
+  comet_angle: Signal<number>;
+  hovered_building: Signal<Building | null>;
 }
 
 export interface MouseSelectedBuilding {
@@ -51,8 +53,10 @@ export class GameStateManager
       grid: Array.from({ length: 5 }, () => Array(5).fill(0)),
       grid_buildings: new Map(),
     },
-    comet_spin: signal(1),
+    comet_spin_velocity: signal(1),
+    comet_angle: signal(0),
     mouse_selected_building: signal<MouseSelectedBuilding>({ building: null }),
+    hovered_building: signal<Building | null>(null),
   });
 
   constructor(pluginManager: Phaser.Plugins.PluginManager) {
@@ -198,10 +202,26 @@ export class GameStateManager
   }
 
   setCometSpin(spin: number): void {
-    this.state.get().comet_spin.set(spin);
+    this.state.get().comet_spin_velocity.set(spin);
   }
 
   getCometSpin(): Signal<number> {
-    return this.state.get().comet_spin;
+    return this.state.get().comet_spin_velocity;
+  }
+
+  getCometAngle(): Signal<number> {
+    return this.state.get().comet_angle;
+  }
+
+  setCometAngle(angle: number): void {
+    this.state.get().comet_angle.set(angle);
+  }
+
+  setHoveredBuilding(building: Building | null): void {
+    this.state.get().hovered_building.set(building);
+  }
+
+  getHoveredBuilding(): Signal<Building | null> {
+    return this.state.get().hovered_building;
   }
 }
