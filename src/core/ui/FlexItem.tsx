@@ -93,7 +93,7 @@ export const Spacer = ({
 }): FlexElement => {
   return {
     flexGrow: grow,
-    width: 1,
+    width: width,
     height: height,
     setX: () => {},
     setY: () => {},
