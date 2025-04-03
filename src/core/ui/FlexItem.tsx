@@ -82,11 +82,19 @@ export const FlexItem = ({
   return children;
 };
 
-export const Spacer = ({ grow = 1 }: { grow?: number }): FlexElement => {
+export const Spacer = ({
+  grow = 1,
+  height = 1,
+  width = 1,
+}: {
+  grow?: number;
+  height?: number;
+  width?: number;
+}): FlexElement => {
   return {
     flexGrow: grow,
     width: 1,
-    height: 1,
+    height: height,
     setX: () => {},
     setY: () => {},
   } as unknown as FlexElement;
