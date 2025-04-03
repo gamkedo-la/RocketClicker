@@ -1,4 +1,6 @@
 import { RESOURCES } from "@game/assets";
+import { Building } from "../buildings/types";
+import { Signal } from "@game/core/signals/types";
 
 export const MATERIALS = {
   kWh: "kWh",
@@ -11,6 +13,8 @@ export const MATERIALS = {
   Metals: "Metals",
   PureMetals: "PureMetals",
 } as const;
+
+export type Material = keyof typeof MATERIALS;
 
 export const MATERIALS_NAMES = {
   kWh: "kWh",
@@ -54,3 +58,12 @@ export const MATERIALS_GENERATION_ORDER = [
   MATERIALS.LOX,
   MATERIALS.LH2,
 ];
+
+export function hasResources(
+  building: Building,
+  material_storage: Record<string, Signal<number>>
+) {
+  return Object.entries(building.building_cost).every(([material, value]) => {
+    return material_storage[material as keyof typeof MATERIALS].get() >= value;
+  });
+}
