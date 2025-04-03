@@ -235,9 +235,13 @@ export abstract class AbstractFlex implements FlexElement {
     }
 
     if (this.containerElement) {
-      this.containerElement.add(
-        child as unknown as Phaser.GameObjects.GameObject
-      );
+      if (child instanceof AbstractFlex) {
+        child.addToContainer(this.containerElement);
+      } else {
+        this.containerElement.add(
+          child as unknown as Phaser.GameObjects.GameObject
+        );
+      }
     }
 
     if (this.depth && child.setDepth) {
@@ -544,6 +548,29 @@ export abstract class AbstractFlex implements FlexElement {
   setOrigin(x: number, y: number): void {
     this.origin = { x, y };
     // TODO: handle proper origin
+  }
+
+  addToContainer(container: Phaser.GameObjects.Container): void {
+    if (this.backgroundElement) {
+      if (this.backgroundElement instanceof AbstractFlex) {
+        this.backgroundElement.addToContainer(container);
+      } else {
+        container.add(this.backgroundElement);
+      }
+    }
+
+    if (this.containerElement) {
+      container.add(this.containerElement);
+      return;
+    }
+
+    this.children.forEach((child) => {
+      if (child instanceof AbstractFlex) {
+        child.addToContainer(container);
+      } else {
+        container.add(child as unknown as Phaser.GameObjects.GameObject);
+      }
+    });
   }
 
   addToScene(scene: Phaser.Scene = window.currentScene) {
