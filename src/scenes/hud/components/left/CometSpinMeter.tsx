@@ -23,11 +23,7 @@ export const CometSpinMeter = ({
   );
 
   const spinCover = (
-    <image
-      texture={RESOURCES["ui-left-panel"]}
-      frame="spin-cover#0"
-      visible={false}
-    />
+    <image texture={RESOURCES["ui-left-panel"]} frame="spin-cover#0" />
   );
 
   const p = window.currentScene.make.particles(
