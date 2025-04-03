@@ -23,9 +23,9 @@ export const MATERIALS_NAMES = {
   H2: "H2",
   O2: "O2",
   H2O: "H2O",
-  StarDust: "(SD)",
-  Metals: "(M)",
-  PureMetals: "(PM)",
+  StarDust: "Star Dust",
+  Metals: "Metals",
+  PureMetals: "Pure Metals",
 };
 
 export const MATERIALS_ICONS = {

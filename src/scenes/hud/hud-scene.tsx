@@ -10,7 +10,7 @@ import { computed } from "@game/core/signals/signals";
 import { GameStateManager } from "@game/state/game-state";
 import { AbstractScene } from "../index";
 import { SCENES } from "../scenes";
-import { NineSlice } from "./components/nineslice";
+import { NineSlice } from "./components/NineSlice";
 import { LeftPanel } from "./left-panel";
 import { RightPanel } from "./right-panel";
 
@@ -35,25 +35,21 @@ export class HudScene extends AbstractScene {
         width={width}
         height={32}
         backgroundElement={<rectangle fillColor={COLORS_NAMES["black"]} />}
+        padding={[0, 20]}
       >
+        <rectangle fillColor={COLORS_NAMES["white"]} width={10} height={10} />
+        <Spacer width={5} grow={0} />
         <text
           text={computed(
             () =>
               `Selected Building: ${
                 this.gameState.state.get().mouse_selected_building.get()
-                  ?.building?.name
+                  ?.building?.name || "None"
               }`
           )}
           style={{
-            fontFamily: "jersey15",
-            color: STRING_COLORS_NAMES["white"],
+            color: STRING_COLORS_NAMES["vaporwave-blue"],
             fontSize: 16,
-          }}
-        />
-        <text
-          text={"            Star Dust = SD | Metals = M | Pure Metals = PM"}
-          style={{
-            color: STRING_COLORS_NAMES["white"],
           }}
         />
       </Flex>
