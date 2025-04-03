@@ -3,8 +3,28 @@
     "files": [
       {
         "type": "binary",
+        "key": "ChemicalPlant",
+        "url": "assets/ChemicalPlant.glb"
+      },
+      {
+        "type": "binary",
+        "key": "Duster",
+        "url": "assets/Duster.glb"
+      },
+      {
+        "type": "binary",
+        "key": "Electrolysis",
+        "url": "assets/Electrolysis.glb"
+      },
+      {
+        "type": "binary",
         "key": "FuelCell",
         "url": "assets/FuelCell.glb"
+      },
+      {
+        "type": "binary",
+        "key": "Miner",
+        "url": "assets/Miner.glb"
       },
       {
         "type": "binary",

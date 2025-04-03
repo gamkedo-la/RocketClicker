@@ -225,11 +225,16 @@ export class ThreeCometScene extends AbstractScene {
 
     // Load 3D models for buildings that have them
     const modelLoaders = new Map([
-      ["h2-compressor", RESOURCES.compressor],
-      ["condenser", RESOURCES.condenser],
       ["generator", RESOURCES.generator],
-      ["fuel-cell", RESOURCES.FuelCell],
+      ["miner", RESOURCES.Miner],
+      ["chemical-plant", RESOURCES.ChemicalPlant],
+      ["duster", RESOURCES.Duster],
+      ["condenser", RESOURCES.condenser],
       ["solar-panel", RESOURCES.SolarPanels],
+      ["fuel-cell", RESOURCES.FuelCell],
+      ["electrolysis", RESOURCES.Electrolysis],
+      ["h2-compressor", RESOURCES.compressor],
+      ["o2-compressor", RESOURCES.compressor],
     ]);
 
     buildingTypes.forEach((type, index) => {
