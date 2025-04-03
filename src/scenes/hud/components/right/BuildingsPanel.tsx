@@ -1,29 +1,84 @@
 import { RESOURCES } from "@game/assets";
 import { COLORS_NAMES } from "@game/consts";
 import { Signal } from "@game/core/signals/types";
-import { computed, signal } from "@game/core/signals/signals";
+import { computed, effect, signal } from "@game/core/signals/signals";
 import { Flex } from "@game/core/ui/Flex";
 import { FlexItem } from "@game/core/ui/FlexItem";
 import { Building } from "@game/entities/buildings/types";
 import { GameStateManager } from "@game/state/game-state";
+import { ALIGN_ITEMS } from "@game/core/ui/AbstractFlex";
+
+import { NineSlice } from "../nineslice";
 
 const Dial = ({
+  id,
   building,
+  gameState,
 }: {
+  id: number;
   building: [number, Signal<Building | null>];
+  gameState: GameStateManager;
 }) => {
   let container: Phaser.GameObjects.Container;
   let dialBackground: Phaser.GameObjects.Image;
   let dial: Phaser.GameObjects.Image;
 
+  if (id === 12) {
+    return (
+      <Flex>
+        <image
+          texture={RESOURCES["ui-left-panel"]}
+          frame="bg-dial-button-breakable#0"
+          tint={0x999999}
+        />
+        <FlexItem
+          attachTo={0}
+          offsetY={8}
+          offsetX={4}
+          origin={{ x: 0, y: 0.5 }}
+        >
+          <rectangle
+            width={18}
+            height={2}
+            fillColor={COLORS_NAMES["dark-knight"]}
+          />
+        </FlexItem>
+      </Flex>
+    );
+  }
+
+  const visibleDial = signal(false);
+  const scaleDial = signal(1);
+  const alphaDial = signal(1);
+  const backgroundTint = signal(0x999999);
+
   const value = signal(20);
   const targetValue = signal(20);
 
   const dialMachine = (
-    <motionMachine initialState="idle">
+    <motionMachine initialState="starting">
+      <state id="starting">
+        <animation on="enter">
+          <tween signal={value} from={100} to={0} duration={1000} />
+        </animation>
+        <transition on="idle" target="idle-enter" />
+      </state>
+      <state id="idle-enter">
+        <animation on="enter">
+          <step run={() => visibleDial.set(true)} />
+          <parallel>
+            <tween signal={value} from={100} to={0} duration={700} />
+            <tween signal={scaleDial} from={2} to={1} duration={500} />
+            <tween signal={alphaDial} from={0} to={1} duration={500} />
+          </parallel>
+          <tween signal={backgroundTint} to={0xcccccc} duration={5} />
+          <step run={() => dialMachine.transition("idle")} />
+        </animation>
+        <transition on="idle" target="idle" />
+      </state>
       <state id="idle">
         <animation on="active">
-          <repeat times={10}>
+          <repeat times={0}>
             <tween signal={value} from={0} to={100} duration={2000} />
             <tween signal={value} from={100} to={0} duration={2000} />
           </repeat>
@@ -36,7 +91,7 @@ const Dial = ({
     <image
       texture={RESOURCES["ui-left-panel"]}
       frame="bg-dial-button-breakable#0"
-      tint={0xcccccc}
+      tint={backgroundTint}
     />
   );
 
@@ -44,6 +99,9 @@ const Dial = ({
     <image
       texture={RESOURCES["ui-left-panel"]}
       frame="dial-bg-button-breakable#0"
+      visible={visibleDial}
+      scale={scaleDial}
+      alpha={alphaDial}
     />
   );
 
@@ -51,6 +109,9 @@ const Dial = ({
     <image
       texture={RESOURCES["ui-left-panel"]}
       frame="dial-button-breakable#0"
+      visible={visibleDial}
+      scale={scaleDial}
+      alpha={alphaDial}
       angle={computed(() => {
         if (dialMachine.state?.get() === "active") {
           return 0;
@@ -71,10 +132,16 @@ const Dial = ({
     <container
       width={1}
       onPointerover={() => {
-        background.tint = 0xffffff;
+        if (building[1].get()) {
+          background.tint = 0xffffff;
+          gameState.setHoveredBuilding(building[1].get());
+        }
       }}
       onPointerout={() => {
-        background.tint = 0xcccccc;
+        if (building[1].get()) {
+          background.tint = 0xcccccc;
+          gameState.setHoveredBuilding(null);
+        }
       }}
       onPointerdown={(t, p, x, y) => {
         dialMachine.transition("active");
@@ -84,8 +151,10 @@ const Dial = ({
         referenceY = p.y;
       }}
       onPointerup={() => {
-        background.tint = 0xffffff;
-        pointerIsDown = false;
+        if (building[1].get()) {
+          background.tint = 0xffffff;
+          pointerIsDown = false;
+        }
       }}
     />
   );
@@ -103,6 +172,16 @@ const Dial = ({
 
       const m = pointer.x - referenceX;
       targetValue.set(Math.max(0, Math.min(100, m)));
+    }
+  });
+
+  effect(() => {
+    const buildingSignal = building[1];
+    if (buildingSignal) {
+      const building = buildingSignal.get();
+      if (building) {
+        dialMachine.transition("idle");
+      }
     }
   });
 
@@ -145,14 +224,37 @@ export const BuildingsPanel = ({
   const buildings = gameState.state.get().board.grid_buildings;
 
   const dials = [];
+  let i = 0;
 
   for (const building of buildings.entries()) {
-    dials.push(<Dial building={building} />);
+    dials.push(<Dial building={building} id={i} gameState={gameState} />);
+    i++;
   }
 
   return (
-    <Flex wrapped width={125}>
-      {dials}
-    </Flex>
+    <FlexItem align={ALIGN_ITEMS.STRETCH} grow={1}>
+      <Flex>
+        <FlexItem align={ALIGN_ITEMS.STRETCH} grow={1}>
+          <Flex
+            backgroundElement={
+              <NineSlice
+                texture={RESOURCES["ui-left-panel"]}
+                frame="bg-rocket-goal"
+              />
+            }
+            padding={[10, 5, 5, 20]}
+          >
+            <text
+              text={computed(
+                () => gameState.state.get().hovered_building.get()?.name || ""
+              )}
+            />
+          </Flex>
+        </FlexItem>
+        <Flex wrapped width={125}>
+          {dials}
+        </Flex>
+      </Flex>
+    </FlexItem>
   );
 };

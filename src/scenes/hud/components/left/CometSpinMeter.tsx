@@ -1,7 +1,7 @@
 import { RESOURCES } from "@game/assets";
 import { computed, signal } from "@game/core/signals/signals";
 import { GameStateManager } from "@game/state/game-state";
-import { FlexItem } from "../../../core/ui/FlexItem";
+import { FlexItem } from "../../../../core/ui/FlexItem";
 
 export const CometSpinMeter = ({
   gameState,
@@ -23,7 +23,11 @@ export const CometSpinMeter = ({
   );
 
   const spinCover = (
-    <image texture={RESOURCES["ui-left-panel"]} frame="spin-cover#0" />
+    <image
+      texture={RESOURCES["ui-left-panel"]}
+      frame="spin-cover#0"
+      visible={false}
+    />
   );
 
   const p = window.currentScene.make.particles(
@@ -128,7 +132,13 @@ export const CometSpinMeter = ({
     }
   });
 
-  return (
+  const temperaturePinMax = 50;
+  const cometAngle = gameState.getCometAngle();
+  const pinX = computed(
+    () => ((Math.PI - Math.abs(cometAngle.get())) / Math.PI) * temperaturePinMax
+  );
+
+  const flex = (
     <>
       <image texture={RESOURCES["ui-left-panel"]} frame="spin-background#0" />
       <FlexItem
@@ -139,10 +149,19 @@ export const CometSpinMeter = ({
       >
         {spinPin}
       </FlexItem>
-      <FlexItem attachTo={-1}>
-        <image texture={RESOURCES["ui-left-panel"]} frame="spin-temp-pin#0" />
+      <FlexItem attachTo={0} offsetX={60} offsetY={74}>
+        <container>
+          <image
+            x={pinX}
+            origin={[0, 0]}
+            texture={RESOURCES["ui-left-panel"]}
+            frame="spin-temp-pin#0"
+          />
+        </container>
       </FlexItem>
       <FlexItem attachTo={0}>{spinCover}</FlexItem>
     </>
   );
+
+  return flex;
 };

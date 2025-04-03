@@ -7,18 +7,21 @@ import { Flex } from "@game/core/ui/Flex";
 import { FlexColumn } from "@game/core/ui/FlexColumn";
 
 import { COLORS_NAMES, STRING_COLORS_NAMES } from "@game/consts";
-import { signal } from "@game/core/signals/signals";
+import { computed } from "@game/core/signals/signals";
 import { Building } from "@game/entities/buildings/types";
 
+import { MotionMachine } from "@game/core/motion-machine/motion-machine";
+import { FlexItem } from "@game/core/ui/FlexItem";
+import { hasResources } from "@game/entities/materials/index";
 import { GameStateManager } from "@game/state/game-state";
-import { MotionMachine } from "../../../core/motion-machine/motion-machine";
-import { FlexItem } from "../../../core/ui/FlexItem";
-import { NineSlice } from "./nineslice";
+import { NineSlice } from "../nineslice";
+import { Signal } from "@game/core/signals/types";
 
 export const Button = ({
   building,
   gameState,
   motionMachine,
+  hoveredBuilding,
 }: {
   building: Building;
   gameState: GameStateManager;
@@ -26,8 +29,11 @@ export const Button = ({
     "hidden" | "visible",
     "mouseenter" | "mouseleave"
   >;
+  hoveredBuilding: Signal<Building | null>;
 }) => {
-  const active = signal<boolean>(false);
+  let active = computed(() =>
+    hasResources(building, gameState.state.get().material_storage)
+  );
 
   const state: FiniteStateMachine<
     "hovered" | "pressed" | "available" | "unavailable",
@@ -57,14 +63,19 @@ export const Button = ({
       texture={RESOURCES["ui-left-panel"]}
       frame={"button-building#0"}
       origin={[0, 0]}
+      tint={computed(() =>
+        active.get() ? 0xffffff : COLORS_NAMES["peaches-of-immortality"]
+      )}
     />
   );
 
   const status: Phaser.GameObjects.Image = (
     <image
       texture={RESOURCES["ui-left-panel"]}
-      frame={"button-ring#2"}
-      tint={COLORS_NAMES["vaporwave-blue"]}
+      frame={"button-ring#0"}
+      tint={computed(() =>
+        active.get() ? COLORS_NAMES["white"] : COLORS_NAMES["elite-teal"]
+      )}
       width={image.width}
       height={image.height}
     />
@@ -76,12 +87,16 @@ export const Button = ({
         <container
           interactive
           onPointerover={() => {
-            state.transition("mouseenter");
-            motionMachine.transition("mouseenter");
+            if (active.get()) {
+              state.transition("mouseenter");
+              motionMachine.transition("mouseenter");
+              hoveredBuilding.set(building);
+            }
           }}
           onPointerout={() => {
             state.transition("mouseleave");
             motionMachine.transition("mouseleave");
+            hoveredBuilding.set(null);
           }}
           onPointerdown={() => state.transition("mousedown")}
           onPointerup={() => state.transition("mouseup")}
@@ -89,7 +104,7 @@ export const Button = ({
       }
     >
       {image}
-      <FlexItem attachTo={0} offsetX={9} offsetY={16}>
+      <FlexItem attachTo={0} offsetX={8} offsetY={16}>
         {status}
       </FlexItem>
     </Flex>
@@ -129,9 +144,11 @@ export function BuildingSelector({
   building,
   gameState,
   buildingPanelMotionMachine,
+  hoveredBuilding,
 }: {
   building: Building;
   gameState: GameStateManager;
+  hoveredBuilding: Signal<Building | null>;
   buildingPanelMotionMachine: MotionMachine<
     "hidden" | "visible",
     "mouseenter" | "mouseleave"
@@ -149,6 +166,7 @@ export function BuildingSelector({
       }
       padding={6}
       width={76}
+      margin={2}
     >
       <Flex
         backgroundElement={
@@ -163,14 +181,7 @@ export function BuildingSelector({
         <text
           text={building.name}
           style={{
-            color: STRING_COLORS_NAMES["dark-knight"],
-            shadow: {
-              color: STRING_COLORS_NAMES["white"],
-              offsetX: 0,
-              offsetY: 1,
-              blur: 0,
-              fill: true,
-            },
+            color: STRING_COLORS_NAMES["elite-teal"],
           }}
         />
       </Flex>
@@ -203,6 +214,7 @@ export function BuildingSelector({
           motionMachine={buildingPanelMotionMachine}
           building={building}
           gameState={gameState}
+          hoveredBuilding={hoveredBuilding}
         />
       </Flex>
     </Flex>

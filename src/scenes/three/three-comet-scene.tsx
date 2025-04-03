@@ -456,6 +456,8 @@ export class ThreeCometScene extends AbstractScene {
 
       // Keep comet oriented correctly during orbit
       this.comet.rotateZ(rotationSpeed);
+
+      this.gameState.getCometAngle().set(this.comet.rotation.z);
     }
   }
 
