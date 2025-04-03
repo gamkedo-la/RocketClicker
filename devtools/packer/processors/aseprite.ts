@@ -1,5 +1,5 @@
 import type Aseprite from "../lib/ase-parser.ts";
-import { AsepriteTypes } from "../lib/ase-parser.ts";
+import type { AsepriteTypes } from "../lib/ase-parser.ts";
 import type { ExtractedSprite } from "../types.ts";
 
 interface AtlasFrame {
