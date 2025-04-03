@@ -362,9 +362,9 @@ export function createMotionMachine<S extends StateId, E extends EventId>(
     mm.addState(config);
   }
 
-  if (!mm.stateIds.includes(props.initialState as S)) {
-    throw new Error(`Initial state ${props.initialState} not found`);
-  }
+  //if (!mm.stateIds.includes(props.initialState as S)) {
+  //  throw new Error(`Initial state ${props.initialState} not found`);
+  //}
 
   return mm;
 }
