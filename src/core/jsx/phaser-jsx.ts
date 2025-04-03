@@ -52,7 +52,7 @@ function setGameObjectProperty(
   } else if (property === "frame") {
     (gameObject as any).setFrame(value);
   } else if (property === "origin") {
-    if (typeof value === "object") {
+    if (!Array.isArray(value)) {
       (gameObject as any).setOrigin(value.x, value.y);
     } else {
       (gameObject as any).setOrigin(value[0], value[1]);
