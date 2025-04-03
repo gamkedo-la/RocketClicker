@@ -479,11 +479,13 @@ export class AnimationPlan {
     if (this.state === "stopped") return 0;
 
     consumed = Math.max(0, Math.min(this.duration - this.clock, dt));
-      dt,
-      clock: this.clock,
-      duration: this.duration,
-      consumed,
-    });
+
+    // console.log("- #a", {
+    //   dt,
+    //   clock: this.clock,
+    //   duration: this.duration,
+    //   consumed,
+    // });
 
     this.clock += dt;
     this.progress = Math.min(this.clock / this.duration, 1);
