@@ -338,26 +338,28 @@ export class ThreeCometScene extends AbstractScene {
     value: number,
     color: string = "#00ff00"
   ) {
-    const distFromCenter = Math.min(370, Math.max(-370, Math.floor(x - 630)));
-    this.gameState.getCometSpin().update((spin) => {
-      return Math.min(10, Math.max(-10, spin + distFromCenter / 370));
-    });
-    const formattedValue = value >= 0 ? `+${value}` : value.toString();
-    const text = this.add.text(x, y, formattedValue, {
-      fontSize: "32px",
-      color: distFromCenter > 0 ? color : "#ff0000",
-      fontStyle: "bold",
-    });
-    text.setOrigin(0.5);
+    const distFromCenter = Math.min(375, Math.max(-385, Math.floor(x - 645)));
+    if (distFromCenter !== 375 && distFromCenter !== -385) {
+      this.gameState.getCometSpin().update((spin) => {
+        return Math.min(10, Math.max(-10, spin + distFromCenter / 370));
+      });
+      const formattedValue = value >= 0 ? `+${value}` : value.toString();
+      const text = this.add.text(x, y, formattedValue, {
+        fontSize: "32px",
+        color: distFromCenter > 0 ? color : "#ff0000",
+        fontStyle: "bold",
+      });
+      text.setOrigin(0.5);
 
-    this.tweens.add({
-      targets: text,
-      y: y - 120,
-      alpha: { from: 1, to: 0 },
-      duration: 3000,
-      ease: "Cubic.easeOut",
-      onComplete: () => text.destroy(),
-    });
+      this.tweens.add({
+        targets: text,
+        y: y - 120,
+        alpha: { from: 1, to: 0 },
+        duration: 3000,
+        ease: "Cubic.easeOut",
+        onComplete: () => text.destroy(),
+      });
+    }
   }
 
   pointer = DebugPanel.debug(this, "pointer", new THREE.Vector2(), {
