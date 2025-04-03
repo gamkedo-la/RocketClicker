@@ -3,15 +3,17 @@ import { DIRECTION } from "@game/core/ui/AbstractFlex";
 import { Flex } from "@game/core/ui/Flex";
 import { Building } from "@game/entities/buildings/types";
 
-import { NineSlice } from "./nineslice";
 import { Signal } from "@game/core/signals/types";
+import { computed } from "@game/core/signals/signals";
+
+import { NineSlice } from "../nineslice";
 
 export const BuildingDetailsPanel = ({
   building,
   width,
 }: {
-  building: Building;
   width: Signal<number>;
+  building: Signal<Building | null>;
 }) => {
   const background = (
     <NineSlice
@@ -29,7 +31,7 @@ export const BuildingDetailsPanel = ({
       padding={10}
       depth={-1}
     >
-      <text text={building.name} />
+      <text text={computed(() => building.get()?.name || "")} />
     </Flex>
   );
 
