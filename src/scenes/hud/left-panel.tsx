@@ -6,12 +6,13 @@ import { BUILDINGS, getBuildingById } from "@game/entities/buildings/index";
 import { MATERIALS } from "@game/entities/materials/index";
 import { GameStateManager } from "@game/state/game-state";
 import { FlexRow } from "../../core/ui/FlexRow";
-import { BuildingSelector } from "./components/BuildingSelector";
+import { BuildingSelector } from "./components/left/BuildingSelector";
 import { NineSlice } from "./components/nineslice";
 import { FlexItem } from "../../core/ui/FlexItem";
-import { CometSpinMeter } from "./components/CometSpinMeter";
-import { BuildingDetailsPanel } from "./components/BuildingDetailsPanel";
+import { CometSpinMeter } from "./components/left/CometSpinMeter";
+import { BuildingDetailsPanel } from "./components/left/BuildingDetailsPanel";
 import { signal } from "@game/core/signals/signals";
+import { Building } from "@game/entities/buildings/types";
 
 const UI_TEXT_STYLE = {
   color: STRING_COLORS_NAMES["cuba-libre"],
@@ -46,6 +47,8 @@ export const LeftPanel = ({
   const minWidth = 40;
   const maxWidth = 300;
 
+  const hoveredBuilding = signal<Building | null>(null);
+
   const mm = (
     <motionMachine initial="hidden">
       <state id="hidden">
@@ -70,10 +73,7 @@ export const LeftPanel = ({
 
   const buildFlex = (
     <FlexItem attachTo={-1} offsetX={0} offsetY={10}>
-      <BuildingDetailsPanel
-        building={getBuildingById(BUILDINGS[0].id)}
-        width={panelWidth}
-      />
+      <BuildingDetailsPanel building={hoveredBuilding} width={panelWidth} />
     </FlexItem>
   );
 
@@ -116,6 +116,7 @@ export const LeftPanel = ({
             {BUILDINGS.map((building) => (
               <BuildingSelector
                 buildingPanelMotionMachine={mm}
+                hoveredBuilding={hoveredBuilding}
                 building={building}
                 gameState={gameState}
               />
