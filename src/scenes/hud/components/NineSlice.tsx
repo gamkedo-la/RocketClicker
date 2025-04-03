@@ -1,3 +1,4 @@
+import { Signal } from "@game/core/signals/types";
 import { ALIGN_ITEMS } from "@game/core/ui/AbstractFlex";
 
 import { DIRECTION } from "@game/core/ui/AbstractFlex";
@@ -11,6 +12,8 @@ export const NineSlice = ({
   y = 0,
   width = 0,
   height = 0,
+  tint = 0xffffff,
+  container,
 }: {
   texture: string;
   frame: string;
@@ -18,6 +21,8 @@ export const NineSlice = ({
   y?: number;
   width?: number;
   height?: number;
+  tint?: number | Signal<number>;
+  container?: Phaser.GameObjects.Container;
 }) => {
   x = Math.floor(x);
   y = Math.floor(y);
@@ -32,29 +37,30 @@ export const NineSlice = ({
       y={y}
       width={width}
       height={height}
+      containerElement={container ?? undefined}
     >
       <Flex>
-        <image texture={texture} frame={`${frame}#0.0`} />
+        <image texture={texture} frame={`${frame}#0.0`} tint={tint} />
         <FlexItem grow={1}>
-          <tileSprite texture={texture} frame={`${frame}#0.1`} />
+          <tileSprite texture={texture} frame={`${frame}#0.1`} tint={tint} />
         </FlexItem>
-        <image texture={texture} frame={`${frame}#0.2`} />
+        <image texture={texture} frame={`${frame}#0.2`} tint={tint} />
       </Flex>
       <FlexItem grow={1}>
         <Flex alignContent={ALIGN_ITEMS.STRETCH}>
-          <tileSprite texture={texture} frame={`${frame}#0.3`} />
+          <tileSprite texture={texture} frame={`${frame}#0.3`} tint={tint} />
           <FlexItem grow={1}>
-            <tileSprite texture={texture} frame={`${frame}#0.4`} />
+            <tileSprite texture={texture} frame={`${frame}#0.4`} tint={tint} />
           </FlexItem>
-          <tileSprite texture={texture} frame={`${frame}#0.5`} />
+          <tileSprite texture={texture} frame={`${frame}#0.5`} tint={tint} />
         </Flex>
       </FlexItem>
       <Flex>
-        <image texture={texture} frame={`${frame}#0.6`} />
+        <image texture={texture} frame={`${frame}#0.6`} tint={tint} />
         <FlexItem grow={1}>
-          <tileSprite texture={texture} frame={`${frame}#0.7`} />
+          <tileSprite texture={texture} frame={`${frame}#0.7`} tint={tint} />
         </FlexItem>
-        <image texture={texture} frame={`${frame}#0.8`} />
+        <image texture={texture} frame={`${frame}#0.8`} tint={tint} />
       </Flex>
     </Flex>
   );

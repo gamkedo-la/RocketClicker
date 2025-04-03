@@ -20,16 +20,9 @@ import { NineSlice } from "../nineslice";
 export const Button = ({
   building,
   gameState,
-  motionMachine,
-  hoveredBuilding,
 }: {
   building: Building;
   gameState: GameStateManager;
-  motionMachine: MotionMachine<
-    "hidden" | "visible",
-    "mouseenter" | "mouseleave"
-  >;
-  hoveredBuilding: Signal<Building | null>;
 }) => {
   let active = computed(() =>
     hasResources(building, gameState.state.get().material_storage)
@@ -89,14 +82,10 @@ export const Button = ({
           onPointerover={() => {
             if (active.get()) {
               state.transition("mouseenter");
-              motionMachine.transition("mouseenter");
-              hoveredBuilding.set(building);
             }
           }}
           onPointerout={() => {
             state.transition("mouseleave");
-            motionMachine.transition("mouseleave");
-            hoveredBuilding.set(null);
           }}
           onPointerdown={() => state.transition("mousedown")}
           onPointerup={() => state.transition("mouseup")}
@@ -143,18 +132,29 @@ export const Button = ({
 export function BuildingSelector({
   building,
   gameState,
-  buildingPanelMotionMachine,
   hoveredBuilding,
 }: {
   building: Building;
   gameState: GameStateManager;
   hoveredBuilding: Signal<Building | null>;
-  buildingPanelMotionMachine: MotionMachine<
-    "hidden" | "visible",
-    "mouseenter" | "mouseleave"
-  >;
 }): FlexColumn {
-  return (
+  window.currentScene.input.setTopOnly(false);
+
+  const container: Phaser.GameObjects.Container = (
+    <container
+      width={1}
+      interactive
+      onPointerover={() => {
+        hoveredBuilding.set(building);
+      }}
+      onPointerout={() => {
+        // FIXME: when this is set to null, the hover panel immediately removes the text
+        hoveredBuilding.set(null);
+      }}
+    />
+  );
+
+  const flex = (
     <Flex
       direction={DIRECTION.COLUMN}
       alignContent={ALIGN_ITEMS.STRETCH}
@@ -162,6 +162,7 @@ export function BuildingSelector({
         <NineSlice
           texture={RESOURCES["ui-left-panel"]}
           frame={"bg-buildings"}
+          container={container}
         />
       }
       padding={6}
@@ -210,13 +211,10 @@ export function BuildingSelector({
             }}
           />
         </Flex>
-        <Button
-          motionMachine={buildingPanelMotionMachine}
-          building={building}
-          gameState={gameState}
-          hoveredBuilding={hoveredBuilding}
-        />
+        <Button building={building} gameState={gameState} />
       </Flex>
     </Flex>
   );
+
+  return flex;
 }

@@ -43,9 +43,10 @@ export const LeftPanel = ({
 
   const x = signal(150);
   const panelWidth = signal(150);
+  const contentAlpha = signal(0);
 
   const minWidth = 40;
-  const maxWidth = 300;
+  const maxWidth = 180;
 
   const hoveredBuilding = signal<Building | null>(null);
 
@@ -53,33 +54,55 @@ export const LeftPanel = ({
     <motionMachine initial="hidden">
       <state id="hidden">
         <animation>
-          <parallel>
-            <tween signal={panelWidth} to={minWidth} duration={300} />
-            <tween signal={x} to={150} duration={300} />
-          </parallel>
+          <tween signal={contentAlpha} from={1} to={0} duration={200} />
+          <tween signal={panelWidth} to={minWidth} duration={200} />
+          <wait duration={50} />
+          <tween signal={x} to={150} duration={300} />
         </animation>
-        <transition on="mouseenter" target="visible" />
+        <transition on="visible" target="visible" />
       </state>
       <state id="visible">
         <animation>
-          <tween signal={x} to={270} duration={400} />
-          <wait duration={100} />
-          <tween signal={panelWidth} to={maxWidth} duration={300} />
+          <parallel>
+            <tween signal={x} to={270} duration={200} />
+            <tween signal={panelWidth} to={maxWidth} duration={300} />
+          </parallel>
+          <tween signal={contentAlpha} from={0} to={1} duration={300} />
         </animation>
-        <transition on="mouseleave" target="hidden" />
+        <transition on="hidden" target="hidden" />
       </state>
     </motionMachine>
   );
 
   const buildFlex = (
     <FlexItem attachTo={-1} offsetX={0} offsetY={10}>
-      <BuildingDetailsPanel building={hoveredBuilding} width={panelWidth} />
+      <BuildingDetailsPanel
+        building={hoveredBuilding}
+        width={panelWidth}
+        contentAlpha={contentAlpha}
+      />
     </FlexItem>
   );
 
   x.subscribe((x) => {
-    console.log("x", x);
     buildFlex.setX(x);
+  });
+
+  let timeout: NodeJS.Timeout | null = null;
+
+  hoveredBuilding.subscribe((building) => {
+    if (building) {
+      console.log("building", building);
+      mm.transition("visible");
+      if (timeout) {
+        clearTimeout(timeout);
+      }
+    } else {
+      console.log("no building");
+      timeout = setTimeout(() => {
+        mm.transition("hidden");
+      }, 100);
+    }
   });
 
   const z: FlexRow = (
@@ -115,7 +138,6 @@ export const LeftPanel = ({
           >
             {BUILDINGS.map((building) => (
               <BuildingSelector
-                buildingPanelMotionMachine={mm}
                 hoveredBuilding={hoveredBuilding}
                 building={building}
                 gameState={gameState}
