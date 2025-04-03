@@ -62,7 +62,7 @@ export class ThreeScene {
 
     // composer.addPass( new RenderPass( scene, camera ) )
 
-    const r = new RenderPixelatedPass(2, this.threeScene, this.camera);
+    const r = new RenderPixelatedPass(1.5, this.threeScene, this.camera);
     r.depthEdgeStrength = 100;
     r.normalEdgeStrength = 3;
     composer.addPass(r);
