@@ -10,12 +10,11 @@ import { COLORS_NAMES, STRING_COLORS_NAMES } from "@game/consts";
 import { computed } from "@game/core/signals/signals";
 import { Building } from "@game/entities/buildings/types";
 
-import { MotionMachine } from "@game/core/motion-machine/motion-machine";
 import { Signal } from "@game/core/signals/types";
 import { FlexItem } from "@game/core/ui/FlexItem";
 import { hasResources } from "@game/entities/materials/index";
 import { GameStateManager } from "@game/state/game-state";
-import { NineSlice } from "../nineslice";
+import { NineSlice } from "../NineSlice";
 
 export const Button = ({
   building,
@@ -134,7 +133,7 @@ export function BuildingSelector({
   gameState,
   hoveredBuilding,
 }: {
-  building: Building;
+  building: Partial<Building>;
   gameState: GameStateManager;
   hoveredBuilding: Signal<Building | null>;
 }): FlexColumn {
@@ -145,7 +144,7 @@ export function BuildingSelector({
       width={1}
       interactive
       onPointerover={() => {
-        hoveredBuilding.set(building);
+        hoveredBuilding.set(building as Building);
       }}
       onPointerout={() => {
         // FIXME: when this is set to null, the hover panel immediately removes the text
@@ -193,7 +192,7 @@ export function BuildingSelector({
           margin={2}
         >
           <text
-            text={[Object.keys(building.input)].join("\n")}
+            text={[Object.keys(building.input!)].join("\n")}
             style={{
               fontSize: 12,
               color: STRING_COLORS_NAMES["castro"],
@@ -204,14 +203,14 @@ export function BuildingSelector({
             frame={"building-arrow#0"}
           />
           <text
-            text={[Object.keys(building.output)].join("\n")}
+            text={[Object.keys(building.output!)].join("\n")}
             style={{
               fontSize: 12,
               color: STRING_COLORS_NAMES["castro"],
             }}
           />
         </Flex>
-        <Button building={building} gameState={gameState} />
+        <Button building={building as Building} gameState={gameState} />
       </Flex>
     </Flex>
   );

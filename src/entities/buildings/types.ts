@@ -1,3 +1,5 @@
+import { Signal } from "@game/core/signals/types";
+
 export interface Building {
   id: string;
   name: string;
@@ -5,4 +7,8 @@ export interface Building {
 
   input: Record<string, number>;
   output: Record<string, number>;
+
+  maximum_success_rate: Signal<number>;
+  current_success_rate: Signal<number>;
+  current_temperature: Signal<number>;
 }

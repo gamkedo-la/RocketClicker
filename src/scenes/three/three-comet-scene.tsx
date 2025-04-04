@@ -11,12 +11,12 @@ import { SCENES } from "../scenes";
 import { effect } from "@game/core/signals/signals";
 import { BUILDINGS, getBuildingById } from "@game/entities/buildings/index";
 import { Building } from "@game/entities/buildings/types";
+import { MATERIALS } from "@game/entities/materials/index";
 import { Camera } from "./components/camera";
 import { loader, ThreeScene } from "./components/scene";
 import { createLights } from "./elements/lights";
 import { buildingMaterial, starMaterial } from "./elements/materials";
 import { createSky } from "./elements/sky";
-import { MATERIALS } from "@game/entities/materials/index";
 
 export class ThreeCometScene extends AbstractScene {
   declare bus: Phaser.Events.EventEmitter;
@@ -239,8 +239,8 @@ export class ThreeCometScene extends AbstractScene {
 
     buildingTypes.forEach((type, index) => {
       // Check if we have a 3D model for this building type
-      if (modelLoaders.has(type)) {
-        const modelResource = modelLoaders.get(type)!;
+      if (modelLoaders.has(type!)) {
+        const modelResource = modelLoaders.get(type!)!;
         loader.parse(this.cache.binary.get(modelResource), "", (gltf) => {
           gltf.scene.traverse((node) => {
             if (node instanceof THREE.Mesh) {
@@ -254,7 +254,7 @@ export class ThreeCometScene extends AbstractScene {
           //gltf.scene.position.set(0, -0.1, 0);
           gltf.scene.rotateY(Math.PI / 4);
 
-          this.buildingsModelsCache.set(type, gltf.scene);
+          this.buildingsModelsCache.set(type!, gltf.scene);
         });
       } else {
         // Use placeholder geometry for buildings without models
@@ -262,7 +262,7 @@ export class ThreeCometScene extends AbstractScene {
         const material = new THREE.MeshPhongMaterial({ color: colors[index] });
         const mesh = new THREE.Mesh(geometry, material);
         mesh.rotateY(Math.PI / 4);
-        this.buildingsModelsCache.set(type, mesh);
+        this.buildingsModelsCache.set(type!, mesh);
       }
     });
   }
@@ -441,7 +441,10 @@ export class ThreeCometScene extends AbstractScene {
             ?.mouse_selected_building.get()?.building;
 
           if (!this.gameState.getBuildingAtCell(cellId) && selectedBuilding) {
-            this.gameState.addBuildingToCell(cellId, selectedBuilding);
+            this.gameState.addBuildingToCell(
+              cellId,
+              getBuildingById(selectedBuilding.id)
+            );
           }
         } else if (this.hoveredObject.userData.id === "comet") {
           this.showFloatingChange(pointer.x, pointer.y, 100);

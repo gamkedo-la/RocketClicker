@@ -3,10 +3,11 @@ import { ALIGN_ITEMS, DIRECTION, JUSTIFY } from "@game/core/ui/AbstractFlex";
 import { Flex } from "@game/core/ui/Flex";
 import { MATERIALS } from "@game/entities/materials/index";
 import { GameStateManager } from "@game/state/game-state";
+import { FlexItem } from "@game/core/ui/FlexItem";
+
 import { Counter } from "./components/counter";
-import { NineSlice } from "./components/nineslice";
-import { FlexItem } from "../../core/ui/FlexItem";
-import { BuildingsPanel } from "./components/right/BuildingsPanel";
+import { NineSlice } from "./components/NineSlice";
+import { BuildingsPanel } from "./components/right/BuildingDialsPanel";
 
 export const RightPanel = ({
   width,

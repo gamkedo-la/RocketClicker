@@ -1,3 +1,4 @@
+import { signal } from "@game/core/signals/signals";
 import { MATERIALS } from "../materials";
 
 import { Building } from "./types";
@@ -10,15 +11,18 @@ export function getBuildingById(id: string): Building {
   }
 
   return {
-    id: building.id,
-    name: building.name,
+    id: building.id!,
+    name: building.name!,
     building_cost: { ...building.building_cost },
     input: { ...building.input },
     output: { ...building.output },
+    maximum_success_rate: signal(1),
+    current_success_rate: signal(1),
+    current_temperature: signal(1),
   };
 }
 
-export const BUILDINGS: Building[] = [
+export const BUILDINGS: Partial<Building>[] = [
   {
     id: "generator",
     name: "Generator",

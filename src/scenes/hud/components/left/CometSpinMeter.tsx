@@ -65,7 +65,7 @@ export const CometSpinMeter = ({
     <motionMachine initialState="failing">
       <state id="spin">
         <animation on="active">
-          <repeat times={100}>
+          <repeat times={100_000}>
             <tween
               signal={rotate}
               from={rotate}

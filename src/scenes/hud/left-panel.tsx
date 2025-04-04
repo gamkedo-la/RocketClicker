@@ -1,18 +1,18 @@
 import { RESOURCES } from "@game/assets";
 import { STRING_COLORS_NAMES } from "@game/consts";
+import { signal } from "@game/core/signals/signals";
 import { DIRECTION, JUSTIFY } from "@game/core/ui/AbstractFlex";
 import { Flex } from "@game/core/ui/Flex";
-import { BUILDINGS, getBuildingById } from "@game/entities/buildings/index";
+import { BUILDINGS } from "@game/entities/buildings/index";
+import { Building } from "@game/entities/buildings/types";
 import { MATERIALS } from "@game/entities/materials/index";
 import { GameStateManager } from "@game/state/game-state";
-import { FlexRow } from "../../core/ui/FlexRow";
-import { BuildingSelector } from "./components/left/BuildingSelector";
-import { NineSlice } from "./components/nineslice";
 import { FlexItem } from "../../core/ui/FlexItem";
-import { CometSpinMeter } from "./components/left/CometSpinMeter";
+import { FlexRow } from "../../core/ui/FlexRow";
 import { BuildingDetailsPanel } from "./components/left/BuildingDetailsPanel";
-import { signal } from "@game/core/signals/signals";
-import { Building } from "@game/entities/buildings/types";
+import { BuildingSelector } from "./components/left/BuildingSelector";
+import { CometSpinMeter } from "./components/left/CometSpinMeter";
+import { NineSlice } from "./components/nineslice";
 
 const UI_TEXT_STYLE = {
   color: STRING_COLORS_NAMES["cuba-libre"],

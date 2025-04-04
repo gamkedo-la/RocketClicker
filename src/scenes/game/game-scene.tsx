@@ -44,95 +44,17 @@ function Button({
   y?: number;
   building: Building;
 }) {
-  const width = 180;
-  const height = 60;
-
-  let canBuildBuilding = computed(() =>
-    hasResources(building, material_storage)
-  );
-
-  let current_rectangle_color = computed(() =>
-    canBuildBuilding.get() ? 0xffffff : 0xaaaaaa
-  );
-
-  /*
-   TODO: fsm signal for mouse state
-   because then I don't have this mess on the pointers in the interaction
-   */
-
   return (
     <container
       x={x}
       y={y}
-      width={width}
-      height={height}
       interactive
       onPointerover={(self) => {
-        if (canBuildBuilding.get()) {
-          (self.first! as Phaser.GameObjects.Rectangle).fillColor = 0xffff00;
-          // needs a scene reference
-          // this.soundSystem.play("sfx-click");
-        }
+        (self.first! as Phaser.GameObjects.Rectangle).fillColor = 0xffff00;
+        // needs a scene reference
+        // this.soundSystem.play("sfx-click");
       }}
-      onPointerout={(self) => {
-        (self.first! as Phaser.GameObjects.Rectangle).fillColor =
-          current_rectangle_color.get();
-      }}
-      onPointerdown={(self) => {
-        if (canBuildBuilding.get()) {
-          (self.first! as Phaser.GameObjects.Rectangle).fillColor = 0x00ff00;
-          if (mouse_selected_building.get()?.name !== building.name) {
-            mouse_selected_building.set(building);
-          } else {
-            mouse_selected_building.set(null);
-          }
-        }
-      }}
-      onPointerup={(self) => {
-        (self.first! as Phaser.GameObjects.Rectangle).fillColor =
-          current_rectangle_color.get();
-      }}
-    >
-      <rectangle
-        width={width}
-        height={20}
-        fillColor={current_rectangle_color}
-        strokeColor={0x000000}
-        origin={{ x: 0.5, y: 1 }}
-      />
-      <text
-        x={0}
-        y={0}
-        origin={{ x: 0.5, y: 1 }}
-        text={`[${i++ < 9 ? i : 0}] ${building.name}`}
-        style={{ color: "#000000" }}
-      />
-      <text
-        x={0}
-        y={3}
-        origin={{ x: 0.5, y: 0 }}
-        text={`${Object.values(building.building_cost)} ${
-          MATERIALS_NAMES[
-            Object.keys(
-              building.building_cost
-            )[0] as keyof typeof MATERIALS_NAMES
-          ]
-        }`}
-        style={computed(() => ({
-          color: canBuildBuilding.get() ? "#00ff00" : "#ff0000",
-          fontSize: "14px",
-        }))}
-      />
-      <text
-        x={0}
-        y={20}
-        origin={{ x: 0.5, y: 0 }}
-        text={`${Object.keys(building.input).join(", ")} → ${Object.keys(
-          building.output
-        ).join(", ")}`}
-        style={{ color: "#ffffff" }}
-      />
-    </container>
+    ></container>
   );
 }
 
@@ -278,31 +200,6 @@ function Cell({
       />
     </container>
   );
-}
-
-function showFloatingChange(
-  scene: Phaser.Scene,
-  x: number,
-  y: number,
-  value: number,
-  color: string = "#00ff00"
-) {
-  const formattedValue = value >= 0 ? `+${value}` : value.toString();
-  const text = scene.add.text(x, y, formattedValue, {
-    fontSize: "32px",
-    color: color,
-    fontStyle: "bold",
-  });
-  text.setOrigin(0.5);
-
-  scene.tweens.add({
-    targets: text,
-    y: y - 120,
-    alpha: { from: 1, to: 0 },
-    duration: 3000,
-    ease: "Cubic.easeOut",
-    onComplete: () => text.destroy(),
-  });
 }
 
 export const material_storage: Record<
