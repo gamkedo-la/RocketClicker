@@ -46,14 +46,14 @@ export default class MaterialsSystem implements System {
           }
 
           //console.log(`${building.name} is generating ${material_order}`);
-          let successRate = 1;
+          let successRate = building.maximum_success_rate.get();
 
           Object.entries(building.input).forEach(([input, value]) => {
             // How much of the input material is available?
             const material =
               this.material_storage[input as keyof typeof MATERIALS].get();
             // How much of the input material is needed?
-            successRate = Math.min(successRate || 1, material / value);
+            successRate = Math.min(successRate, material / value);
           });
 
           building.current_success_rate.set(successRate);

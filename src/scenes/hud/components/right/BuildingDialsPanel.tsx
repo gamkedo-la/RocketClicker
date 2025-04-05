@@ -9,6 +9,7 @@ import { Building } from "@game/entities/buildings/types";
 import { GameStateManager } from "@game/state/game-state";
 
 import { NineSlice } from "../NineSlice";
+import { BuildingDialsInformation } from "./BuildingDialsInformation";
 
 const Dial = ({
   id,
@@ -167,7 +168,6 @@ const Dial = ({
   );
 
   let referenceX = 0;
-  let referenceY = 0;
   let pointerIsDown = false;
 
   container = (
@@ -185,10 +185,9 @@ const Dial = ({
           gameState.setHoveredBuilding(null);
         }
       }}
-      onPointerdown={(t, p, x, y) => {
+      onPointerdown={(_t, p) => {
         pointerIsDown = true;
         referenceX = p.x;
-        referenceY = p.y;
       }}
       onPointerup={() => {
         if (building[1].get()) {
@@ -214,7 +213,7 @@ const Dial = ({
 
   container.on(
     "wheel",
-    (pointer: Phaser.Input.Pointer, deltaX: number, deltaY: number) => {
+    (_pointer: Phaser.Input.Pointer, _deltaX: number, deltaY: number) => {
       if (Math.abs(deltaY) > 60) {
         dialMachine.transition("broken");
       }
@@ -242,6 +241,16 @@ const Dial = ({
             console.log("successRate", rate);
             successRate.set(rate);
           });
+      }
+    }
+  });
+
+  targetValue.subscribe((value) => {
+    const buildingSignal = building[1];
+    if (buildingSignal) {
+      const building = buildingSignal.get();
+      if (building) {
+        building.maximum_success_rate.set(value / 100);
       }
     }
   });
@@ -287,9 +296,16 @@ export const BuildingsPanel = ({
   const dials = [];
   let i = 0;
 
-  for (const building of buildings.entries()) {
-    dials.push(<Dial building={building} id={i} gameState={gameState} />);
-    i++;
+  const buildingsEntries = Array.from(buildings.entries());
+
+  // Go from 5-0, then 10-5, etc
+  // To keep the order more intuitive with what we see on the grid
+  for (let j = 0; j < buildingsEntries.length; j += 5) {
+    for (let k = j + 4; k >= j; k--) {
+      const building = buildingsEntries[k];
+      dials.push(<Dial building={building} id={i} gameState={gameState} />);
+      i++;
+    }
   }
 
   return (
@@ -303,13 +319,9 @@ export const BuildingsPanel = ({
                 frame="bg-rocket-goal"
               />
             }
-            padding={[10, 5, 5, 20]}
+            padding={[0, 5, 5, 20]}
           >
-            <text
-              text={computed(
-                () => gameState.state.get().hovered_building.get()?.name || ""
-              )}
-            />
+            <BuildingDialsInformation gameState={gameState} />
           </Flex>
         </FlexItem>
         <Flex wrapped width={125}>
