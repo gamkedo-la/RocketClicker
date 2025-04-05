@@ -73,24 +73,32 @@ export const Button = ({
     />
   );
 
+  const container: Phaser.GameObjects.Container = (
+    <container
+      interactive
+      onPointerover={() => {
+        if (active.get()) {
+          state.transition("mouseenter");
+        }
+      }}
+      onPointerout={() => {
+        state.transition("mouseleave");
+      }}
+      onPointerdown={() => state.transition("mousedown")}
+      onPointerup={() => state.transition("mouseup")}
+    />
+  );
+
+  active.subscribe((active) => {
+    if (active) {
+      container.input!.cursor = "pointer";
+    } else {
+      container.input!.cursor = "default";
+    }
+  });
+
   const button = (
-    <Flex
-      containerElement={
-        <container
-          interactive
-          onPointerover={() => {
-            if (active.get()) {
-              state.transition("mouseenter");
-            }
-          }}
-          onPointerout={() => {
-            state.transition("mouseleave");
-          }}
-          onPointerdown={() => state.transition("mousedown")}
-          onPointerup={() => state.transition("mouseup")}
-        />
-      }
-    >
+    <Flex containerElement={container}>
       {image}
       <FlexItem attachTo={0} offsetX={8} offsetY={16}>
         {status}
