@@ -111,7 +111,7 @@ export const BuildingDialsInformation = ({
       />
       <Spacer grow={0} height={15} />
       <text
-        text={"Maximum"}
+        text={"Allowance"}
         style={{ fontSize: 14, color: STRING_COLORS_NAMES["pleasing-pink"] }}
       />
       <Bar

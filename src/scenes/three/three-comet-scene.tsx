@@ -42,7 +42,7 @@ export class ThreeCometScene extends AbstractScene {
   board_bounds: THREE.Box3;
   board_size: THREE.Vector3;
 
-  interactiveMeshes: THREE.Mesh[];
+  groundMeshes: THREE.Mesh[];
 
   // Building meshes that are on the comet
   buildingMeshes: Map<number, THREE.Object3D> = new Map();
@@ -58,14 +58,13 @@ export class ThreeCometScene extends AbstractScene {
       this.game.scale.height
     );
     const scene = new ThreeScene(this, camera.camera);
-    const renderer = scene.renderer;
 
     this.camera = camera;
 
     this.threeScene = scene.threeScene;
     this.threeCamera = camera.camera;
 
-    this.interactiveMeshes = [];
+    this.groundMeshes = [];
 
     this.loadCometSystemModel();
     this.setupBoardListeners();
@@ -93,7 +92,7 @@ export class ThreeCometScene extends AbstractScene {
 
           // Add the camera pivot as a child of the comet
           this.comet.add(this.camera.getPivot());
-          this.interactiveMeshes.push(this.comet);
+          this.groundMeshes.push(this.comet);
         }
 
         if (node.name === "board") {
@@ -150,7 +149,7 @@ export class ThreeCometScene extends AbstractScene {
         };
 
         this.comet.add(terrainMesh);
-        this.interactiveMeshes.push(terrainMesh);
+        this.groundMeshes.push(terrainMesh);
       }
     }
   }
@@ -179,7 +178,7 @@ export class ThreeCometScene extends AbstractScene {
       this.cache.binary.get(RESOURCES["rocket-temporary"]),
       "",
       (gltf) => {
-        const mesh = gltf.scene as THREE.Mesh;
+        const mesh = gltf.scene;
 
         gltf.scene.traverse((node) => {
           if (node instanceof THREE.Mesh) {
@@ -351,10 +350,18 @@ export class ThreeCometScene extends AbstractScene {
     // Get the building model
     let buildingMesh = this.buildingsModelsCache.get(building.id)!.clone();
 
+    // Clone materials recursively for the building mesh
+    buildingMesh.traverse((node) => {
+      if (node instanceof THREE.Mesh && node.material) {
+        if (Array.isArray(node.material)) {
+          node.material = node.material.map((mat) => mat.clone());
+        } else {
+          node.material = node.material.clone();
+        }
+      }
+    });
+
     const mesh = buildingMesh as THREE.Mesh;
-    if (mesh.material) {
-      mesh.material = (mesh.material as THREE.Material).clone();
-    }
 
     // TODO: Shadows or something
     mesh.castShadow = true;
@@ -440,12 +447,12 @@ export class ThreeCometScene extends AbstractScene {
 
   zAxis = new THREE.Vector3(0, 0, 1);
 
-  hoveredObject: THREE.Mesh | null = null;
+  hoveredObject: THREE.Object3D | undefined = undefined;
 
   pointerDownFrames = 0;
   pointerJustDown = false;
 
-  update(time: number, delta: number) {
+  update(_time: number, _delta: number) {
     const pointer = this.input.activePointer;
     if (pointer.isDown) {
       this.pointerDownFrames++;
@@ -459,7 +466,7 @@ export class ThreeCometScene extends AbstractScene {
       this.pointerJustDown = false;
     }
 
-    if (this.board && this.pointerJustDown) {
+    if (this.board) {
       // First normalize within the viewport
       const viewportWidth = this.game.scale.width * 0.6;
       const viewportX = pointer.x - 250; // Adjust for viewport offset
@@ -473,39 +480,57 @@ export class ThreeCometScene extends AbstractScene {
       raycaster.setFromCamera(new THREE.Vector2(x, y), this.threeCamera);
 
       // TODO: interactions!
-      const intersects = raycaster.intersectObjects(this.interactiveMeshes);
+      const groundIntersects = raycaster.intersectObjects(this.groundMeshes);
 
-      if (intersects.length > 0) {
-        const intersection = intersects[0];
+      if (groundIntersects.length > 0) {
+        this.hoveredObject?.children[0].children.forEach((child) => {
+          // @ts-ignore
+          (child as THREE.Mesh).material?.emissive.setHex(0);
+        });
 
-        this.hoveredObject = intersection.object as THREE.Mesh;
-        /*
-        // Debugging
-        if (this.hoveredObject) {
-          const material = this.hoveredObject
-            .material as THREE.MeshStandardMaterial;
-          material.emissive.setHex(0);
-        }
-        const material = this.hoveredObject
-          .material as THREE.MeshStandardMaterial;
-        material.emissive.setHex(0x555555);*/
-
-        if (this.hoveredObject.userData.id === "terrain") {
-          const { grid, cellId } = this.hoveredObject.userData;
-          this.pointer.set(grid.x, grid.y);
-
-          const selectedBuilding = this.gameState.state
-            .get()
-            ?.mouse_selected_building.get()?.building;
-
-          if (!this.gameState.getBuildingAtCell(cellId) && selectedBuilding) {
-            this.gameState.addBuildingToCell(
-              cellId,
-              getBuildingById(selectedBuilding.id)
-            );
+        const hoverObject = groundIntersects.find((i) => {
+          if (i.object.userData.id) {
+            return true;
           }
-        } else if (this.hoveredObject.userData.id === "comet") {
-          this.showFloatingChange(pointer.x, pointer.y, 100);
+          return false;
+        })?.object as THREE.Mesh;
+
+        if (hoverObject?.userData.id === "terrain") {
+          const { grid, cellId } = hoverObject.userData;
+          this.pointer.set(grid.x, grid.y);
+          this.gameState.setHoveredBuilding(
+            this.gameState.getBuildingAt(grid.x, grid.y)
+          );
+
+          const building = this.buildingMeshes.get(cellId);
+          this.hoveredObject = building;
+          if (building) {
+            building.children[0].children.forEach((child) => {
+              // @ts-ignore
+              (child as THREE.Mesh).material.emissive.setHex(0x555555);
+            });
+          }
+        }
+
+        if (this.pointerJustDown) {
+          if (hoverObject?.userData.id === "comet") {
+            this.showFloatingChange(pointer.x, pointer.y, 100);
+          }
+
+          if (hoverObject?.userData.id === "terrain") {
+            const { cellId } = hoverObject.userData;
+
+            const selectedBuilding = this.gameState.state
+              .get()
+              ?.mouse_selected_building.get()?.building;
+
+            if (!this.gameState.getBuildingAtCell(cellId) && selectedBuilding) {
+              this.gameState.addBuildingToCell(
+                cellId,
+                getBuildingById(selectedBuilding.id)
+              );
+            }
+          }
         }
       }
     }
