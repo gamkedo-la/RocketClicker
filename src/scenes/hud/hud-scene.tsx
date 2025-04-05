@@ -88,7 +88,11 @@ export class HudScene extends AbstractScene {
       >
         <LeftPanel width={sidebarWidth} gameState={this.gameState} />
         <Spacer />
-        <RightPanel width={sidebarWidth} gameState={this.gameState} />
+        <RightPanel
+          width={sidebarWidth}
+          gameState={this.gameState}
+          bus={this.bus}
+        />
       </Flex>
     );
 

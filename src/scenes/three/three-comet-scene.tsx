@@ -8,7 +8,7 @@ import { DebugPanel } from "@game/scenes/debug/debug-panel";
 import { AbstractScene } from "..";
 import { SCENES } from "../scenes";
 
-import { effect } from "@game/core/signals/signals";
+import { effect, signal } from "@game/core/signals/signals";
 import { BUILDINGS, getBuildingById } from "@game/entities/buildings/index";
 import { Building } from "@game/entities/buildings/types";
 import { MATERIALS } from "@game/entities/materials/index";
@@ -17,6 +17,7 @@ import { loader, ThreeScene } from "./components/scene";
 import { createLights } from "./elements/lights";
 import { buildingMaterial, starMaterial } from "./elements/materials";
 import { createSky } from "./elements/sky";
+import { MotionMachine } from "../../core/motion-machine/motion-machine";
 
 export class ThreeCometScene extends AbstractScene {
   declare bus: Phaser.Events.EventEmitter;
@@ -33,6 +34,8 @@ export class ThreeCometScene extends AbstractScene {
   threeCamera: THREE.OrthographicCamera;
 
   comet: THREE.Mesh;
+  rocket: THREE.Mesh;
+
   board: THREE.Mesh;
   board_pointer: THREE.Mesh;
 
@@ -209,6 +212,59 @@ export class ThreeCometScene extends AbstractScene {
 
         // Add to the scene and track it
         this.comet.add(mesh);
+        this.rocket = mesh.children[0].children[1] as THREE.Mesh;
+
+        const tower = mesh.children[0].children[0] as THREE.Mesh;
+
+        const rocketRotY = signal(0);
+        const rocketPosY = signal(0);
+
+        const towerRotX = signal(0);
+
+        const y = new THREE.Vector3(0, 1, 0);
+        const x = new THREE.Vector3(1, 0, 0);
+
+        rocketRotY.subscribe((value) => {
+          this.rocket.setRotationFromAxisAngle(y, value);
+        });
+
+        rocketPosY.subscribe((value) => {
+          this.rocket.position.y += value;
+        });
+
+        towerRotX.subscribe((value) => {
+          tower.setRotationFromAxisAngle(x, value);
+        });
+
+        const machine: MotionMachine<"idle" | "launching", "send_rocket"> = (
+          <motionMachine initialState="idle">
+            <state id="idle">
+              <transition on="send_rocket" target="launching" />
+            </state>
+            <state id="launching">
+              <animation>
+                <parallel>
+                  <tween
+                    from={0}
+                    to={0.14}
+                    duration={10000}
+                    signal={rocketPosY}
+                  />
+                  <tween
+                    from={0}
+                    to={Math.PI / 2}
+                    duration={4000}
+                    signal={towerRotX}
+                  />
+                </parallel>
+              </animation>
+            </state>
+          </motionMachine>
+        );
+
+        this.bus.on("send_rocket", () => {
+          machine.transition("send_rocket");
+        });
       }
     );
   }

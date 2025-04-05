@@ -12,13 +12,14 @@ import { BuildingsPanel } from "./components/right/BuildingDialsPanel";
 export const RightPanel = ({
   width,
   gameState,
+  bus,
 }: {
   width: number;
   gameState: GameStateManager;
+  bus: Phaser.Events.EventEmitter;
 }) => (
   <Flex direction={DIRECTION.COLUMN} width={width} margin={1}>
     <Flex
-      direction={DIRECTION.COLUMN}
       backgroundElement={
         <NineSlice
           texture={RESOURCES["ui-left-panel"]}
@@ -27,6 +28,7 @@ export const RightPanel = ({
       }
       padding={[10, 9]}
       width={width}
+      justify={JUSTIFY.SPACE_AROUND}
     >
       <Flex
         direction={DIRECTION.COLUMN}
@@ -47,6 +49,22 @@ export const RightPanel = ({
               }
             />
           ))}
+      </Flex>
+      <Flex direction={DIRECTION.COLUMN} margin={5}>
+        <text text={"Launch"} />
+        <image
+          texture={RESOURCES["ui-left-panel"]}
+          frame={"button-building#0"}
+          origin={[0, 0]}
+          interactive
+          onPointerdown={() => {
+            console.log("send rocket");
+            bus.emit("send_rocket", null);
+          }}
+          /*tint={computed(() =>
+          active.get() ? 0xffffff : COLORS_NAMES["peaches-of-immortality"]
+        )}*/
+        />
       </Flex>
     </Flex>
     <FlexItem grow={1}>
