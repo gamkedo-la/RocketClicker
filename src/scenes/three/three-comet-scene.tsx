@@ -348,6 +348,8 @@ export class ThreeCometScene extends AbstractScene {
       this.gameState.getCometSpin().update((spin) => {
         return Math.min(10, Math.max(-10, spin + distFromCenter / 370));
       });
+      this.gameState.changeMaterial(MATERIALS.StarDust, 100);
+
       const formattedValue = value >= 0 ? `+${value}` : value.toString();
       const text = this.add.text(x, y, formattedValue, {
         fontSize: "32px",
@@ -448,7 +450,6 @@ export class ThreeCometScene extends AbstractScene {
           }
         } else if (this.hoveredObject.userData.id === "comet") {
           this.showFloatingChange(pointer.x, pointer.y, 100);
-          this.gameState.changeMaterial(MATERIALS.StarDust, 100);
         }
       }
     }
