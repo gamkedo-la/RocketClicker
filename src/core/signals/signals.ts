@@ -224,5 +224,7 @@ export function getSignalValue<T>(
   value: SignalValue<T>,
   defaultValue: T = value as T
 ): NonNullable<T> {
-  return (isSignal(value) ? value.get() : defaultValue) as NonNullable<T>;
+  return (
+    isSignal(value) ? value.get() : value ?? defaultValue
+  ) as NonNullable<T>;
 }
