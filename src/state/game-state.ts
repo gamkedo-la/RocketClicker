@@ -45,7 +45,7 @@ export class GameStateManager
     time: 0,
     score: 0,
     material_storage: Object.fromEntries(
-      Object.keys(MATERIALS).map((material) => [material, signal(10000)])
+      Object.keys(MATERIALS).map((material) => [material, signal(0)])
     ) as Record<keyof typeof MATERIALS, Signal<number>>,
     board: {
       boardWidth: 5,

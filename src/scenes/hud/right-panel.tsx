@@ -8,6 +8,7 @@ import { FlexItem } from "@game/core/ui/FlexItem";
 import { Counter } from "./components/counter";
 import { NineSlice } from "./components/NineSlice";
 import { BuildingsPanel } from "./components/right/BuildingDialsPanel";
+import { RocketLauncher } from "./components/right/RocketLauncher";
 
 export const RightPanel = ({
   width,
@@ -51,20 +52,7 @@ export const RightPanel = ({
           ))}
       </Flex>
       <Flex direction={DIRECTION.COLUMN} margin={5}>
-        <text text={"Launch"} />
-        <image
-          texture={RESOURCES["ui-left-panel"]}
-          frame={"button-building#0"}
-          origin={[0, 0]}
-          interactive
-          onPointerdown={() => {
-            console.log("send rocket");
-            bus.emit("send_rocket", null);
-          }}
-          /*tint={computed(() =>
-          active.get() ? 0xffffff : COLORS_NAMES["peaches-of-immortality"]
-        )}*/
-        />
+        <RocketLauncher gameState={gameState} bus={bus} />
       </Flex>
     </Flex>
     <FlexItem grow={1}>
