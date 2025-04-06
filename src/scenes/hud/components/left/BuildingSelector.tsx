@@ -11,9 +11,14 @@ import { computed } from "@game/core/signals/signals";
 import { Building } from "@game/entities/buildings/types";
 
 import { Signal } from "@game/core/signals/types";
-import { hasResources } from "@game/entities/materials/index";
+import {
+  hasResources,
+  MATERIALS,
+  MATERIALS_KEYS,
+} from "@game/entities/materials/index";
 import { GameStateManager } from "@game/state/game-state";
 import { NineSlice } from "../NineSlice";
+import { FlexItem } from "../../../../core/ui/FlexItem";
 
 export const Button = ({
   building,
@@ -117,10 +122,12 @@ export const Button = ({
 };
 
 export function BuildingSelector({
+  id,
   building,
   gameState,
   hoveredBuilding,
 }: {
+  id: number;
   building: Partial<Building>;
   gameState: GameStateManager;
   hoveredBuilding: Signal<Building | null>;
@@ -141,6 +148,26 @@ export function BuildingSelector({
     />
   );
 
+  const building_title_text = (
+    <text
+      text={`(${id > 8 ? "0" : 1 + id}) ${building.name}`}
+      style={{
+        color: STRING_COLORS_NAMES["elite-teal"],
+      }}
+      resolution={2}
+    />
+  );
+
+  gameState.state
+    .get()
+    .mouse_selected_building.subscribe((mouse_selected_building) => {
+      if (mouse_selected_building?.building?.name === building.name) {
+        building_title_text.setColor(STRING_COLORS_NAMES["strawberry-field"]);
+      } else {
+        building_title_text.setColor(STRING_COLORS_NAMES["elite-teal"]);
+      }
+    });
+
   const flex = (
     <Flex
       alignContent={ALIGN_ITEMS.STRETCH}
@@ -155,52 +182,62 @@ export function BuildingSelector({
       padding={6}
       margin={2}
     >
-      <Flex
-        backgroundElement={
-          <NineSlice
-            texture={RESOURCES["ui-left-panel"]}
-            frame={"title-bg-buildings"}
+      <FlexItem grow={1}>
+        <Flex
+          backgroundElement={
+            <NineSlice
+              texture={RESOURCES["ui-left-panel"]}
+              frame={"title-bg-buildings"}
+            />
+          }
+          direction={DIRECTION.COLUMN}
+          padding={4}
+          justify={JUSTIFY.CENTER}
+          width={120}
+        >
+          <Flex margin={10}>
+            {building_title_text}
+
+            {building.input?.kWh && (
+              <text
+                text={`${building.input?.kWh.toLocaleString()} kWh`}
+                style={{
+                  color: STRING_COLORS_NAMES["cuba-libre"],
+                }}
+                resolution={2}
+              />
+            )}
+
+            {building.output?.kWh && (
+              <text
+                text={`${building.output?.kWh.toLocaleString()} kWh`}
+                style={{ color: STRING_COLORS_NAMES["vaporwave-blue"] }}
+              />
+            )}
+          </Flex>
+
+          <text
+            text={`${Object.keys(building.input!)
+              .filter((key) => key !== "kWh")
+              .map(
+                (key) =>
+                  `${building.input![key].toLocaleString()} ${
+                    MATERIALS_KEYS[key as keyof typeof MATERIALS]
+                  }`
+              )
+              .join(", ")} → ${Object.keys(building.output!)
+              .filter((key) => key !== "kWh")
+              .map(
+                (key) =>
+                  `${building.output![key].toLocaleString()} ${
+                    MATERIALS_KEYS[key as keyof typeof MATERIALS]
+                  }`
+              )
+              .join(", ")}`}
+            style={{ color: STRING_COLORS_NAMES["meteorite"] }}
           />
-        }
-        padding={[4, 3]}
-        justify={JUSTIFY.CENTER}
-        width={110}
-      >
-        <text
-          text={building.name}
-          style={{
-            color: STRING_COLORS_NAMES["elite-teal"],
-          }}
-          resolution={2}
-        />
-      </Flex>
-      <Flex
-        direction={DIRECTION.COLUMN}
-        alignContent={ALIGN_ITEMS.CENTER}
-        justify={JUSTIFY.CENTER}
-        margin={2}
-      >
-        <text
-          text={[Object.keys(building.input!)].join("\n")}
-          style={{
-            fontSize: 12,
-            color: STRING_COLORS_NAMES["castro"],
-          }}
-          resolution={2}
-        />
-        <image
-          texture={RESOURCES["ui-left-panel"]}
-          frame={"building-arrow#0"}
-        />
-        <text
-          text={[Object.keys(building.output!)].join("\n")}
-          style={{
-            fontSize: 12,
-            color: STRING_COLORS_NAMES["castro"],
-          }}
-          resolution={2}
-        />
-      </Flex>
+        </Flex>
+      </FlexItem>
       <Button building={building as Building} gameState={gameState} />
     </Flex>
   );

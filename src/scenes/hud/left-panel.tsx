@@ -124,8 +124,9 @@ export const LeftPanel = ({
             padding={2}
           >
             {[
-              ...BUILDINGS.map((building) => (
+              ...BUILDINGS.map((building, i) => (
                 <BuildingSelector
+                  id={i}
                   hoveredBuilding={hoveredBuilding}
                   building={building}
                   gameState={gameState}

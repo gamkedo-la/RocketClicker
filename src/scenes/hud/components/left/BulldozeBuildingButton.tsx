@@ -89,6 +89,26 @@ export const BulldozeBuildingButton = ({
 }: {
   gameState: GameStateManager;
 }) => {
+  const bulldoze_text = (
+    <text
+      text={"(x) Remove building"}
+      style={{
+        color: STRING_COLORS_NAMES["elite-teal"],
+      }}
+      resolution={2}
+    />
+  );
+
+  gameState.state
+    .get()
+    .mouse_selected_bulldoze.subscribe((mouse_selected_bulldoze) => {
+      if (mouse_selected_bulldoze) {
+        bulldoze_text.setColor(STRING_COLORS_NAMES["strawberry-field"]);
+      } else {
+        bulldoze_text.setColor(STRING_COLORS_NAMES["elite-teal"]);
+      }
+    });
+
   const flex = (
     <Flex
       alignContent={ALIGN_ITEMS.STRETCH}
@@ -97,13 +117,7 @@ export const BulldozeBuildingButton = ({
       margin={2}
     >
       <Flex padding={[4, 3]} justify={JUSTIFY.CENTER} width={110}>
-        <text
-          text={"Remove building"}
-          style={{
-            color: STRING_COLORS_NAMES["elite-teal"],
-          }}
-          resolution={2}
-        />
+        {bulldoze_text}
       </Flex>
 
       <Button gameState={gameState} />

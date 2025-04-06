@@ -122,7 +122,10 @@ export const BuildingDetailsPanel = ({
       />
       <text
         text={computed(
-          () => EFFECTS_EXPLANATIONS[building?.get()?.effect] || ""
+          () =>
+            EFFECTS_EXPLANATIONS[
+              building?.get()?.effect as keyof typeof EFFECTS_EXPLANATIONS
+            ] || ""
         )}
         alpha={contentAlpha}
         style={{
