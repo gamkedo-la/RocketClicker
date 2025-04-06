@@ -9,7 +9,11 @@ import { AbstractScene } from "..";
 import { SCENES } from "../scenes";
 
 import { effect, signal } from "@game/core/signals/signals";
-import { BUILDINGS, getBuildingById } from "@game/entities/buildings/index";
+import {
+  BUILDINGS,
+  getBuildingById,
+  TILES_FORCES,
+} from "@game/entities/buildings/index";
 import { Building } from "@game/entities/buildings/types";
 import { MATERIALS } from "@game/entities/materials/index";
 import { Camera } from "./components/camera";

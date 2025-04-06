@@ -14,6 +14,18 @@ export const MATERIALS = {
   PureMetals: "PureMetals",
 } as const;
 
+export const MATERIALS_KEYS = {
+  kWh: "kWh",
+  LH2: "LH2",
+  LOX: "LOX",
+  H2: "H2",
+  O2: "O2",
+  H2O: "H2O",
+  StarDust: "SD",
+  Metals: "M",
+  PureMetals: "PM",
+} as const;
+
 export type Material = keyof typeof MATERIALS;
 
 export const MATERIALS_NAMES = {

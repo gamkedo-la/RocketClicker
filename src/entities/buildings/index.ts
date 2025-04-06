@@ -14,6 +14,7 @@ export function getBuildingById(id: string): Building {
   return {
     id: building.id!,
     name: building.name!,
+    effect: building.effect!,
     building_cost: { ...building.building_cost },
     input: { ...building.input },
     output: { ...building.output },
@@ -27,6 +28,37 @@ export function getBuildingById(id: string): Building {
     current_efficiency: signal(1),
   };
 }
+
+export const TILES_FORCES: Record<number, number> = {
+  // Left side
+  24: -1.0, // Strongest
+  23: -0.75, // Strong
+  19: -0.75,
+  22: -0.5, // Medium
+  18: -0.5,
+  14: -0.5,
+  21: -0.25, // Weak
+  17: -0.25,
+  13: -0.25,
+  9: -0.25,
+  // Right side
+  0: 1.0, // Strongest
+  1: 0.75, // Strong
+  5: 0.75,
+  2: 0.5, // Medium
+  6: 0.5,
+  10: 0.5,
+  3: 0.25, // Weak
+  7: 0.25,
+  11: 0.25,
+  15: 0.25,
+  // Middle
+  4: 0,
+  8: 0,
+  12: 0,
+  16: 0,
+  20: 0,
+};
 
 export const EFFECTS = {
   VIBRATION: "Vibration",

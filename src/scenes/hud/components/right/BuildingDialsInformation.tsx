@@ -49,6 +49,10 @@ export const BuildingDialsInformation = ({
         text={computed(() => hoveredBuilding.get()?.name || "")}
         style={{ wordWrap: { width: 70 } }}
       />
+      <text
+        text={computed(() => hoveredBuilding.get()?.effect || "")}
+        style={{ fontSize: 12, color: STRING_COLORS_NAMES["strawberry-field"] }}
+      />
       <Spacer grow={0} height={20} />
       <text
         text={"Efficiency"}

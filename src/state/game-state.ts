@@ -6,6 +6,7 @@ import { Building } from "@game/entities/buildings/types";
 export const GameStatus = {
   LOADING: "loading",
   RUNNING: "running",
+  ROCKET_LAUNCHED: "rocket_launched",
   ENDED: "ended",
 } as const;
 
@@ -200,10 +201,14 @@ export class GameStateManager
   }
 
   setMouseSelectedBuilding(building: Building | null): void {
+    if (building !== null) {
+      this.state.get().mouse_selected_bulldoze.set(false);
+    }
     this.state.get().mouse_selected_building.set({ building });
   }
 
   toggleMouseSelectedBulldoze(): void {
+    this.setMouseSelectedBuilding(null);
     this.state.get().mouse_selected_bulldoze.update((current) => !current);
   }
 
