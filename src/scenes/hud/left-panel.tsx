@@ -12,6 +12,7 @@ import { BuildingDetailsPanel } from "./components/left/BuildingDetailsPanel";
 import { BuildingSelector } from "./components/left/BuildingSelector";
 import { CometSpinMeter } from "./components/left/CometSpinMeter";
 import { NineSlice } from "./components/NineSlice";
+import { BulldozeBuildingButton } from "./components/left/BulldozeBuildingButton";
 
 export const LeftPanel = ({
   width,
@@ -130,6 +131,7 @@ export const LeftPanel = ({
                   gameState={gameState}
                 />
               )),
+              <BulldozeBuildingButton gameState={gameState} />,
             ]}
           </Flex>
           {buildFlex}

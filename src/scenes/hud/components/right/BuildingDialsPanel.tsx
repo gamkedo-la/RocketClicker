@@ -83,7 +83,7 @@ const Dial = ({
           <tween signal={value} from={100} to={0} duration={1000} />
           <tween signal={successRate} from={1} to={0} duration={500} />
         </animation>
-        <transition on="idle" target="idle-enter" />
+        <transition on="active" target="idle-enter" />
       </state>
       <state id="idle-enter">
         <animation on="enter">
@@ -104,8 +104,15 @@ const Dial = ({
             <tween signal={value} to={targetValue} duration={200} />
           </repeat>
         </animation>
-        <transition on="idle" target="active-idle" />
+        <transition on="remove" target="remove" />
         <transition on="broken" target="broken" />
+      </state>
+      <state id="remove">
+        <animation on="enter">
+          <step run={() => visibleDial.set(false)} />
+          <tween signal={backgroundTint} to={0x999999} duration={5} />
+        </animation>
+        <transition on="active" target="idle-enter" />
       </state>
       <state id="broken">
         <animation on="active">
@@ -224,6 +231,8 @@ const Dial = ({
 
   let successRateSubscriptionDispose: (() => void) | null;
 
+  let wasBuilding: Building | null = null;
+
   effect(() => {
     const buildingSignal = building[1];
     if (buildingSignal) {
@@ -235,12 +244,17 @@ const Dial = ({
       }
 
       if (building) {
-        dialMachine.transition("idle");
+        wasBuilding = building;
+        dialMachine.transition("active");
         successRateSubscriptionDispose =
           building.current_success_rate.subscribe((rate) => {
             console.log("successRate", rate);
             successRate.set(rate);
           });
+      } else {
+        if (wasBuilding) {
+          dialMachine.transition("remove");
+        }
       }
     }
   });

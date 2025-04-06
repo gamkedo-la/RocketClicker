@@ -505,7 +505,11 @@ export class ThreeCometScene extends AbstractScene {
           if (building) {
             building.children[0].children.forEach((child) => {
               // @ts-ignore
-              (child as THREE.Mesh).material.emissive.setHex(0x555555);
+              (child as THREE.Mesh).material.emissive.setHex(
+                this.gameState.state.get()?.mouse_selected_bulldoze.get()
+                  ? 0x990000
+                  : 0x555555
+              );
             });
           }
         }
@@ -518,15 +522,27 @@ export class ThreeCometScene extends AbstractScene {
           if (hoverObject?.userData.id === "terrain") {
             const { cellId } = hoverObject.userData;
 
-            const selectedBuilding = this.gameState.state
+            const selectedBulldoze = this.gameState.state
               .get()
-              ?.mouse_selected_building.get()?.building;
+              .mouse_selected_bulldoze.get();
 
-            if (!this.gameState.getBuildingAtCell(cellId) && selectedBuilding) {
-              this.gameState.addBuildingToCell(
-                cellId,
-                getBuildingById(selectedBuilding.id)
-              );
+            if (selectedBulldoze) {
+              this.gameState.removeBuildingFromCell(cellId);
+              this.gameState.toggleMouseSelectedBulldoze();
+            } else {
+              const selectedBuilding = this.gameState.state
+                .get()
+                ?.mouse_selected_building.get()?.building;
+
+              if (
+                !this.gameState.getBuildingAtCell(cellId) &&
+                selectedBuilding
+              ) {
+                this.gameState.addBuildingToCell(
+                  cellId,
+                  getBuildingById(selectedBuilding.id)
+                );
+              }
             }
           }
         }

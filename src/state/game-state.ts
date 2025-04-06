@@ -23,6 +23,7 @@ export interface State {
   material_storage: Record<keyof typeof MATERIALS, Signal<number>>;
   board: BoardState;
   mouse_selected_building: Signal<MouseSelectedBuilding>;
+  mouse_selected_bulldoze: Signal<boolean>;
   comet_spin_velocity: Signal<number>;
   comet_angle: Signal<number>;
   hovered_building: Signal<Building | null>;
@@ -56,6 +57,7 @@ export class GameStateManager
     comet_spin_velocity: signal(1),
     comet_angle: signal(0),
     mouse_selected_building: signal<MouseSelectedBuilding>({ building: null }),
+    mouse_selected_bulldoze: signal<boolean>(false),
     hovered_building: signal<Building | null>(null),
   });
 
@@ -199,6 +201,10 @@ export class GameStateManager
 
   setMouseSelectedBuilding(building: Building | null): void {
     this.state.get().mouse_selected_building.set({ building });
+  }
+
+  toggleMouseSelectedBulldoze(): void {
+    this.state.get().mouse_selected_bulldoze.update((current) => !current);
   }
 
   setCometSpin(spin: number): void {
