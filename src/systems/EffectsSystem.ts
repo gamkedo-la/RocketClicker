@@ -49,7 +49,7 @@ export default class EffectsSystem implements System {
 
           const force = leftSideForces[cellId] ?? rightSideForces[cellId] ?? 0;
 
-          this.gameState.addCometSpin(force * 0.005);
+          this.gameState.addCometSpin(force * 0.0005 * delta);
           break;
         case EFFECTS.DAMP:
           this.gameState.getCometSpin().update((spin) => {

@@ -1,7 +1,6 @@
 import { RESOURCES } from "@game/assets";
-import { STRING_COLORS_NAMES } from "@game/consts";
 import { signal } from "@game/core/signals/signals";
-import { DIRECTION, JUSTIFY } from "@game/core/ui/AbstractFlex";
+import { ALIGN_ITEMS, DIRECTION } from "@game/core/ui/AbstractFlex";
 import { Flex } from "@game/core/ui/Flex";
 import { BUILDINGS } from "@game/entities/buildings/index";
 import { Building } from "@game/entities/buildings/types";
@@ -12,14 +11,7 @@ import { FlexRow } from "../../core/ui/FlexRow";
 import { BuildingDetailsPanel } from "./components/left/BuildingDetailsPanel";
 import { BuildingSelector } from "./components/left/BuildingSelector";
 import { CometSpinMeter } from "./components/left/CometSpinMeter";
-import { NineSlice } from "./components/nineslice";
-
-const UI_TEXT_STYLE = {
-  color: STRING_COLORS_NAMES["cuba-libre"],
-  fontSize: "32px",
-  align: "center",
-  fontFamily: "jersey15",
-};
+import { NineSlice } from "./components/NineSlice";
 
 export const LeftPanel = ({
   width,
@@ -28,11 +20,6 @@ export const LeftPanel = ({
   width: number;
   gameState: GameStateManager;
 }) => {
-  const title: Phaser.GameObjects.Text = (
-    <text text="Big left title" resolution={2} style={UI_TEXT_STYLE} />
-  );
-  title.setShadow(0, -2, STRING_COLORS_NAMES["dark-void"], 0, true, true);
-
   const material_storage =
     gameState.state.get().material_storage[MATERIALS.StarDust];
 
@@ -129,20 +116,21 @@ export const LeftPanel = ({
           width={width}
           padding={[10, 9]}
         >
-          {title}
           <Flex
-            justify={JUSTIFY.SPACE_AROUND}
             width={width - 20}
-            wrapped
+            direction={DIRECTION.COLUMN}
+            alignContent={ALIGN_ITEMS.STRETCH}
             padding={2}
           >
-            {BUILDINGS.map((building) => (
-              <BuildingSelector
-                hoveredBuilding={hoveredBuilding}
-                building={building}
-                gameState={gameState}
-              />
-            ))}
+            {[
+              ...BUILDINGS.map((building) => (
+                <BuildingSelector
+                  hoveredBuilding={hoveredBuilding}
+                  building={building}
+                  gameState={gameState}
+                />
+              )),
+            ]}
           </Flex>
           {buildFlex}
         </Flex>

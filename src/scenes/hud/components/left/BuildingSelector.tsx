@@ -11,7 +11,6 @@ import { computed } from "@game/core/signals/signals";
 import { Building } from "@game/entities/buildings/types";
 
 import { Signal } from "@game/core/signals/types";
-import { FlexItem } from "@game/core/ui/FlexItem";
 import { hasResources } from "@game/entities/materials/index";
 import { GameStateManager } from "@game/state/game-state";
 import { NineSlice } from "../NineSlice";
@@ -53,23 +52,11 @@ export const Button = ({
   const image = (
     <image
       texture={RESOURCES["ui-left-panel"]}
-      frame={"button-building#0"}
+      frame={"button-building-smaller#0"}
       origin={[0, 0]}
       tint={computed(() =>
         active.get() ? 0xffffff : COLORS_NAMES["peaches-of-immortality"]
       )}
-    />
-  );
-
-  const status: Phaser.GameObjects.Image = (
-    <image
-      texture={RESOURCES["ui-left-panel"]}
-      frame={"button-ring#0"}
-      tint={computed(() =>
-        active.get() ? COLORS_NAMES["white"] : COLORS_NAMES["elite-teal"]
-      )}
-      width={image.width}
-      height={image.height}
     />
   );
 
@@ -97,32 +84,25 @@ export const Button = ({
     }
   });
 
-  const button = (
-    <Flex containerElement={container}>
-      {image}
-      <FlexItem attachTo={0} offsetX={8} offsetY={16}>
-        {status}
-      </FlexItem>
-    </Flex>
-  );
+  const button = <Flex containerElement={container}>{image}</Flex>;
 
   <stateObserver fsm={state}>
     <onEnter
       state="available"
       run={() => {
-        image.setFrame("button-building#0");
+        image.setFrame("button-building-smaller#0");
       }}
     />
     <onEnter
       state="hovered"
       run={() => {
-        image.setFrame("button-building#1");
+        image.setFrame("button-building-smaller#1");
       }}
     />
     <onEnter
       state="pressed"
       run={() => {
-        image.setFrame("button-building#2");
+        image.setFrame("button-building-smaller#2");
       }}
     />
     <onExit
@@ -163,8 +143,8 @@ export function BuildingSelector({
 
   const flex = (
     <Flex
-      direction={DIRECTION.COLUMN}
       alignContent={ALIGN_ITEMS.STRETCH}
+      justify={JUSTIFY.SPACE_BETWEEN}
       backgroundElement={
         <NineSlice
           texture={RESOURCES["ui-left-panel"]}
@@ -173,7 +153,6 @@ export function BuildingSelector({
         />
       }
       padding={6}
-      width={76}
       margin={2}
     >
       <Flex
@@ -185,41 +164,44 @@ export function BuildingSelector({
         }
         padding={[4, 3]}
         justify={JUSTIFY.CENTER}
+        width={110}
       >
         <text
           text={building.name}
           style={{
             color: STRING_COLORS_NAMES["elite-teal"],
           }}
+          resolution={2}
         />
       </Flex>
-      <Flex justify={JUSTIFY.SPACE_EVENLY}>
-        <Flex
-          direction={DIRECTION.COLUMN}
-          alignContent={ALIGN_ITEMS.CENTER}
-          margin={2}
-        >
-          <text
-            text={[Object.keys(building.input!)].join("\n")}
-            style={{
-              fontSize: 12,
-              color: STRING_COLORS_NAMES["castro"],
-            }}
-          />
-          <image
-            texture={RESOURCES["ui-left-panel"]}
-            frame={"building-arrow#0"}
-          />
-          <text
-            text={[Object.keys(building.output!)].join("\n")}
-            style={{
-              fontSize: 12,
-              color: STRING_COLORS_NAMES["castro"],
-            }}
-          />
-        </Flex>
-        <Button building={building as Building} gameState={gameState} />
+      <Flex
+        direction={DIRECTION.COLUMN}
+        alignContent={ALIGN_ITEMS.CENTER}
+        justify={JUSTIFY.CENTER}
+        margin={2}
+      >
+        <text
+          text={[Object.keys(building.input!)].join("\n")}
+          style={{
+            fontSize: 12,
+            color: STRING_COLORS_NAMES["castro"],
+          }}
+          resolution={2}
+        />
+        <image
+          texture={RESOURCES["ui-left-panel"]}
+          frame={"building-arrow#0"}
+        />
+        <text
+          text={[Object.keys(building.output!)].join("\n")}
+          style={{
+            fontSize: 12,
+            color: STRING_COLORS_NAMES["castro"],
+          }}
+          resolution={2}
+        />
       </Flex>
+      <Button building={building as Building} gameState={gameState} />
     </Flex>
   );
 

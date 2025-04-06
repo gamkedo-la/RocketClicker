@@ -2,6 +2,7 @@ import { RESOURCES } from "@game/assets";
 import { computed, signal } from "@game/core/signals/signals";
 import { GameStateManager } from "@game/state/game-state";
 import { FlexItem } from "../../../../core/ui/FlexItem";
+import { MotionMachine } from "../../../../core/motion-machine/motion-machine";
 
 export const CometSpinMeter = ({
   gameState,
@@ -61,11 +62,14 @@ export const CometSpinMeter = ({
 
   let stopDoubling = false;
 
-  const motionMachine = (
+  const motionMachine: MotionMachine<
+    "spin" | "failing" | "broken",
+    "spin" | "failing" | "broken"
+  > = (
     <motionMachine initialState="failing">
       <state id="spin">
         <animation on="active">
-          <repeat times={100_000}>
+          <repeat times={60 * 60 * 8}>
             <tween
               signal={rotate}
               from={rotate}
@@ -115,15 +119,18 @@ export const CometSpinMeter = ({
   );
 
   cometSpin.subscribe((value) => {
-    if (value < -8 || value > 8) {
+    if (
+      (value < -8 || value > 8) &&
+      motionMachine.current.get() !== "failing"
+    ) {
       motionMachine.transition("failing");
-    } else {
+    } else if (motionMachine.current.get() === "failing") {
       motionMachine.transition("spin");
     }
   });
 
   failing.subscribe((value) => {
-    if (value > 10) {
+    if (value > 20) {
       motionMachine.transition("broken");
     }
   });
