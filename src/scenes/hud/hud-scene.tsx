@@ -67,6 +67,14 @@ export class HudScene extends AbstractScene {
         backgroundElement={<rectangle fillColor={COLORS_NAMES["black"]} />}
         padding={[0, 20]}
       >
+        <text
+          text="PLAYTESTING VERSION 0.1.0"
+          style={{
+            color: STRING_COLORS_NAMES["fever-dream"],
+            fontSize: 20,
+          }}
+        />
+        <Spacer width={5} grow={0} />
         <rectangle fillColor={COLORS_NAMES["white"]} width={10} height={10} />
         <Spacer width={5} grow={0} />
         <text
@@ -82,7 +90,7 @@ export class HudScene extends AbstractScene {
             fontSize: 16,
           }}
         />
-        <Spacer width={450} grow={0} />
+        <Spacer width={250} grow={0} />
         {timer_text}
         <Spacer width={275} grow={0} />
         {rocket_text}
