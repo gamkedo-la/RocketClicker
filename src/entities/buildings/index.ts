@@ -2,6 +2,7 @@ import { signal } from "@game/core/signals/signals";
 import { MATERIALS } from "../materials";
 
 import { Building } from "./types";
+import { RESOURCES } from "@game/assets";
 
 export function getBuildingById(id: string): Building {
   const building = BUILDINGS.find((b) => b.id === id);
@@ -16,7 +17,11 @@ export function getBuildingById(id: string): Building {
     building_cost: { ...building.building_cost },
     input: { ...building.input },
     output: { ...building.output },
-    effect: building.effect!,
+    sounds: {
+      build: building.sounds?.build ?? "",
+      hover: building.sounds?.hover ?? "",
+      destroy: building.sounds?.destroy ?? "",
+    },
     maximum_success_rate: signal(1),
     current_success_rate: signal(1),
     current_efficiency: signal(1),
@@ -49,6 +54,9 @@ export const BUILDINGS: Partial<Building>[] = [
     building_cost: { [MATERIALS.StarDust]: 50 },
     input: { [MATERIALS.StarDust]: 50 },
     output: { [MATERIALS.kWh]: 100 },
+    sounds: {
+      build: RESOURCES["build-generator"],
+    },
   },
   {
     id: "solar-panel",
@@ -57,6 +65,9 @@ export const BUILDINGS: Partial<Building>[] = [
     building_cost: { [MATERIALS.Metals]: 1_000 },
     input: {},
     output: { [MATERIALS.kWh]: 5000 },
+    sounds: {
+      build: RESOURCES["build-solarpanel"],
+    },
   },
   {
     id: "fuel-cell",
@@ -65,6 +76,9 @@ export const BUILDINGS: Partial<Building>[] = [
     building_cost: { [MATERIALS.PureMetals]: 5_000 },
     input: { [MATERIALS.O2]: 120, [MATERIALS.H2]: 120 },
     output: { [MATERIALS.kWh]: 30_000, [MATERIALS.H2O]: 120 },
+    sounds: {
+      build: RESOURCES["build-fuelcell"],
+    },
   },
   {
     id: "duster",
@@ -73,6 +87,9 @@ export const BUILDINGS: Partial<Building>[] = [
     building_cost: { [MATERIALS.StarDust]: 100 },
     input: { [MATERIALS.kWh]: 200 },
     output: { [MATERIALS.StarDust]: 2_000 },
+    sounds: {
+      build: RESOURCES["build-duster"],
+    },
   },
   {
     id: "miner",
@@ -81,6 +98,9 @@ export const BUILDINGS: Partial<Building>[] = [
     building_cost: { [MATERIALS.StarDust]: 1_000 },
     input: { [MATERIALS.kWh]: 1_000 },
     output: { [MATERIALS.Metals]: 1_000 },
+    sounds: {
+      build: RESOURCES["build-miner"],
+    },
   },
   {
     id: "chemical-plant",
@@ -89,6 +109,9 @@ export const BUILDINGS: Partial<Building>[] = [
     building_cost: { [MATERIALS.Metals]: 2_500 },
     input: { [MATERIALS.kWh]: 8750, [MATERIALS.Metals]: 35_000 },
     output: { [MATERIALS.PureMetals]: 3_500 },
+    sounds: {
+      build: RESOURCES["build-chemicalplant"],
+    },
   },
   {
     id: "condenser",
@@ -97,6 +120,9 @@ export const BUILDINGS: Partial<Building>[] = [
     building_cost: { [MATERIALS.Metals]: 10_000 },
     input: { [MATERIALS.kWh]: 2_000 },
     output: { [MATERIALS.H2O]: 7_000 },
+    sounds: {
+      build: RESOURCES["build-condenser"],
+    },
   },
   {
     id: "electrolysis",
@@ -105,6 +131,9 @@ export const BUILDINGS: Partial<Building>[] = [
     building_cost: { [MATERIALS.Metals]: 50_000 },
     input: { [MATERIALS.kWh]: 50_000, [MATERIALS.H2O]: 10_000 },
     output: { [MATERIALS.O2]: 750, [MATERIALS.H2]: 1500 },
+    sounds: {
+      build: RESOURCES["build-electrolysis"],
+    },
   },
   {
     id: "h2-compressor",
@@ -113,6 +142,9 @@ export const BUILDINGS: Partial<Building>[] = [
     building_cost: { [MATERIALS.PureMetals]: 10_000 },
     input: { [MATERIALS.kWh]: 2500, [MATERIALS.H2]: 350 },
     output: { [MATERIALS.LH2]: 250 },
+    sounds: {
+      build: RESOURCES["build-H2compressor"],
+    },
   },
   {
     id: "o2-compressor",
@@ -121,5 +153,8 @@ export const BUILDINGS: Partial<Building>[] = [
     building_cost: { [MATERIALS.PureMetals]: 8_000 },
     input: { [MATERIALS.kWh]: 200, [MATERIALS.O2]: 300 },
     output: { [MATERIALS.LOX]: 200 },
+    sounds: {
+      build: RESOURCES["build-O2compressor"],
+    },
   },
 ];

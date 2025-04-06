@@ -10,6 +10,12 @@ export interface Building {
 
   effect: string;
 
+  sounds: {
+    build?: string;
+    hover?: string;
+    destroy?: string;
+  };
+
   maximum_success_rate: Signal<number>;
   current_success_rate: Signal<number>;
   current_efficiency: Signal<number>;
