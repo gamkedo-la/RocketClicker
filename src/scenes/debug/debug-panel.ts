@@ -38,15 +38,19 @@ export const DebugParameters: any = {
 };
 
 export class DebugPanel {
-  static pane: Pane = new Pane({
-    expanded: true,
-    title: "Debug",
-  });
+  static pane: Pane | null = false
+    ? new Pane({
+        expanded: false,
+        title: "Debug",
+      })
+    : null;
   static tabApi: any;
   static jsxTab: any;
   static i = 0;
 
   static init() {
+    if (!DebugPanel.pane) return;
+
     DebugPanel.tabApi = DebugPanel.pane.addTab({
       pages: [{ title: "General" }, { title: "JSX" }],
     });
@@ -102,6 +106,8 @@ export class DebugPanel {
   }
 
   static add(key: string, value: any) {
+    if (!DebugPanel.pane) return;
+
     DebugPanel.pane.addBinding(DebugParameters, key, {
       readonly: true,
       format: (v: number) => v.toFixed(0),
@@ -115,6 +121,7 @@ export class DebugPanel {
     min: number = 0,
     max: number = 1
   ) {
+    if (!DebugPanel.pane) return;
     DebugPanel.pane.addBinding(DebugParameters, key, {
       min: min,
       max: max,
@@ -129,7 +136,7 @@ export class DebugPanel {
     if (DebugPanel.i > 10) {
       DebugPanel.i = 0;
       // Only update FPS here
-      DebugPanel.pane.refresh();
+      DebugPanel.pane!.refresh();
     }
   }
 
@@ -293,8 +300,10 @@ export class DebugPanel {
     });
   }
 
-  static folder(options: FolderOptions): FolderApi {
-    const parent = options.parent || this.pane;
+  static folder(options: FolderOptions): FolderApi | null {
+    if (!DebugPanel.pane) return null;
+
+    const parent = options.parent || DebugPanel.pane;
     return parent.addFolder({
       title: options.title,
       expanded: options.expanded ?? true,
