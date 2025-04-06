@@ -5,10 +5,10 @@ import { MATERIALS } from "@game/entities/materials/index";
 import { GameStateManager } from "@game/state/game-state";
 import { FlexItem } from "@game/core/ui/FlexItem";
 
-import { Counter } from "./components/counter";
 import { NineSlice } from "./components/NineSlice";
 import { BuildingsPanel } from "./components/right/BuildingDialsPanel";
 import { RocketLauncher } from "./components/right/RocketLauncher";
+import { Counter, ResourcesCounter } from "./components/right/ResourcesCounter";
 
 export const RightPanel = ({
   width,
@@ -39,10 +39,9 @@ export const RightPanel = ({
         {...Object.keys(MATERIALS)
           .filter((material) => material === "LOX" || material === "LH2")
           .map((material) => (
-            // TODO: add material icons
-            // <image texture={RESOURCES[material]} />
             <Counter
               title={material}
+              material={material}
               value={
                 gameState.state.get().material_storage[
                   material as keyof typeof MATERIALS
@@ -64,26 +63,7 @@ export const RightPanel = ({
           <NineSlice texture={RESOURCES["ui-left-panel"]} frame="bg-panel" />
         }
       >
-        <Flex
-          direction={DIRECTION.COLUMN}
-          padding={2}
-          alignContent={ALIGN_ITEMS.FLEX_END}
-        >
-          {...Object.keys(MATERIALS)
-            .filter((material) => material !== "LOX" && material !== "LH2")
-            .map((material) => (
-              // TODO: add material icons
-              // <image texture={RESOURCES[material]} />
-              <Counter
-                title={material}
-                value={
-                  gameState.state.get().material_storage[
-                    material as keyof typeof MATERIALS
-                  ]
-                }
-              />
-            ))}
-        </Flex>
+        <ResourcesCounter gameState={gameState} />
       </Flex>
     </FlexItem>
     <Flex

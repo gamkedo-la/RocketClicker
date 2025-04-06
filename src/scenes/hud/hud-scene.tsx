@@ -1,13 +1,13 @@
 import { RESOURCES } from "@game/assets";
-import { ALIGN_ITEMS, DIRECTION } from "@game/core/ui/AbstractFlex";
+import { ALIGN_ITEMS, DIRECTION, JUSTIFY } from "@game/core/ui/AbstractFlex";
 import { Flex } from "@game/core/ui/Flex";
 import { FlexItem, Spacer } from "@game/core/ui/FlexItem";
 import { FlexRow } from "@game/core/ui/FlexRow";
 import PhaserGamebus from "@game/lib/gamebus";
 
 import { COLORS_NAMES, STRING_COLORS_NAMES } from "@game/consts";
-import { computed } from "@game/core/signals/signals";
-import { GameStateManager } from "@game/state/game-state";
+import { computed, effect, signal } from "@game/core/signals/signals";
+import { GameStateManager, GameStatus } from "@game/state/game-state";
 import { AbstractScene } from "../index";
 import { SCENES } from "../scenes";
 import { NineSlice } from "./components/NineSlice";
@@ -29,6 +29,36 @@ export class HudScene extends AbstractScene {
     this.bus = this.gamebus.getBus();
 
     const { width, height } = this.scale.gameSize;
+
+    let timer = signal(0);
+
+    const timer_event = this.time.addEvent({
+      delay: 1000,
+      repeat: -1,
+      callback: () => {
+        timer.update((timer) => timer + 1);
+      },
+    });
+
+    let timer_text = (
+      <text
+        text={computed(() => {
+          const minutes = Math.floor(timer.get() / 60);
+          const seconds = timer.get() % 60;
+          return `${minutes.toString().padStart(2, "0")}:${seconds
+            .toString()
+            .padStart(2, "0")}`;
+        })}
+        style={{ align: "center", fontSize: 22 }}
+      />
+    );
+
+    const rocket_text = (
+      <text
+        text={`You need 140,000 LH2 and 30,000 LOX to launch the rocket`}
+        style={{ align: "center", fontSize: 16 }}
+      />
+    );
 
     const topBar = (
       <Flex
@@ -52,8 +82,21 @@ export class HudScene extends AbstractScene {
             fontSize: 16,
           }}
         />
+        <Spacer width={450} grow={0} />
+        {timer_text}
+        <Spacer width={275} grow={0} />
+        {rocket_text}
       </Flex>
     );
+
+    effect(() => {
+      if (this.gameState.state.get().status === GameStatus.ROCKET_LAUNCHED) {
+        timer_event.remove();
+        timer_text.setColor("#aaff00");
+        rocket_text.setColor("#ffaa00");
+        rocket_text.setText("Rocket launched!");
+      }
+    });
 
     const screenBorder = (
       <Flex

@@ -119,10 +119,7 @@ export const CometSpinMeter = ({
   );
 
   cometSpin.subscribe((value) => {
-    if (
-      (value < -8 || value > 8) &&
-      motionMachine.current.get() !== "failing"
-    ) {
+    if (value < -6 || value > 6) {
       motionMachine.transition("failing");
     } else if (motionMachine.current.get() === "failing") {
       motionMachine.transition("spin");
@@ -130,7 +127,7 @@ export const CometSpinMeter = ({
   });
 
   failing.subscribe((value) => {
-    if (value > 20) {
+    if (value > 25) {
       motionMachine.transition("broken");
     }
   });

@@ -12,7 +12,7 @@ export class ThreeScene {
   threeScene: THREE.Scene;
   renderer: THREE.WebGLRenderer;
 
-  renderWithComposer = DebugPanel.debug(this, "renderWithComposer", false, {
+  renderWithComposer = DebugPanel.debug(this, "renderWithComposer", true, {
     view: { type: "boolean" },
   });
 

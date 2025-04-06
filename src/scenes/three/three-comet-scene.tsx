@@ -220,6 +220,7 @@ export class ThreeCometScene extends AbstractScene {
         const tower = mesh.children[0].children[0] as THREE.Mesh;
 
         const rocketRotY = signal(0);
+        const rocketRotY2 = signal(20);
         const rocketPosY = signal(0);
 
         const towerRotX = signal(0);
@@ -235,12 +236,26 @@ export class ThreeCometScene extends AbstractScene {
           this.rocket.position.y += value;
         });
 
+        rocketRotY2.subscribe((value) => {
+          this.rocket.position.y = value;
+        });
+
         towerRotX.subscribe((value) => {
           tower.setRotationFromAxisAngle(x, value);
         });
 
-        const machine: MotionMachine<"idle" | "launching", "send_rocket"> = (
-          <motionMachine initialState="idle">
+        const machine: MotionMachine<
+          "idle" | "entering" | "launching",
+          "send_rocket" | "intro_done"
+        > = (
+          <motionMachine initialState="entering">
+            <state id="entering">
+              <animation>
+                <tween to={1} duration={2000} signal={rocketRotY2} />
+                <step run={() => machine.transition("intro_done")} />
+              </animation>
+              <transition on="intro_done" target="idle" />
+            </state>
             <state id="idle">
               <transition on="send_rocket" target="launching" />
             </state>
@@ -249,7 +264,7 @@ export class ThreeCometScene extends AbstractScene {
                 <parallel>
                   <tween
                     from={0}
-                    to={0.14}
+                    to={0.4}
                     duration={10000}
                     signal={rocketPosY}
                   />
@@ -365,6 +380,39 @@ export class ThreeCometScene extends AbstractScene {
       }
     });
 
+    if (building.id === "miner") {
+      const posY = signal(0);
+      const range = signal(0);
+
+      const mm: MotionMachine<"idle", "idle"> = (
+        <motionMachine initialState="idle">
+          <state id="idle">
+            <animation>
+              <repeat times={200 * 5 * 60 * 60 * 4}>
+                <tween from={0} to={range} duration={100} signal={posY} />
+                <tween from={range} to={0} duration={100} signal={posY} />
+              </repeat>
+            </animation>
+          </state>
+        </motionMachine>
+      );
+
+      building.current_success_rate.subscribe((value) => {
+        range.set(0.5 * value);
+      });
+
+      posY.subscribe((value) => {
+        buildingMesh.traverse((node) => {
+          if (node.name === "mesh_0") {
+            node.position.y = value / 8;
+          }
+          if (node.name === "mesh_0_1" || node.name === "mesh_0_2") {
+            node.position.y = value;
+          }
+        });
+      });
+    }
+
     const mesh = buildingMesh as THREE.Mesh;
 
     // TODO: Shadows or something
@@ -387,6 +435,8 @@ export class ThreeCometScene extends AbstractScene {
     // Add to the scene and track it
     this.comet.add(mesh);
     this.buildingMeshes.set(cellId, mesh);
+
+    this.gameState.addCometSpin((TILES_FORCES[cellId] ?? 0) * 3);
 
     console.log(`Added building ${building.name} to cell ${cellId}`);
     return mesh;
@@ -481,7 +531,6 @@ export class ThreeCometScene extends AbstractScene {
       const raycaster = new THREE.Raycaster();
       raycaster.setFromCamera(new THREE.Vector2(x, y), this.threeCamera);
 
-      // TODO: interactions!
       const groundIntersects = raycaster.intersectObjects(this.groundMeshes);
 
       if (groundIntersects.length > 0) {

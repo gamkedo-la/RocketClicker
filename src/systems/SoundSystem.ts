@@ -4,17 +4,19 @@
 // import { RESOURCES } from "@game/assets";
 
 export default class SoundSystem {
-
   DEBUG_SOUNDS = true;
-  scene!:Phaser.Scene; 
+  scene!: Phaser.Scene;
 
-  constructor (thisScene:Phaser.Scene) {
+  muted: boolean;
+
+  constructor(thisScene: Phaser.Scene) {
     if (this.DEBUG_SOUNDS) console.log("creating SoundSystem");
     this.scene = thisScene;
+    this.muted = false;
 
     // the preloader has already downloaded the .mp3
     // so we just add them to the scene ready to play
-    // FIXME: iterate all non-graphic RESOURCES[] 
+    // FIXME: iterate all non-graphic RESOURCES[]
     this.scene.sound.add("build-chemicalplant");
     this.scene.sound.add("build-condenser");
     this.scene.sound.add("build-duster");
@@ -37,12 +39,13 @@ export default class SoundSystem {
     this.scene.sound.add("sfx-pick-up");
     this.scene.sound.add("sfx-put-down");
     this.scene.sound.add("sfx-rocket-launch");
-    this.scene.sound.add("placeholder-music-loop",{loop:true});
+    this.scene.sound.add("placeholder-music-loop", { loop: true });
+
     this.play("placeholder-music-loop");
 
     return this;
   }
-  
+
   destroy() {
     if (this.DEBUG_SOUNDS) console.log("destroying a SoundSystem");
     // fixme: unload sounds from ram/scene, stop any currently playing
@@ -50,25 +53,27 @@ export default class SoundSystem {
 
   // takes a string key as seens in RESOURCES[]
   // fixme: volume etc
-  play(soundName="") {
-    if (this.DEBUG_SOUNDS) console.log("playing sound: "+soundName);
+  play(soundName = "") {
+    if (this.DEBUG_SOUNDS) console.log("playing sound: " + soundName);
+
+    if (this.muted) return;
+
     let snd = this.scene.sound.get(soundName);
     if (snd) {
-        snd.play(); 
+      snd.play();
     } else {
-        console.error("missing sound: "+soundName);
+      console.error("missing sound: " + soundName);
     }
   }
 
   // mute or unmute all sounds
-  setSoundMute(muted=false) {
-    if (this.DEBUG_SOUNDS) console.log("sound is muted: "+muted);
-    this.scene.sound.mute = muted;
+  setSoundMute(muted = false) {
+    if (this.DEBUG_SOUNDS) console.log("sound is muted: " + muted);
+    this.muted = muted;
   }
 
   // global volume for all sounds
-  setSoundVolume(vol=1) { 
+  setSoundVolume(vol = 1) {
     this.scene.sound.volume = vol;
   }
-
 }

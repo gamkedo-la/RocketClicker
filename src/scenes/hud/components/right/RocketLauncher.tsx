@@ -3,7 +3,7 @@ import { Flex } from "../../../../core/ui/Flex";
 import { DIRECTION } from "@game/core/ui/AbstractFlex";
 import { FiniteStateMachine } from "../../../../core/state-machine/state-machine";
 import { computed } from "@game/core/signals/signals";
-import { GameStateManager } from "@game/state/game-state";
+import { GameStateManager, GameStatus } from "@game/state/game-state";
 import { COLORS_NAMES, STRING_COLORS_NAMES } from "@game/consts";
 import { NineSlice } from "../NineSlice";
 
@@ -55,6 +55,7 @@ export const RocketLauncher = ({
           state.transition("mousedown");
           console.log("send rocket");
           bus.emit("send_rocket", null);
+          gameState.setGameStatus(GameStatus.ROCKET_LAUNCHED);
         }
       }}
       onPointerover={() => {
@@ -129,12 +130,6 @@ export const RocketLauncher = ({
       state="pressed"
       run={() => {
         image.setFrame("button-building#2");
-      }}
-    />
-    <onExit
-      state="pressed"
-      run={() => {
-        gameState.setMouseSelectedBuilding(building);
       }}
     />
   </stateObserver>;

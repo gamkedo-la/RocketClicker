@@ -48,7 +48,7 @@ export class Preloader extends AbstractScene {
     graphics.generateTexture("wind_particle", 2, 2);
     graphics.destroy();
 
-    this.scene.start(SCENES.GAME);
+    this.scene.start(SCENES.INTRO);
   }
 
   shutdown() {}
