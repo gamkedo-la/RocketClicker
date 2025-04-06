@@ -205,6 +205,14 @@ export class GameStateManager
     this.state.get().comet_spin_velocity.set(spin);
   }
 
+  addCometSpin(amount: number): void {
+    this.state
+      .get()
+      .comet_spin_velocity.update((current) =>
+        Math.min(10, Math.max(-10, current + amount))
+      );
+  }
+
   getCometSpin(): Signal<number> {
     return this.state.get().comet_spin_velocity;
   }

@@ -11,6 +11,7 @@ import { MATERIALS_NAMES } from "@game/entities/materials/index";
 import { FlexItem, Spacer } from "../../../../core/ui/FlexItem";
 import { NineSlice } from "../NineSlice";
 import { FlexColumn } from "../../../../core/ui/FlexColumn";
+import { EFFECTS_EXPLANATIONS } from "@game/entities/buildings/index";
 
 export const BuildingDetailsPanel = ({
   building,
@@ -58,6 +59,7 @@ export const BuildingDetailsPanel = ({
           color: STRING_COLORS_NAMES["pleasing-pink"],
         }}
         alpha={contentAlpha}
+        resolution={2}
       />
     </FlexItem>
   );
@@ -75,6 +77,7 @@ export const BuildingDetailsPanel = ({
           color: STRING_COLORS_NAMES["pleasing-pink"],
         }}
         alpha={contentAlpha}
+        resolution={2}
       />
     </FlexItem>
   );
@@ -84,7 +87,7 @@ export const BuildingDetailsPanel = ({
       direction={DIRECTION.COLUMN}
       backgroundElement={background}
       width={width}
-      height={200}
+      height={220}
       padding={10}
       depth={-1}
     >
@@ -99,6 +102,7 @@ export const BuildingDetailsPanel = ({
         text={building_cost}
         alpha={contentAlpha}
         style={{ color: STRING_COLORS_NAMES["vaporwave-blue"] }}
+        resolution={2}
       />
       <Spacer grow={0} height={20} />
       {inputFlexItem}
@@ -109,6 +113,25 @@ export const BuildingDetailsPanel = ({
         height={12}
       />
       {outputFlexItem}
+      <Spacer grow={0} height={5} />
+      <text
+        text={computed(() => building?.get()?.effect || "")}
+        alpha={contentAlpha}
+        style={{ color: STRING_COLORS_NAMES["strawberry-field"] }}
+        resolution={2}
+      />
+      <text
+        text={computed(
+          () => EFFECTS_EXPLANATIONS[building?.get()?.effect] || ""
+        )}
+        alpha={contentAlpha}
+        style={{
+          color: STRING_COLORS_NAMES["vicious-violet"],
+          align: "center",
+          wordWrap: { width: width.get() },
+        }}
+        resolution={2}
+      />
     </Flex>
   );
 

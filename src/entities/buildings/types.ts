@@ -8,7 +8,9 @@ export interface Building {
   input: Record<string, number>;
   output: Record<string, number>;
 
+  effect: string;
+
   maximum_success_rate: Signal<number>;
   current_success_rate: Signal<number>;
-  current_temperature: Signal<number>;
+  current_efficiency: Signal<number>;
 }

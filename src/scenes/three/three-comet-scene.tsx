@@ -408,9 +408,7 @@ export class ThreeCometScene extends AbstractScene {
   ) {
     const distFromCenter = Math.min(375, Math.max(-385, Math.floor(x - 645)));
     if (distFromCenter !== 375 && distFromCenter !== -385) {
-      this.gameState.getCometSpin().update((spin) => {
-        return Math.min(10, Math.max(-10, spin + distFromCenter / 370));
-      });
+      this.gameState.addCometSpin(distFromCenter / 370);
       this.gameState.changeMaterial(MATERIALS.StarDust, 100);
 
       const formattedValue = value >= 0 ? `+${value}` : value.toString();

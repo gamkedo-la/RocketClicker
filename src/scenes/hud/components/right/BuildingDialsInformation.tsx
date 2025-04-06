@@ -51,6 +51,38 @@ export const BuildingDialsInformation = ({
       />
       <Spacer grow={0} height={20} />
       <text
+        text={"Efficiency"}
+        style={{ fontSize: 14, color: STRING_COLORS_NAMES["pleasing-pink"] }}
+      />
+      <Bar
+        value={computed(
+          () =>
+            gameState.state
+              .get()
+              .hovered_building.get()
+              ?.current_efficiency.get() || 0
+        )}
+        width={70}
+        color={COLORS_NAMES["pleasing-pink"]}
+      />
+      <Spacer grow={0} height={5} />
+      <text
+        text={"Allowance"}
+        style={{ fontSize: 14, color: STRING_COLORS_NAMES["namibia"] }}
+      />
+      <Bar
+        value={computed(
+          () =>
+            gameState.state
+              .get()
+              .hovered_building.get()
+              ?.maximum_success_rate.get() || 0
+        )}
+        width={70}
+        color={COLORS_NAMES["namibia"]}
+      />
+      <Spacer grow={0} height={5} />
+      <text
         text={"Consumption"}
         style={{ fontSize: 14, color: STRING_COLORS_NAMES["vicious-violet"] }}
       />
@@ -73,7 +105,9 @@ export const BuildingDialsInformation = ({
           return Object.entries(hoveredBuilding.get()?.input || {})
             .map(
               ([key, value]) =>
-                `${key}: ${Number(value * successRate).toLocaleString()}`
+                `${key}: ${Number(
+                  Math.round(value * successRate)
+                ).toLocaleString()}`
             )
             .join("\n");
         })}
@@ -103,40 +137,13 @@ export const BuildingDialsInformation = ({
           return Object.entries(hoveredBuilding.get()?.output || {})
             .map(
               ([key, value]) =>
-                `${key}: ${Number(value * successRate).toLocaleString()}`
+                `${key}: ${Number(
+                  Math.round(value * successRate)
+                ).toLocaleString()}`
             )
             .join("\n");
         })}
         style={{ fontSize: 12, color: STRING_COLORS_NAMES["vaporwave-blue"] }}
-      />
-      <Spacer grow={0} height={15} />
-      <text
-        text={"Allowance"}
-        style={{ fontSize: 14, color: STRING_COLORS_NAMES["pleasing-pink"] }}
-      />
-      <Bar
-        value={computed(
-          () =>
-            gameState.state
-              .get()
-              .hovered_building.get()
-              ?.maximum_success_rate.get() || 0
-        )}
-        width={70}
-      />
-      <text
-        text={computed(() => {
-          const successRate = hoveredBuilding
-            .get()
-            ?.maximum_success_rate?.get();
-
-          if (!successRate) {
-            return "";
-          }
-
-          return `${Math.round(successRate * 100)} %`;
-        })}
-        style={{ fontSize: 12, color: STRING_COLORS_NAMES["pleasing-pink"] }}
       />
     </Flex>
   );

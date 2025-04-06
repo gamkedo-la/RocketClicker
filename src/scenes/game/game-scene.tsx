@@ -13,6 +13,7 @@ import { MATERIALS, MATERIALS_NAMES } from "@game/entities/materials/index";
 import MaterialsSystem from "@game/systems/MaterialsSystem";
 import { AbstractScene } from "..";
 import { SCENES } from "../scenes";
+import EffectsSystem from "@game/systems/EffectsSystem";
 
 let i = 0;
 
@@ -254,6 +255,7 @@ export class GameScene extends AbstractScene {
 
   soundSystem!: SoundSystem;
   materialsSystem!: MaterialsSystem;
+  effectsSystem!: EffectsSystem;
 
   create() {
     this.bus = this.gamebus.getBus();
@@ -507,6 +509,7 @@ export class GameScene extends AbstractScene {
     console.log("registering systems");
     this.soundSystem = new SoundSystem(this);
     this.materialsSystem = new MaterialsSystem(this.gameState).create();
+    this.effectsSystem = new EffectsSystem(this.gameState).create();
   }
 
   tickLength = 1000;
@@ -527,6 +530,7 @@ export class GameScene extends AbstractScene {
     }
 
     this.materialsSystem.update(time, delta);
+    this.effectsSystem.update(time, delta);
   }
 
   shutdown() {}
