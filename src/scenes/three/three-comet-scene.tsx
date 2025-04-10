@@ -9,6 +9,7 @@ import { AbstractScene } from "..";
 import { SCENES } from "../scenes";
 
 import { TWELVE_HOURS_IN_SECONDS } from "@game/consts";
+import { assert } from "@game/core/common/assert";
 import { effect, signal } from "@game/core/signals/signals";
 import {
   BUILDINGS,
@@ -19,16 +20,19 @@ import { Building } from "@game/entities/buildings/types";
 import { hasResources, MATERIALS } from "@game/entities/materials/index";
 import { MAX_COMET_SPIN } from "@game/state/consts";
 import { MotionMachine } from "../../core/motion-machine/motion-machine";
+import { GameScene } from "../game/game-scene";
 import { Camera } from "./components/camera";
 import { loader, ThreeScene } from "./components/scene";
+import { addFlyingBuilding } from "./elements/flying-building";
 import { createLights } from "./elements/lights";
 import { buildingMaterial, starMaterial } from "./elements/materials";
 import { createSky } from "./elements/sky";
-import { assert } from "@game/core/common/assert";
 
 export class ThreeCometScene extends AbstractScene {
   declare bus: Phaser.Events.EventEmitter;
   declare gamebus: PhaserGamebus;
+
+  gameScene: GameScene;
 
   camera: Camera;
   orbitControls: OrbitControls;
@@ -69,6 +73,8 @@ export class ThreeCometScene extends AbstractScene {
 
   async create() {
     this.bus = this.gamebus.getBus();
+
+    this.gameScene = this.scene.get(SCENES.GAME) as GameScene;
 
     const camera = new Camera(
       this.game.scale.width * 0.6,
@@ -416,7 +422,7 @@ export class ThreeCometScene extends AbstractScene {
   /**
    * Converts a cell ID to a position on the comet
    */
-  private getCellPosition(cellId: number): THREE.Vector3 {
+  getCellPosition(cellId: number): THREE.Vector3 {
     const board = this.gameState.state.get()?.board;
     if (!board) return new THREE.Vector3();
 
@@ -786,10 +792,15 @@ export class ThreeCometScene extends AbstractScene {
                   this.gameState.state.get()?.material_storage ?? {}
                 )
               ) {
-                this.gameState.addBuildingToCell(
-                  cellId,
-                  getBuildingById(selectedBuilding.id)
-                );
+                if (this.gameState.state.get().can_place_building.get()) {
+                  this.gameState.addBuildingToCell(
+                    cellId,
+                    getBuildingById(selectedBuilding.id)
+                  );
+                } else {
+                  this.gameState.consumeBuildingConstruction(selectedBuilding);
+                  addFlyingBuilding(this, selectedBuilding, cellId);
+                }
               }
             }
           }
