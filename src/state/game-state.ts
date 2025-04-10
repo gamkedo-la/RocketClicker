@@ -1,4 +1,4 @@
-import { mutable, signal } from "@game/core/signals/signals";
+import { computed, mutable, signal } from "@game/core/signals/signals";
 import { MutableSignal, Signal } from "@game/core/signals/types";
 import { MATERIALS } from "@game/entities/materials/index";
 import { Building } from "@game/entities/buildings/types";
@@ -27,6 +27,8 @@ export interface State {
   mouse_selected_building: Signal<MouseSelectedBuilding>;
   mouse_selected_bulldoze: Signal<boolean>;
   comet_spin_velocity: Signal<number>;
+  comet_spin_velocity_abs: Signal<number>;
+  can_place_building: Signal<boolean>;
   comet_angle: Signal<number>;
   hovered_building: Signal<Building | null>;
 }
@@ -38,6 +40,33 @@ export interface MouseSelectedBuilding {
 export interface GameState {
   state: MutableSignal<State | null>;
 }
+
+/* Ha, is this the way to go with states + signals?
+ * Will this look unparseable at 10/100 signals?
+ * Could this "global" declaration allow for splitting files?
+ *
+ * Not really because this won't allow for resetting the state easily.
+ * How would this "save to disk" or be loaded across multiple games?
+ */
+
+const comet_spin_velocity = signal(0, {
+  label: "Comet Spin",
+  tweakpaneOptions: {
+    min: -MAX_COMET_SPIN,
+    max: MAX_COMET_SPIN,
+  },
+});
+
+const comet_spin_velocity_abs = computed(
+  () => Math.abs(comet_spin_velocity.get()),
+  {
+    label: "Absolute Comet Spin",
+    tweakpaneOptions: {
+      min: 0,
+      max: MAX_COMET_SPIN,
+    },
+  }
+);
 
 export class GameStateManager
   extends Phaser.Plugins.BasePlugin
@@ -56,14 +85,12 @@ export class GameStateManager
       grid: Array.from({ length: 5 }, () => Array(5).fill(0)),
       grid_buildings: new Map(),
     },
-    comet_spin_velocity: signal(MAX_COMET_SPIN, {
-      label: "Comet Spin",
-      tweakpaneOptions: {
-        min: 0,
-        max: MAX_COMET_SPIN,
-      },
-    }),
+    comet_spin_velocity,
+    comet_spin_velocity_abs,
     comet_angle: signal(0),
+    can_place_building: computed(() => comet_spin_velocity_abs.get() <= 20.0, {
+      label: "Can Place Building",
+    }),
     mouse_selected_building: signal<MouseSelectedBuilding>({ building: null }),
     mouse_selected_bulldoze: signal<boolean>(false),
     hovered_building: signal<Building | null>(null),

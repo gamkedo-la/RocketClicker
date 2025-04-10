@@ -8,6 +8,7 @@ import { DebugPanel } from "@game/scenes/debug/debug-panel";
 import { AbstractScene } from "..";
 import { SCENES } from "../scenes";
 
+import { TWELVE_HOURS_IN_SECONDS } from "@game/consts";
 import { effect, signal } from "@game/core/signals/signals";
 import {
   BUILDINGS,
@@ -15,15 +16,15 @@ import {
   TILES_FORCES,
 } from "@game/entities/buildings/index";
 import { Building } from "@game/entities/buildings/types";
-import { MATERIALS } from "@game/entities/materials/index";
+import { hasResources, MATERIALS } from "@game/entities/materials/index";
+import { MAX_COMET_SPIN } from "@game/state/consts";
+import { MotionMachine } from "../../core/motion-machine/motion-machine";
 import { Camera } from "./components/camera";
 import { loader, ThreeScene } from "./components/scene";
 import { createLights } from "./elements/lights";
 import { buildingMaterial, starMaterial } from "./elements/materials";
 import { createSky } from "./elements/sky";
-import { MotionMachine } from "../../core/motion-machine/motion-machine";
-import { MAX_COMET_SPIN } from "@game/state/consts";
-import { TWELVE_HOURS_IN_SECONDS } from "@game/consts";
+import { assert } from "@game/core/common/assert";
 
 export class ThreeCometScene extends AbstractScene {
   declare bus: Phaser.Events.EventEmitter;
@@ -61,6 +62,10 @@ export class ThreeCometScene extends AbstractScene {
   cameraPositionY = signal(50);
   ambientLightIntensity = signal(1.5);
   spotLightIntensity = signal(0.25);
+
+  // Track both the ghost and the current selected building type
+  ghostBuilding: THREE.Object3D | null = null;
+  currentGhostBuildingId: string | null = null;
 
   async create() {
     this.bus = this.gamebus.getBus();
@@ -367,14 +372,7 @@ export class ThreeCometScene extends AbstractScene {
   }
 
   private loadBuildingModels() {
-    // This will load all building models and store them for later use
-    // For now, if there's no model, we are create simple placeholder geometries
-
     const buildingTypes = BUILDINGS.map((b) => b.id);
-    const colors = [
-      0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff, 0xffa500,
-      0x800080, 0x008000, 0x800000,
-    ];
 
     // Load 3D models for buildings that have them
     const modelLoaders = new Map([
@@ -390,7 +388,7 @@ export class ThreeCometScene extends AbstractScene {
       ["o2-compressor", RESOURCES.compressor],
     ]);
 
-    buildingTypes.forEach((type, index) => {
+    buildingTypes.forEach((type) => {
       // Check if we have a 3D model for this building type
       if (modelLoaders.has(type!)) {
         const modelResource = modelLoaders.get(type!)!;
@@ -410,12 +408,7 @@ export class ThreeCometScene extends AbstractScene {
           this.buildingsModelsCache.set(type!, gltf.scene);
         });
       } else {
-        // Use placeholder geometry for buildings without models
-        const geometry = new THREE.BoxGeometry(0.02, 0.02, 0.02);
-        const material = new THREE.MeshPhongMaterial({ color: colors[index] });
-        const mesh = new THREE.Mesh(geometry, material);
-        mesh.rotateY(Math.PI / 4);
-        this.buildingsModelsCache.set(type!, mesh);
+        assert(false, `No model found for building type: ${type}`);
       }
     });
   }
@@ -560,6 +553,10 @@ export class ThreeCometScene extends AbstractScene {
         ease: "Cubic.easeOut",
         onComplete: () => text.destroy(),
       });
+
+      this.gameState.state.get()?.mouse_selected_building.set({
+        building: null,
+      });
     }
   }
 
@@ -582,6 +579,109 @@ export class ThreeCometScene extends AbstractScene {
 
   pointerDownFrames = 0;
   pointerJustDown = false;
+
+  private updateGhostBuilding(
+    cellId: number | null,
+    selectedBuilding: Building | null
+  ) {
+    // Early exit if nothing changed
+    if (!selectedBuilding && !this.ghostBuilding) return;
+    if (cellId === 12) return; // Rocket launcher cell
+
+    // Remove ghost if no valid placement
+    if (!cellId || !selectedBuilding || this.buildingMeshes.has(cellId)) {
+      if (this.ghostBuilding) {
+        this.comet.remove(this.ghostBuilding);
+        this.ghostBuilding = null;
+        this.currentGhostBuildingId = null;
+      }
+      return;
+    }
+
+    const canBuild = hasResources(
+      selectedBuilding,
+      this.gameState.state.get()?.material_storage ?? {}
+    );
+
+    const tooFastToBuild = !this.gameState.state.get().can_place_building.get();
+
+    // Create new ghost if building type changed
+    if (this.currentGhostBuildingId !== selectedBuilding.id) {
+      // Remove old ghost
+      if (this.ghostBuilding) {
+        this.comet.remove(this.ghostBuilding);
+        this.ghostBuilding = null;
+      }
+
+      // Create new ghost
+      const buildingMesh = this.buildingsModelsCache
+        .get(selectedBuilding.id)
+        ?.clone();
+
+      if (buildingMesh) {
+        buildingMesh.traverse((node) => {
+          if (node instanceof THREE.Mesh) {
+            if (Array.isArray(node.material)) {
+              node.material = node.material.map((mat) => {
+                const ghostMat = mat.clone();
+                ghostMat.transparent = true;
+                ghostMat.opacity = 0.1;
+                ghostMat.depthWrite = false;
+                return ghostMat;
+              });
+            } else if (node.material) {
+              const ghostMat = node.material.clone();
+              ghostMat.transparent = true;
+              ghostMat.opacity = 0.1;
+              ghostMat.depthWrite = false;
+              node.material = ghostMat;
+            }
+          }
+        });
+
+        this.comet.add(buildingMesh);
+        this.ghostBuilding = buildingMesh;
+        this.currentGhostBuildingId = selectedBuilding.id;
+      }
+    }
+
+    // Update ghost position and appearance
+    if (this.ghostBuilding) {
+      // Update position
+      const position = this.getCellPosition(cellId);
+      this.ghostBuilding.position.copy(position);
+      this.ghostBuilding.position.y -= 0.008;
+
+      // Update materials color based on state
+      const color = !canBuild
+        ? 0xff0000
+        : tooFastToBuild
+        ? 0xffff00
+        : undefined;
+
+      if (color !== undefined) {
+        this.ghostBuilding.traverse((node) => {
+          if (node instanceof THREE.Mesh) {
+            if (Array.isArray(node.material)) {
+              node.material.forEach((mat) => {
+                if (
+                  mat instanceof THREE.MeshStandardMaterial ||
+                  mat instanceof THREE.MeshPhongMaterial
+                ) {
+                  mat.color.setHex(color);
+                }
+              });
+            } else if (
+              node.material instanceof THREE.MeshStandardMaterial ||
+              node.material instanceof THREE.MeshPhongMaterial
+            ) {
+              node.material.color.setHex(color);
+            }
+          }
+        });
+      }
+    }
+  }
 
   update(_time: number, _delta: number) {
     const pointer = this.input.activePointer;
@@ -632,6 +732,12 @@ export class ThreeCometScene extends AbstractScene {
             this.gameState.getBuildingAt(grid.x, grid.y)
           );
 
+          // Update ghost building
+          const selectedBuilding = this.gameState.state
+            .get()
+            ?.mouse_selected_building.get()?.building;
+          this.updateGhostBuilding(cellId, selectedBuilding);
+
           const building = this.buildingMeshes.get(cellId);
           this.hoveredObject = building;
           if (building) {
@@ -644,6 +750,9 @@ export class ThreeCometScene extends AbstractScene {
               );
             });
           }
+        } else {
+          // Remove ghost building when not hovering over terrain
+          this.updateGhostBuilding(null, null);
         }
 
         if (this.pointerJustDown) {
@@ -671,7 +780,11 @@ export class ThreeCometScene extends AbstractScene {
 
               if (
                 !this.gameState.getBuildingAtCell(cellId) &&
-                selectedBuilding
+                selectedBuilding &&
+                hasResources(
+                  selectedBuilding,
+                  this.gameState.state.get()?.material_storage ?? {}
+                )
               ) {
                 this.gameState.addBuildingToCell(
                   cellId,
@@ -681,6 +794,9 @@ export class ThreeCometScene extends AbstractScene {
             }
           }
         }
+      } else {
+        // Remove ghost building when not hovering over anything
+        this.updateGhostBuilding(null, null);
       }
     }
 
