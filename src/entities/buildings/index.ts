@@ -23,9 +23,9 @@ export function getBuildingById(id: string): Building {
       hover: building.sounds?.hover ?? "",
       destroy: building.sounds?.destroy ?? "",
     },
-    maximum_success_rate: signal(1),
-    current_success_rate: signal(1),
-    current_efficiency: signal(1),
+    maximum_success_rate: signal(0.5),
+    current_success_rate: signal(0),
+    current_efficiency: signal(0),
   };
 }
 

@@ -8,8 +8,13 @@ import { FlexItem } from "@game/core/ui/FlexItem";
 import { Building } from "@game/entities/buildings/types";
 import { GameStateManager } from "@game/state/game-state";
 
+import { MAX_ALLOWANCE, MIN_ALLOWANCE } from "@game/state/consts";
+
 import { NineSlice } from "../NineSlice";
 import { BuildingDialsInformation } from "./BuildingDialsInformation";
+
+const boundTargetValue = (target: Signal<number>, cur: number) =>
+  target.set(Math.max(MIN_ALLOWANCE, Math.min(MAX_ALLOWANCE, cur)));
 
 const Dial = ({
   id,
@@ -48,16 +53,16 @@ const Dial = ({
     );
   }
 
-  const visibleDial = signal(false);
-  const scaleDial = signal(1);
-  const alphaDial = signal(1);
-  const backgroundTint = signal(0x999999);
+  const visuals_visibleDial = signal(false);
+  const visuals_scaleDial = signal(1);
+  const visuals_alphaDial = signal(1);
+  const visuals_backgroundTint = signal(0x999999);
 
-  const value = signal(0);
-  const targetValue = signal(100);
-  const successRate = signal(1);
+  const visuals_dialValue = signal(0);
+  const allowanceValue = signal(1);
+  const buildingSuccessRate = signal(1);
 
-  const p = window.currentScene.make.particles(
+  const visuals_buttonParticle = window.currentScene.make.particles(
     {
       config: {
         rotate: { min: 0, max: 360 },
@@ -71,29 +76,29 @@ const Dial = ({
     true
   );
 
-  p.setDepth(1);
-  p.stop();
+  visuals_buttonParticle.setDepth(1);
+  visuals_buttonParticle.stop();
 
-  let particle = false;
+  let buttonParticleEmitted = false;
 
   const dialMachine = (
     <motionMachine initialState="starting">
       <state id="starting">
         <animation on="enter">
-          <tween signal={value} from={100} to={0} duration={1000} />
-          <tween signal={successRate} from={1} to={0} duration={500} />
+          <tween signal={visuals_dialValue} from={2} to={0} duration={1000} />
+          <tween signal={buildingSuccessRate} from={1} to={0} duration={500} />
         </animation>
         <transition on="active" target="idle-enter" />
       </state>
       <state id="idle-enter">
         <animation on="enter">
-          <step run={() => visibleDial.set(true)} />
+          <step run={() => visuals_visibleDial.set(true)} />
           <parallel>
-            <tween signal={value} from={0} to={100} duration={700} />
-            <tween signal={scaleDial} from={2} to={1} duration={500} />
-            <tween signal={alphaDial} from={0} to={1} duration={500} />
+            <tween signal={visuals_dialValue} from={0} to={10} duration={700} />
+            <tween signal={visuals_scaleDial} from={2} to={1} duration={500} />
+            <tween signal={visuals_alphaDial} from={0} to={1} duration={500} />
           </parallel>
-          <tween signal={backgroundTint} to={0xcccccc} duration={5} />
+          <tween signal={visuals_backgroundTint} to={0xcccccc} duration={5} />
           <step run={() => dialMachine.transition("active")} />
         </animation>
         <transition on="active" target="active" />
@@ -101,7 +106,11 @@ const Dial = ({
       <state id="active">
         <animation on="active">
           <repeat times={200 * 5 * 60 * 120}>
-            <tween signal={value} to={targetValue} duration={200} />
+            <tween
+              signal={visuals_dialValue}
+              to={allowanceValue}
+              duration={200}
+            />
           </repeat>
         </animation>
         <transition on="remove" target="remove" />
@@ -109,8 +118,8 @@ const Dial = ({
       </state>
       <state id="remove">
         <animation on="enter">
-          <step run={() => visibleDial.set(false)} />
-          <tween signal={backgroundTint} to={0x999999} duration={5} />
+          <step run={() => visuals_visibleDial.set(false)} />
+          <tween signal={visuals_backgroundTint} to={0x999999} duration={5} />
         </animation>
         <transition on="active" target="idle-enter" />
       </state>
@@ -118,14 +127,14 @@ const Dial = ({
         <animation on="active">
           <step
             run={() => {
-              if (!particle) {
-                p.explode(
+              if (!buttonParticleEmitted) {
+                visuals_buttonParticle.explode(
                   1,
                   container.x + dialBackground.x,
                   container.y + dialBackground.y
                 );
 
-                particle = true;
+                buttonParticleEmitted = true;
               }
 
               dialBackground.setVisible(false);
@@ -141,7 +150,7 @@ const Dial = ({
     <image
       texture={RESOURCES["ui-left-panel"]}
       frame="bg-dial-button-breakable#0"
-      tint={backgroundTint}
+      tint={visuals_backgroundTint}
     />
   );
 
@@ -149,9 +158,9 @@ const Dial = ({
     <image
       texture={RESOURCES["ui-left-panel"]}
       frame="dial-bg-button-breakable#0"
-      visible={visibleDial}
-      scale={scaleDial}
-      alpha={alphaDial}
+      visible={visuals_visibleDial}
+      scale={visuals_scaleDial}
+      alpha={visuals_alphaDial}
     />
   );
 
@@ -159,17 +168,18 @@ const Dial = ({
     <image
       texture={RESOURCES["ui-left-panel"]}
       frame="dial-button-breakable#0"
-      visible={visibleDial}
-      scale={scaleDial}
-      alpha={alphaDial}
+      visible={visuals_visibleDial}
+      scale={visuals_scaleDial}
+      alpha={visuals_alphaDial}
       angle={computed(() => {
         if (dialMachine.state?.get() === "active") {
           return 0;
         }
 
-        let val = value.get();
+        let val = visuals_dialValue.get();
 
-        return -145 + 290 * (val / 100);
+        // Map the 0-2 range to the -145 to 145 angle range
+        return -45 + 90 * (val / 2);
       })}
     />
   );
@@ -209,23 +219,32 @@ const Dial = ({
 
   container.on("drag", (pointer: Phaser.Input.Pointer) => {
     if (pointerIsDown) {
-      if (pointer.distance > 100) {
-        dialMachine.transition("broken");
-      }
+      const dragDistance = pointer.x - referenceX;
+      // each 100 pixels is 1 zone
+      const zone = Math.round(dragDistance / 100);
+      // but we need to start from the current value
+      const currentValue = allowanceValue.get();
+      const newValue = currentValue + zone;
 
-      const m = pointer.x - referenceX;
-      targetValue.update((cur) => Math.max(0, Math.min(100, cur + m / 10)));
+      if (newValue !== currentValue) {
+        referenceX = pointer.x;
+        boundTargetValue(allowanceValue, newValue);
+      }
     }
   });
+
+  let accumulatedDelta = 0;
 
   container.on(
     "wheel",
     (_pointer: Phaser.Input.Pointer, _deltaX: number, deltaY: number) => {
-      if (Math.abs(deltaY) > 60) {
-        dialMachine.transition("broken");
-      }
+      accumulatedDelta += deltaY;
 
-      targetValue.update((cur) => Math.max(0, Math.min(100, cur + deltaY)));
+      if (Math.abs(accumulatedDelta) > 100) {
+        const newValue = allowanceValue.get() + accumulatedDelta / 100;
+        boundTargetValue(allowanceValue, newValue);
+        accumulatedDelta = 0;
+      }
     }
   );
 
@@ -248,8 +267,7 @@ const Dial = ({
         dialMachine.transition("active");
         successRateSubscriptionDispose =
           building.current_success_rate.subscribe((rate) => {
-            console.log("successRate", rate);
-            successRate.set(rate);
+            buildingSuccessRate.set(rate);
           });
       } else {
         if (wasBuilding) {
@@ -259,12 +277,12 @@ const Dial = ({
     }
   });
 
-  targetValue.subscribe((value) => {
+  allowanceValue.subscribe((value) => {
     const buildingSignal = building[1];
     if (buildingSignal) {
       const building = buildingSignal.get();
       if (building) {
-        building.maximum_success_rate.set(value / 100);
+        building.maximum_success_rate.set(value / 2);
       }
     }
   });
@@ -274,8 +292,10 @@ const Dial = ({
       {background}
       <FlexItem attachTo={0} offsetY={8} origin={{ x: 0, y: 0.5 }}>
         <rectangle
-          x={computed(() => Math.floor(4 + 17 * successRate.get()))}
-          width={computed(() => Math.floor(18 - 17 * successRate.get()))}
+          x={computed(() => Math.floor(4 + 17 * buildingSuccessRate.get()))}
+          width={computed(() =>
+            Math.floor(18 - 17 * buildingSuccessRate.get())
+          )}
           height={2}
           fillColor={COLORS_NAMES["dark-knight"]}
         />
@@ -283,7 +303,7 @@ const Dial = ({
       <FlexItem
         attachTo={0}
         offsetX={12}
-        offsetY={22}
+        offsetY={27}
         origin={{ x: 0.5, y: 0.5 }}
       >
         {dialBackground}
@@ -291,7 +311,7 @@ const Dial = ({
       <FlexItem
         attachTo={0}
         offsetX={12}
-        offsetY={22}
+        offsetY={27}
         origin={{ x: 0.5, y: 0.5 }}
       >
         {dial}
