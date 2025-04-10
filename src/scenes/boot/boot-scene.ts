@@ -14,11 +14,10 @@ export class Boot extends Scene {
 
   create() {
     if (import.meta.env.VITE_DEBUG) {
-      //DebugPanel.init();
+      DebugPanel.init();
 
       this.events.on("update", () => {
-        //DebugParameters.fps = this.game.loop.actualFps;
-        //DebugPanel.update();
+        DebugParameters.fps = this.game.loop.actualFps;
       });
     }
     this.scene.launch(SCENES.PRELOADER);

@@ -50,6 +50,7 @@ export class DebugPanel {
   static tabApi: any;
   static jsxTab: any;
   static i = 0;
+  static signalsFolder: FolderApi | null = null;
 
   static init() {
     if (!DebugPanel.pane) return;
@@ -59,14 +60,14 @@ export class DebugPanel {
     });
 
     DebugParameters.fps = 0;
+    DebugPanel.tabApi.pages[0].addBinding(DebugParameters, "frameBudget", {
+      readonly: true,
+      format: (v: number) => v.toFixed(6),
+    });
+
     DebugPanel.tabApi.pages[0].addBinding(DebugParameters, "fps", {
       readonly: true,
       format: (v: number) => v.toFixed(0),
-    });
-
-    DebugPanel.tabApi.pages[0].addBinding(DebugParameters, "frameBudget", {
-      readonly: true,
-      format: (v: number) => v.toFixed(4),
     });
 
     DebugPanel.tabApi.pages[0].addBinding(DebugParameters, "fps", {
@@ -74,7 +75,12 @@ export class DebugPanel {
       readonly: true,
       view: "graph",
       min: 0,
-      max: 100,
+      max: 140,
+    });
+
+    DebugPanel.signalsFolder = DebugPanel.tabApi.pages[0].addFolder({
+      title: "Signals",
+      expanded: true,
     });
 
     DebugPanel.jsxTab = DebugPanel.tabApi.pages[1].addTab({

@@ -23,6 +23,16 @@ export function registerSignalForDebug<T>(
   signalInstance: SignalImpl<T>,
   debugOptions: SignalDebugOptions
 ) {
+  // "Makes sure" the debug panel is initialized
+  setTimeout(() => {
+    asyncRegisterSignalForDebug(signalInstance, debugOptions);
+  }, 0);
+}
+
+function asyncRegisterSignalForDebug<T>(
+  signalInstance: SignalImpl<T>,
+  debugOptions: SignalDebugOptions
+) {
   if (!DebugPanel.pane) return;
 
   const isComputed = !!signalInstance.computeFn;
@@ -58,7 +68,9 @@ export function registerSignalForDebug<T>(
   };
 
   try {
-    const parentPane = debugOptions.folder || DebugPanel.pane;
+    const parentPane =
+      debugOptions.folder || DebugPanel.signalsFolder || DebugPanel.pane;
+
     const bindingOptions: BindingParams = {
       label,
       readonly: isReadOnly,

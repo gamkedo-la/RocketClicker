@@ -56,7 +56,13 @@ export class GameStateManager
       grid: Array.from({ length: 5 }, () => Array(5).fill(0)),
       grid_buildings: new Map(),
     },
-    comet_spin_velocity: signal(MAX_COMET_SPIN),
+    comet_spin_velocity: signal(MAX_COMET_SPIN, {
+      label: "Comet Spin",
+      tweakpaneOptions: {
+        min: 0,
+        max: MAX_COMET_SPIN,
+      },
+    }),
     comet_angle: signal(0),
     mouse_selected_building: signal<MouseSelectedBuilding>({ building: null }),
     mouse_selected_bulldoze: signal<boolean>(false),
