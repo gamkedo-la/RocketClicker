@@ -8,7 +8,7 @@ export interface Building {
   input: Record<string, number>;
   output: Record<string, number>;
 
-  effect: string;
+  effects: string[];
 
   sounds: {
     build?: string;

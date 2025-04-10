@@ -1,6 +1,7 @@
 import { GameStateManager } from "@game/state/game-state";
 import { System } from ".";
 import { EFFECTS, TILES_FORCES } from "../entities/buildings";
+import { MAX_COMET_SPIN } from "@game/state/consts";
 
 export default class EffectsSystem implements System {
   constructor(private gameState: GameStateManager) {}
@@ -17,41 +18,41 @@ export default class EffectsSystem implements System {
 
       if (building === null) return;
 
-      const effect = building.effect;
-
-      switch (effect) {
-        case EFFECTS.VIBRATION:
-          const force = TILES_FORCES[cellId] ?? 0;
-          this.gameState.addCometSpin(
-            force * 0.0005 * delta * building.current_efficiency.get()
-          );
-          break;
-        case EFFECTS.DAMP:
-          this.gameState
-            .getCometSpin()
-            .update((spin) => spin * 0.999 * building.current_efficiency.get());
-          break;
-        case EFFECTS.SPEED:
-          building.current_efficiency.set(
-            Math.abs(this.gameState.getCometSpin().get() / 10)
-          );
-          break;
-        case EFFECTS.SLOW:
-          building.current_efficiency.set(
-            1 - Math.abs(this.gameState.getCometSpin().get() / 10)
-          );
-          break;
-        case EFFECTS.LIGHT:
-          building.current_efficiency.set(
-            1 - Math.abs(this.gameState.getCometAngle().get() / Math.PI)
-          );
-          break;
-        case EFFECTS.COLD:
-          building.current_efficiency.set(
-            Math.abs(this.gameState.getCometAngle().get() / Math.PI)
-          );
-          break;
-      }
+      building.effects.forEach((effect) => {
+        switch (effect) {
+          case EFFECTS.VIBRATION:
+            const force = TILES_FORCES[cellId] ?? 0;
+            this.gameState.addCometSpin(
+              force * 0.0005 * delta * building.current_efficiency.get()
+            );
+            break;
+          case EFFECTS.DAMP:
+            this.gameState
+              .getCometSpin()
+              .update(
+                (spin) => spin * 0.999 * building.current_efficiency.get()
+              );
+            break;
+          case EFFECTS.SPEED:
+            // building tax covers for this now?
+            break;
+          case EFFECTS.SLOW:
+            building.current_efficiency.set(
+              1 - Math.abs(this.gameState.getCometSpin().get() / MAX_COMET_SPIN)
+            );
+            break;
+          case EFFECTS.LIGHT:
+            building.current_efficiency.set(
+              1 - Math.abs(this.gameState.getCometAngle().get() / Math.PI)
+            );
+            break;
+          case EFFECTS.COLD:
+            building.current_efficiency.set(
+              Math.abs(this.gameState.getCometAngle().get() / Math.PI)
+            );
+            break;
+        }
+      });
     });
   }
 

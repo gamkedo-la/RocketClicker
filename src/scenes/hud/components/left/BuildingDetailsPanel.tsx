@@ -87,7 +87,7 @@ export const BuildingDetailsPanel = ({
       direction={DIRECTION.COLUMN}
       backgroundElement={background}
       width={width}
-      height={220}
+      height={280}
       padding={10}
       depth={-1}
     >
@@ -115,7 +115,7 @@ export const BuildingDetailsPanel = ({
       {outputFlexItem}
       <Spacer grow={0} height={5} />
       <text
-        text={computed(() => building?.get()?.effect || "")}
+        text={computed(() => building?.get()?.effects[0] || "")}
         alpha={contentAlpha}
         style={{ color: STRING_COLORS_NAMES["strawberry-field"] }}
         resolution={2}
@@ -124,7 +124,7 @@ export const BuildingDetailsPanel = ({
         text={computed(
           () =>
             EFFECTS_EXPLANATIONS[
-              building?.get()?.effect as keyof typeof EFFECTS_EXPLANATIONS
+              building?.get()?.effects[0] as keyof typeof EFFECTS_EXPLANATIONS
             ] || ""
         )}
         alpha={contentAlpha}
@@ -133,6 +133,31 @@ export const BuildingDetailsPanel = ({
           align: "center",
           wordWrap: { width: width.get() },
         }}
+        resolution={2}
+      />
+      <Spacer grow={0} height={20} />
+
+      <text
+        text={computed(() => building?.get()?.effects[1] || "")}
+        alpha={contentAlpha}
+        style={{ color: STRING_COLORS_NAMES["strawberry-field"] }}
+        visible={computed(() => building?.get()?.effects.length! > 1)}
+        resolution={2}
+      />
+      <text
+        text={computed(
+          () =>
+            EFFECTS_EXPLANATIONS[
+              building?.get()?.effects[1] as keyof typeof EFFECTS_EXPLANATIONS
+            ] || ""
+        )}
+        alpha={contentAlpha}
+        style={{
+          color: STRING_COLORS_NAMES["vicious-violet"],
+          align: "center",
+          wordWrap: { width: width.get() },
+        }}
+        visible={computed(() => building?.get()?.effects.length! > 1)}
         resolution={2}
       />
     </Flex>
