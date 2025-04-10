@@ -126,10 +126,6 @@ export class ThreeCometScene extends AbstractScene {
 
     for (let x = 0; x < board.boardWidth; x++) {
       for (let y = 0; y < board.boardHeight; y++) {
-        if (x === 2 && y === 2) {
-          // Rocket launcher
-          continue;
-        }
         const terrainMesh = new THREE.Mesh(
           new THREE.BoxGeometry(0.035, 0.0005, 0.035),
           buildingMaterial.clone()
@@ -148,6 +144,8 @@ export class ThreeCometScene extends AbstractScene {
 
         terrainMesh.userData = {
           cellId: this.gameState.gridToCell(x, y),
+          // Rocket launcher is inactive
+          active: !(x === 2 && y === 2),
           grid: { x, y },
           id: "terrain",
         };
@@ -572,7 +570,10 @@ export class ThreeCometScene extends AbstractScene {
             this.showFloatingChange(pointer.x, pointer.y, 100);
           }
 
-          if (hoverObject?.userData.id === "terrain") {
+          if (
+            hoverObject?.userData.id === "terrain" &&
+            hoverObject.userData.active
+          ) {
             const { cellId } = hoverObject.userData;
 
             const selectedBulldoze = this.gameState.state
