@@ -7,6 +7,8 @@ import {
   Subscriber,
 } from "@game/core/signals/types";
 
+import { registerSignalForDebug, SignalDebugOptions } from "./debug-signals";
+
 /**
  * Signal implementation
  *
@@ -198,16 +200,39 @@ class EffectSignal extends SignalImpl<void> {
 }
 
 // Helper functions
-export function signal<T>(initialValue: T): Signal<T> {
-  return new SignalImpl(initialValue);
+
+export function signal<T>(
+  initialValue: T,
+  debugOptions?: SignalDebugOptions
+): Signal<T> {
+  const instance = new SignalImpl(initialValue);
+  if (import.meta.env.VITE_DEBUG && debugOptions) {
+    registerSignalForDebug(instance, debugOptions);
+  }
+  return instance;
 }
 
-export function computed<T>(computeFn: () => T): Signal<T> {
-  return new SignalImpl(computeFn);
+export function computed<T>(
+  computeFn: () => T,
+  debugOptions?: SignalDebugOptions
+): Signal<T> {
+  const instance = new SignalImpl(computeFn);
+  if (import.meta.env.VITE_DEBUG && debugOptions) {
+    const finalDebugOptions = { ...debugOptions, readOnly: true };
+    registerSignalForDebug(instance, finalDebugOptions);
+  }
+  return instance;
 }
 
-export function mutable<T>(initialValue: T): MutableSignal<T> {
-  return new MutableSignalImpl(initialValue);
+export function mutable<T>(
+  initialValue: T,
+  debugOptions?: SignalDebugOptions
+): MutableSignal<T> {
+  const instance = new MutableSignalImpl(initialValue);
+  if (import.meta.env.VITE_DEBUG && debugOptions) {
+    registerSignalForDebug(instance, debugOptions);
+  }
+  return instance;
 }
 
 export function effect(fn: Effect, displayName: string = ""): Cleanup {
