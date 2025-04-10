@@ -133,7 +133,7 @@ export class ThreeCometScene extends AbstractScene {
                 <tween
                   signal={this.cameraZoom}
                   to={() =>
-                    11 + 2 * Math.abs(currentCometSpin.get() / MAX_COMET_SPIN)
+                    11 + 4 * Math.abs(currentCometSpin.get() / MAX_COMET_SPIN)
                   }
                   duration={1000}
                 />
@@ -147,7 +147,7 @@ export class ThreeCometScene extends AbstractScene {
                 <tween
                   signal={this.ambientLightIntensity}
                   to={() =>
-                    1.5 + Math.abs(currentCometSpin.get() / MAX_COMET_SPIN) * 15
+                    1.5 + Math.abs(currentCometSpin.get() / MAX_COMET_SPIN) * 20
                   }
                   duration={1000}
                 />
