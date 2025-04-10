@@ -57,7 +57,7 @@
             "x": 179,
             "y": 96,
             "w": 18,
-            "h": 69
+            "h": 70
           },
           "rotated": false,
           "trimmed": true,
@@ -65,11 +65,11 @@
             "x": 0,
             "y": 0,
             "w": 18,
-            "h": 69
+            "h": 70
           },
           "sourceSize": {
             "w": 18,
-            "h": 69
+            "h": 70
           }
         },
         {
@@ -1630,7 +1630,7 @@
           "filename": "button-building-status#3",
           "frame": {
             "x": 179,
-            "y": 167,
+            "y": 168,
             "w": 31,
             "h": 7
           },
@@ -1651,7 +1651,7 @@
           "filename": "building-arrow#0",
           "frame": {
             "x": 212,
-            "y": 167,
+            "y": 168,
             "w": 5,
             "h": 6
           },
