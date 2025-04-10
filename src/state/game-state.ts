@@ -132,6 +132,15 @@ export class GameStateManager
       return false;
     }
 
+    // consume resources
+    const material_storage = this.state.get().material_storage;
+    const building_cost = building.building_cost;
+    for (const [material, amount] of Object.entries(building_cost)) {
+      material_storage[material as keyof typeof MATERIALS].update(
+        (current) => current - amount
+      );
+    }
+
     const buildingSignal = board.grid_buildings.get(cellId);
     if (!buildingSignal) {
       console.error(`No building signal found for cell ID: ${cellId}`);
