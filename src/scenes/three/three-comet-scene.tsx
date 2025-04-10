@@ -22,6 +22,8 @@ import { createLights } from "./elements/lights";
 import { buildingMaterial, starMaterial } from "./elements/materials";
 import { createSky } from "./elements/sky";
 import { MotionMachine } from "../../core/motion-machine/motion-machine";
+import { MAX_COMET_SPIN } from "@game/state/consts";
+import { TWELVE_HOURS_IN_SECONDS } from "@game/consts";
 
 export class ThreeCometScene extends AbstractScene {
   declare bus: Phaser.Events.EventEmitter;
@@ -54,6 +56,12 @@ export class ThreeCometScene extends AbstractScene {
   // Cache of building models
   buildingsModelsCache: Map<string, THREE.Object3D> = new Map();
 
+  // Camera and light signals
+  cameraZoom = signal(11);
+  cameraPositionY = signal(50);
+  ambientLightIntensity = signal(1.5);
+  spotLightIntensity = signal(0.25);
+
   async create() {
     this.bus = this.gamebus.getBus();
 
@@ -76,8 +84,81 @@ export class ThreeCometScene extends AbstractScene {
     const sky = createSky();
     this.threeScene.add(sky);
 
-    const lights = createLights();
-    this.threeScene.add(...lights);
+    const [ambientLight, directionalLight, spotLight] = createLights();
+    this.threeScene.add(ambientLight, directionalLight, spotLight);
+
+    const currentCometSpin = signal(0, {
+      label: "cometSpin",
+    });
+
+    // Subscribe to camera zoom changes
+    this.cameraZoom.subscribe((value) => {
+      this.camera.camera.zoom = value;
+      this.camera.camera.updateProjectionMatrix();
+    });
+
+    // Subscribe to camera position changes
+    this.cameraPositionY.subscribe((value) => {
+      this.camera.camera.position.y = value;
+      this.camera.camera.updateProjectionMatrix();
+    });
+
+    // Subscribe to light intensity changes
+    this.ambientLightIntensity.subscribe((value) => {
+      ambientLight.intensity = value;
+    });
+
+    this.spotLightIntensity.subscribe((value) => {
+      spotLight.intensity = value;
+    });
+
+    // Create a motion machine to handle smooth transitions
+    const mm: MotionMachine<"idle", "idle"> = (
+      <motionMachine initialState="idle">
+        <state id="idle">
+          <animation on="active">
+            <repeat times={TWELVE_HOURS_IN_SECONDS}>
+              <parallel>
+                <tween
+                  signal={this.cameraZoom}
+                  to={() =>
+                    11 + 2 * Math.abs(currentCometSpin.get() / MAX_COMET_SPIN)
+                  }
+                  duration={1000}
+                />
+                <tween
+                  signal={this.cameraPositionY}
+                  to={() =>
+                    50 - Math.abs(currentCometSpin.get() / MAX_COMET_SPIN) / 25
+                  }
+                  duration={1000}
+                />
+                <tween
+                  signal={this.ambientLightIntensity}
+                  to={() =>
+                    1.5 + Math.abs(currentCometSpin.get() / MAX_COMET_SPIN) * 15
+                  }
+                  duration={1000}
+                />
+                <tween
+                  signal={this.spotLightIntensity}
+                  to={() =>
+                    0.25 +
+                    (1 - Math.abs(currentCometSpin.get() / MAX_COMET_SPIN)) *
+                      4.75
+                  }
+                  duration={1000}
+                />
+              </parallel>
+            </repeat>
+          </animation>
+        </state>
+      </motionMachine>
+    );
+
+    this.gameState.getCometSpin().subscribe((value) => {
+      currentCometSpin.set(value);
+    });
   }
 
   private loadCometSystemModel() {
