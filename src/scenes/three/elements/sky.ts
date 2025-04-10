@@ -43,7 +43,7 @@ export function createSky() {
         vec3 dir = normalize(vWorldPosition);
         
         // Base sky color (very dark blue)
-        vec3 skyColor = vec3(0.005, 0.005, 0.01);
+        vec3 skyColor = vec3(0.005, 0.02, 0.05);
         
         // Create a stable star field
         float stars = 0.0;
