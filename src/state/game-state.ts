@@ -2,6 +2,7 @@ import { mutable, signal } from "@game/core/signals/signals";
 import { MutableSignal, Signal } from "@game/core/signals/types";
 import { MATERIALS } from "@game/entities/materials/index";
 import { Building } from "@game/entities/buildings/types";
+import { MAX_COMET_SPIN } from "./consts";
 
 export const GameStatus = {
   LOADING: "loading",
@@ -55,7 +56,7 @@ export class GameStateManager
       grid: Array.from({ length: 5 }, () => Array(5).fill(0)),
       grid_buildings: new Map(),
     },
-    comet_spin_velocity: signal(1),
+    comet_spin_velocity: signal(MAX_COMET_SPIN),
     comet_angle: signal(0),
     mouse_selected_building: signal<MouseSelectedBuilding>({ building: null }),
     mouse_selected_bulldoze: signal<boolean>(false),
@@ -220,7 +221,7 @@ export class GameStateManager
     this.state
       .get()
       .comet_spin_velocity.update((current) =>
-        Math.min(10, Math.max(-10, current + amount))
+        Math.min(MAX_COMET_SPIN, Math.max(-MAX_COMET_SPIN, current + amount))
       );
   }
 

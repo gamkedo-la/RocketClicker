@@ -61,3 +61,7 @@ export const STRING_COLORS_NAMES = {
   "pleasing-pink": "#f4cbd4",
   white: "#ffffff",
 };
+
+// While motionmachine on=active does not repeat indefinitely, we can hack it by
+// using a large number of repeats.
+export const TWELVE_HOURS_IN_SECONDS = 12 * 60 * 60;

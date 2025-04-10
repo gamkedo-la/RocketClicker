@@ -3,6 +3,8 @@ import { computed, signal } from "@game/core/signals/signals";
 import { GameStateManager } from "@game/state/game-state";
 import { FlexItem } from "../../../../core/ui/FlexItem";
 import { MotionMachine } from "../../../../core/motion-machine/motion-machine";
+import { MAX_COMET_SPIN } from "@game/state/consts";
+import { TWELVE_HOURS_IN_SECONDS } from "@game/consts";
 
 export const CometSpinMeter = ({
   gameState,
@@ -12,7 +14,9 @@ export const CometSpinMeter = ({
   const cometSpin = gameState.getCometSpin();
 
   const rotate = signal(-75);
-  const rotateGoal = computed(() => (cometSpin.get() / 10) * 75);
+  const rotateGoal = computed(
+    () => Math.abs(cometSpin.get() / MAX_COMET_SPIN) * 150 - 75
+  );
   const failing = signal(0);
 
   const spinPin = (
@@ -69,7 +73,7 @@ export const CometSpinMeter = ({
     <motionMachine initialState="failing">
       <state id="spin">
         <animation on="active">
-          <repeat times={60 * 60 * 8}>
+          <repeat times={TWELVE_HOURS_IN_SECONDS}>
             <tween
               signal={rotate}
               from={rotate}
@@ -119,16 +123,10 @@ export const CometSpinMeter = ({
   );
 
   cometSpin.subscribe((value) => {
-    if (value < -6 || value > 6) {
+    if (value > 90) {
       motionMachine.transition("failing");
     } else if (motionMachine.current.get() === "failing") {
       motionMachine.transition("spin");
-    }
-  });
-
-  failing.subscribe((value) => {
-    if (value > 25) {
-      motionMachine.transition("broken");
     }
   });
 
