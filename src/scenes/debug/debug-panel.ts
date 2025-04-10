@@ -2,6 +2,9 @@ import { Pane, FolderApi } from "tweakpane";
 import { JsxElementsRegistry } from "@game/core/jsx/phaser-jsx";
 import * as THREE from "three";
 
+// Export FolderApi for external use
+export { FolderApi };
+
 export type DebugInputType =
   | { type: "slider"; min?: number; max?: number; step?: number }
   | { type: "vector2" | "point2d"; min?: number; max?: number; step?: number }
@@ -38,9 +41,9 @@ export const DebugParameters: any = {
 };
 
 export class DebugPanel {
-  static pane: Pane | null = false
+  static pane: Pane | null = import.meta.env.VITE_DEBUG
     ? new Pane({
-        expanded: false,
+        expanded: true,
         title: "Debug",
       })
     : null;
