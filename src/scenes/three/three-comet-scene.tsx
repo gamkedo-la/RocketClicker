@@ -8,7 +8,11 @@ import { DebugPanel } from "@game/scenes/debug/debug-panel";
 import { AbstractScene } from "..";
 import { SCENES } from "../scenes";
 
-import { TWELVE_HOURS_IN_SECONDS } from "@game/consts";
+import {
+  COLORS_NAMES,
+  STRING_COLORS_NAMES,
+  TWELVE_HOURS_IN_SECONDS,
+} from "@game/consts";
 import { assert } from "@game/core/common/assert";
 import { effect, signal } from "@game/core/signals/signals";
 import {
@@ -18,7 +22,7 @@ import {
 } from "@game/entities/buildings/index";
 import { Building } from "@game/entities/buildings/types";
 import { hasResources, MATERIALS } from "@game/entities/materials/index";
-import { MAX_COMET_SPIN } from "@game/state/consts";
+import { COMET_DUST_MOUSE_MINING, MAX_COMET_SPIN } from "@game/state/consts";
 import { MotionMachine } from "../../core/motion-machine/motion-machine";
 import { GameScene } from "../game/game-scene";
 import { Camera } from "./components/camera";
@@ -530,23 +534,38 @@ export class ThreeCometScene extends AbstractScene {
     }
   }
 
-  private mineCometDust(
-    x: number,
-    y: number,
-    value: number,
-    color: string = "#00ff00"
-  ) {
+  private mineCometDust(x: number, y: number) {
+    const cometSpin = this.gameState.getCometSpin().get();
+    const forceSignal = Math.sign(x);
+    const spinSignal = Math.sign(cometSpin);
     const distFromCenter = Math.min(375, Math.max(-385, Math.floor(x - 645)));
     if (distFromCenter !== 375 && distFromCenter !== -385) {
-      this.gameState.addCometSpin(distFromCenter / 370);
-      this.gameState.changeMaterial(MATERIALS.CometDust, 100);
+      // If we are increasing the comet spin, we can only do until spin velocity is 25, with diminshed returns
+      const effectiveness =
+        forceSignal === spinSignal
+          ? cometSpin < 15
+            ? 1
+            : Math.max(0, 1 - (cometSpin - 15) / 15)
+          : 1;
 
-      const formattedValue = value >= 0 ? `+${value}` : value.toString();
-      const text = this.add.text(x, y, formattedValue, {
-        fontSize: "32px",
-        color: distFromCenter > 0 ? color : "#ff0000",
-        fontStyle: "bold",
-      });
+      const value = COMET_DUST_MOUSE_MINING * effectiveness;
+
+      this.gameState.addCometSpin((effectiveness * distFromCenter) / 370);
+      this.gameState.changeMaterial(MATERIALS.CometDust, value);
+
+      const text = this.add.text(
+        x + Math.random() * 5 - 10,
+        y,
+        `+${value.toFixed(0)}`,
+        {
+          fontSize: "32px",
+          color:
+            distFromCenter > 0
+              ? STRING_COLORS_NAMES["strawberry-field"]
+              : STRING_COLORS_NAMES["vaporwave-blue"],
+          fontStyle: "bold",
+        }
+      );
       text.setOrigin(0.5);
 
       this.tweens.add({
@@ -761,7 +780,7 @@ export class ThreeCometScene extends AbstractScene {
 
         if (this.pointerJustDown) {
           if (hoverObject?.userData.id === "comet") {
-            this.mineCometDust(pointer.x, pointer.y, 100);
+            this.mineCometDust(pointer.x, pointer.y);
           }
 
           if (
