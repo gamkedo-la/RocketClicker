@@ -1,7 +1,7 @@
 import { GameStateManager } from "@game/state/game-state";
 import { System } from ".";
 import { EFFECTS, TILES_FORCES } from "../entities/buildings";
-import { MAX_COMET_SPIN } from "@game/state/consts";
+import { COMET_SPIN_FORCE, MAX_COMET_SPIN } from "@game/state/consts";
 
 export default class EffectsSystem implements System {
   constructor(private gameState: GameStateManager) {}
@@ -23,7 +23,10 @@ export default class EffectsSystem implements System {
           case EFFECTS.VIBRATION:
             const force = TILES_FORCES[cellId] ?? 0;
             this.gameState.addCometSpin(
-              force * 0.0005 * delta * building.current_efficiency.get()
+              force *
+                COMET_SPIN_FORCE *
+                delta *
+                building.current_efficiency.get()
             );
             break;
           case EFFECTS.DAMP:

@@ -49,7 +49,7 @@ export interface GameState {
  * How would this "save to disk" or be loaded across multiple games?
  */
 
-const comet_spin_velocity = signal(0, {
+const comet_spin_velocity = signal(3, {
   label: "Comet Spin",
   tweakpaneOptions: {
     min: -MAX_COMET_SPIN,

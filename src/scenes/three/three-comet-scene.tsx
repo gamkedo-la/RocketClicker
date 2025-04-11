@@ -535,10 +535,10 @@ export class ThreeCometScene extends AbstractScene {
   }
 
   private mineCometDust(x: number, y: number) {
-    const cometSpin = this.gameState.getCometSpin().get();
-    const forceSignal = Math.sign(x);
-    const spinSignal = Math.sign(cometSpin);
     const distFromCenter = Math.min(375, Math.max(-385, Math.floor(x - 645)));
+    const cometSpin = this.gameState.getCometSpin().get();
+    const spinSignal = Math.sign(cometSpin);
+    const forceSignal = Math.sign(distFromCenter);
     if (distFromCenter !== 375 && distFromCenter !== -385) {
       // If we are increasing the comet spin, we can only do until spin velocity is 25, with diminshed returns
       const effectiveness =
@@ -550,6 +550,12 @@ export class ThreeCometScene extends AbstractScene {
 
       const value = COMET_DUST_MOUSE_MINING * effectiveness;
 
+      // Positive force gives blue colors
+      const color =
+        forceSignal === spinSignal
+          ? STRING_COLORS_NAMES["vaporwave-blue"]
+          : STRING_COLORS_NAMES["strawberry-field"];
+
       this.gameState.addCometSpin((effectiveness * distFromCenter) / 370);
       this.gameState.changeMaterial(MATERIALS.CometDust, value);
 
@@ -559,10 +565,7 @@ export class ThreeCometScene extends AbstractScene {
         `+${value.toFixed(0)}`,
         {
           fontSize: "32px",
-          color:
-            distFromCenter > 0
-              ? STRING_COLORS_NAMES["strawberry-field"]
-              : STRING_COLORS_NAMES["vaporwave-blue"],
+          color,
           fontStyle: "bold",
         }
       );
@@ -793,7 +796,7 @@ export class ThreeCometScene extends AbstractScene {
               .get()
               .mouse_selected_bulldoze.get();
 
-            if (selectedBulldoze) {
+            if (selectedBulldoze && this.gameState.getBuildingAtCell(cellId)) {
               this.gameState.addCometSpin((TILES_FORCES[cellId] ?? 0) * 3);
 
               addFlyingBuilding(

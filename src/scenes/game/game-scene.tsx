@@ -9,6 +9,7 @@ import MaterialsSystem from "@game/systems/MaterialsSystem";
 import { AbstractScene } from "..";
 import { addKeyboardSupport } from "../hud/keyboard-support";
 import { SCENES } from "../scenes";
+import CometSpinSystem from "@game/systems/CometSpinSystem";
 
 export class GameScene extends AbstractScene {
   declare bus: Phaser.Events.EventEmitter;
@@ -24,6 +25,7 @@ export class GameScene extends AbstractScene {
   soundSystem!: SoundSystem;
   materialsSystem!: MaterialsSystem;
   effectsSystem!: EffectsSystem;
+  cometSpinSystem!: CometSpinSystem;
 
   create() {
     this.bus = this.gamebus.getBus();
@@ -55,12 +57,11 @@ export class GameScene extends AbstractScene {
     this.soundSystem = new SoundSystem(this);
     this.materialsSystem = new MaterialsSystem(this.gameState).create();
     this.effectsSystem = new EffectsSystem(this.gameState).create();
+    this.cometSpinSystem = new CometSpinSystem(this.gameState).create();
   }
 
-  tickLength = 1000;
-  tickTimer = 0;
-
   update(time: number, delta: number) {
+    this.cometSpinSystem.update(time, delta);
     this.materialsSystem.update(time, delta);
     this.effectsSystem.update(time, delta);
   }
