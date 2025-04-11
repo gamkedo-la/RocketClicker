@@ -9,7 +9,7 @@ export const MATERIALS = {
   H2: "H2",
   O2: "O2",
   H2O: "H2O",
-  StarDust: "StarDust",
+  CometDust: "CometDust",
   Metals: "Metals",
   PureMetals: "PureMetals",
 } as const;
@@ -21,7 +21,7 @@ export const MATERIALS_KEYS = {
   H2: "H2",
   O2: "O2",
   H2O: "H2O",
-  StarDust: "SD",
+  CometDust: "CD",
   Metals: "M",
   PureMetals: "PM",
 } as const;
@@ -35,7 +35,7 @@ export const MATERIALS_NAMES = {
   H2: "H2",
   O2: "O2",
   H2O: "H2O",
-  StarDust: "Star Dust",
+  CometDust: "Comet Dust",
   Metals: "Metals",
   PureMetals: "Pure Metals",
 };
@@ -47,7 +47,7 @@ export const MATERIALS_ICONS = {
   H2: RESOURCES.H2,
   O2: RESOURCES.O2,
   H2O: RESOURCES.H2O,
-  StarDust: RESOURCES.stardust,
+  CometDust: RESOURCES.stardust,
   Metals: RESOURCES.metals,
   PureMetals: RESOURCES["pure-metals"],
 };
@@ -61,7 +61,7 @@ export const MATERIALS_ICONS = {
  */
 export const MATERIALS_GENERATION_ORDER = [
   MATERIALS.kWh,
-  MATERIALS.StarDust,
+  MATERIALS.CometDust,
   MATERIALS.Metals,
   MATERIALS.PureMetals,
   MATERIALS.H2O,

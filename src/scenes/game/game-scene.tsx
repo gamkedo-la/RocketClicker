@@ -1,32 +1,14 @@
-import { signal } from "@game/core/signals/signals";
-import { Signal } from "@game/core/signals/types";
 import PhaserGamebus from "@game/lib/gamebus";
 import { GameStatus } from "@game/state/game-state";
 import SoundSystem from "@game/systems/SoundSystem";
 
 import { ThreeCometScene } from "../three/three-comet-scene";
 
-import { MATERIALS } from "@game/entities/materials/index";
 import EffectsSystem from "@game/systems/EffectsSystem";
 import MaterialsSystem from "@game/systems/MaterialsSystem";
 import { AbstractScene } from "..";
 import { addKeyboardSupport } from "../hud/keyboard-support";
 import { SCENES } from "../scenes";
-
-export const material_storage: Record<
-  keyof typeof MATERIALS,
-  Signal<number>
-> = {
-  kWh: signal(0),
-  LH2: signal(0),
-  LOX: signal(0),
-  H2: signal(0),
-  O2: signal(0),
-  H2O: signal(0),
-  PureMetals: signal(0),
-  Metals: signal(0),
-  StarDust: signal(100),
-};
 
 export class GameScene extends AbstractScene {
   declare bus: Phaser.Events.EventEmitter;

@@ -85,8 +85,8 @@ export const BUILDINGS: Partial<Building>[] = [
     id: "generator",
     name: "Generator",
     effects: [EFFECTS.VIBRATION, EFFECTS.SPEED],
-    building_cost: { [MATERIALS.StarDust]: 50 },
-    input: { [MATERIALS.StarDust]: 50 },
+    building_cost: { [MATERIALS.CometDust]: 50 },
+    input: { [MATERIALS.CometDust]: 50 },
     output: { [MATERIALS.kWh]: 100 },
     sounds: {
       build: RESOURCES["build-generator"],
@@ -118,9 +118,9 @@ export const BUILDINGS: Partial<Building>[] = [
     id: "duster",
     name: "Duster",
     effects: [EFFECTS.SPEED],
-    building_cost: { [MATERIALS.StarDust]: 100 },
+    building_cost: { [MATERIALS.CometDust]: 100 },
     input: { [MATERIALS.kWh]: 200 },
-    output: { [MATERIALS.StarDust]: 2_000 },
+    output: { [MATERIALS.CometDust]: 2_000 },
     sounds: {
       build: RESOURCES["build-duster"],
     },
@@ -129,7 +129,7 @@ export const BUILDINGS: Partial<Building>[] = [
     id: "miner",
     name: "Miner",
     effects: [EFFECTS.VIBRATION, EFFECTS.SPEED],
-    building_cost: { [MATERIALS.StarDust]: 1_000 },
+    building_cost: { [MATERIALS.CometDust]: 1_000 },
     input: { [MATERIALS.kWh]: 1_000 },
     output: { [MATERIALS.Metals]: 1_000 },
     sounds: {

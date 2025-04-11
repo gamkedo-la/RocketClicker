@@ -532,7 +532,7 @@ export class ThreeCometScene extends AbstractScene {
     }
   }
 
-  private showFloatingChange(
+  private mineCometDust(
     x: number,
     y: number,
     value: number,
@@ -541,7 +541,7 @@ export class ThreeCometScene extends AbstractScene {
     const distFromCenter = Math.min(375, Math.max(-385, Math.floor(x - 645)));
     if (distFromCenter !== 375 && distFromCenter !== -385) {
       this.gameState.addCometSpin(distFromCenter / 370);
-      this.gameState.changeMaterial(MATERIALS.StarDust, 100);
+      this.gameState.changeMaterial(MATERIALS.CometDust, 100);
 
       const formattedValue = value >= 0 ? `+${value}` : value.toString();
       const text = this.add.text(x, y, formattedValue, {
@@ -763,7 +763,7 @@ export class ThreeCometScene extends AbstractScene {
 
         if (this.pointerJustDown) {
           if (hoverObject?.userData.id === "comet") {
-            this.showFloatingChange(pointer.x, pointer.y, 100);
+            this.mineCometDust(pointer.x, pointer.y, 100);
           }
 
           if (

@@ -22,7 +22,7 @@ export const LeftPanel = ({
   gameState: GameStateManager;
 }) => {
   const material_storage =
-    gameState.state.get().material_storage[MATERIALS.StarDust];
+    gameState.state.get().material_storage[MATERIALS.CometDust];
 
   /*
   const button = (
