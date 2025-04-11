@@ -259,9 +259,9 @@ export class ThreeCometScene extends AbstractScene {
         const building = buildingSignal.get();
         console.log("Building changed", building);
         if (building) {
-          this.addBuildingToCell(cellId, building);
+          this.addBuildingModelToCell(cellId, building);
         } else {
-          this.removeBuildingFromCell(cellId);
+          this.removeBuildingModelFromCell(cellId);
         }
       });
     });
@@ -439,10 +439,10 @@ export class ThreeCometScene extends AbstractScene {
   /**
    * Adds a building mesh to a specific cell
    */
-  public addBuildingToCell(cellId: number, building: Building) {
+  public addBuildingModelToCell(cellId: number, building: Building) {
     console.log("Adding building to cell", building);
     // Remove any existing building at this cell
-    this.removeBuildingFromCell(cellId);
+    this.removeBuildingModelFromCell(cellId);
 
     // Get the building model
     let buildingMesh = this.buildingsModelsCache.get(building.id)!.clone();
@@ -462,7 +462,7 @@ export class ThreeCometScene extends AbstractScene {
       const posY = signal(0);
       const range = signal(0);
 
-      const mm: MotionMachine<"idle", "idle"> = (
+      (
         <motionMachine initialState="idle">
           <state id="idle">
             <animation>
@@ -473,7 +473,7 @@ export class ThreeCometScene extends AbstractScene {
             </animation>
           </state>
         </motionMachine>
-      );
+      ) as MotionMachine<"idle", "idle">;
 
       building.current_success_rate.subscribe((value) => {
         range.set(0.5 * value);
@@ -514,8 +514,6 @@ export class ThreeCometScene extends AbstractScene {
     this.comet.add(mesh);
     this.buildingMeshes.set(cellId, mesh);
 
-    this.gameState.addCometSpin((TILES_FORCES[cellId] ?? 0) * 3);
-
     console.log(`Added building ${building.name} to cell ${cellId}`);
     return mesh;
   }
@@ -523,7 +521,7 @@ export class ThreeCometScene extends AbstractScene {
   /**
    * Removes a building mesh from a specific cell
    */
-  public removeBuildingFromCell(cellId: number) {
+  public removeBuildingModelFromCell(cellId: number) {
     if (this.buildingMeshes.has(cellId)) {
       const mesh = this.buildingMeshes.get(cellId)!;
       this.comet.remove(mesh);
@@ -777,6 +775,13 @@ export class ThreeCometScene extends AbstractScene {
               .mouse_selected_bulldoze.get();
 
             if (selectedBulldoze) {
+              this.gameState.addCometSpin((TILES_FORCES[cellId] ?? 0) * 3);
+
+              addFlyingBuilding(
+                this,
+                this.gameState.getBuildingAtCell(cellId)!,
+                cellId
+              );
               this.gameState.removeBuildingFromCell(cellId);
               this.gameState.toggleMouseSelectedBulldoze();
             } else {
@@ -792,6 +797,8 @@ export class ThreeCometScene extends AbstractScene {
                   this.gameState.state.get()?.material_storage ?? {}
                 )
               ) {
+                this.gameState.addCometSpin((TILES_FORCES[cellId] ?? 0) * 3);
+
                 if (this.gameState.state.get().can_place_building.get()) {
                   this.gameState.addBuildingToCell(
                     cellId,
@@ -816,7 +823,7 @@ export class ThreeCometScene extends AbstractScene {
       const position = this.comet.position.clone();
 
       // Rotate position around Z axis
-      const rotationSpeed = this.gameState.getCometSpin().get() * 0.001;
+      const rotationSpeed = this.gameState.getCometSpin().get() * 0.0005;
       position.applyAxisAngle(this.zAxis, rotationSpeed);
 
       // Add pivot back to get new world position
@@ -825,7 +832,7 @@ export class ThreeCometScene extends AbstractScene {
       // Keep comet oriented correctly during orbit
       this.comet.rotateZ(rotationSpeed);
 
-      this.gameState.getCometAngle().set(this.comet.rotation.z);
+      this.gameState.setCometAngle(this.comet.rotation.z);
     }
   }
 

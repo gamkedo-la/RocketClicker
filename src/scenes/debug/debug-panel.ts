@@ -96,7 +96,7 @@ export class DebugPanel {
       .addButton({ title: "Refresh Counts" })
       .on("click", () => this.updateCounts());
 
-    const countsContent = countsPage.addFolder({
+    countsPage.addFolder({
       title: "Element Counts",
       expanded: true,
     });
@@ -114,7 +114,7 @@ export class DebugPanel {
       .on("click", () => this.collapseAllFolders(jsxTreePage));
   }
 
-  static add(key: string, value: any) {
+  static add(key: string) {
     if (!DebugPanel.pane) return;
 
     DebugPanel.pane.addBinding(DebugParameters, key, {
@@ -227,7 +227,7 @@ export class DebugPanel {
       .forEach((child: any) => targetFolder.remove(child));
 
     const counts = new Map<string, number>();
-    JsxElementsRegistry.elements.forEach((parent, element) => {
+    JsxElementsRegistry.elements.forEach((_parent, element) => {
       const type = element.constructor.name;
       counts.set(type, (counts.get(type) || 0) + 1);
     });

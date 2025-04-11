@@ -85,9 +85,12 @@ export const addFlyingBuilding = (
                 to={Math.PI * 40 * (Math.random() - 0.5)}
                 duration={10000}
               />
+              <sequence>
+                <wait duration={9000} />
+                <tween signal={scale} to={0} duration={1000} />
+              </sequence>
             </parallel>
             {/* Fade out by scaling down */}
-            <tween signal={scale} to={0} duration={1000} />
             <step
               run={() => {
                 scene.comet.remove(buildingMesh);

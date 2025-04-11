@@ -87,7 +87,13 @@ export class GameStateManager
     },
     comet_spin_velocity,
     comet_spin_velocity_abs,
-    comet_angle: signal(0),
+    comet_angle: signal(0, {
+      label: "Comet Angle",
+      tweakpaneOptions: {
+        min: -Math.PI,
+        max: Math.PI,
+      },
+    }),
     can_place_building: computed(() => comet_spin_velocity_abs.get() <= 20.0, {
       label: "Can Place Building",
     }),

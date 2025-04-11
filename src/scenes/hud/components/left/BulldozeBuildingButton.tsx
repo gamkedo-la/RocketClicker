@@ -91,7 +91,7 @@ export const BulldozeBuildingButton = ({
 }) => {
   const bulldoze_text = (
     <text
-      text={"(x) Remove building"}
+      text={"(x) Eject building"}
       style={{
         color: STRING_COLORS_NAMES["elite-teal"],
       }}
