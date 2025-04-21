@@ -31,6 +31,7 @@ export interface State {
   can_place_building: Signal<boolean>;
   comet_angle: Signal<number>;
   hovered_building: Signal<Building | null>;
+  sound_volume: Signal<number>;
 }
 
 export interface MouseSelectedBuilding {
@@ -100,6 +101,13 @@ export class GameStateManager
     mouse_selected_building: signal<MouseSelectedBuilding>({ building: null }),
     mouse_selected_bulldoze: signal<boolean>(false),
     hovered_building: signal<Building | null>(null),
+    sound_volume: signal(1, {
+      label: "Sound volume",
+      tweakpaneOptions: {
+         min: 0,
+         max: 1,
+      },
+    }),
   });
 
   constructor(pluginManager: Phaser.Plugins.PluginManager) {
@@ -296,4 +304,13 @@ export class GameStateManager
   getHoveredBuilding(): Signal<Building | null> {
     return this.state.get().hovered_building;
   }
+
+  getSoundVolume(): Signal<number> {
+    return this.state.get().sound_volume;
+  }
+
+  setSoundVolume(volume: number): void {
+    const normalizedVolume = Math.max(0, Math.min(1, volume));
+    this.state.get().sound_volume.set(normalizedVolume);
+  } 
 }
