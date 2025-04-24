@@ -600,6 +600,30 @@ export abstract class AbstractFlex implements FlexElement {
     });
   }
 
+  removeFromScene() {
+    if (this.backgroundElement) {
+      if (this.backgroundElement instanceof AbstractFlex) {
+        this.backgroundElement.removeFromScene();
+      } else {
+        this.backgroundElement.destroy();
+      }
+    }
+
+    if (this.containerElement) {
+      this.containerElement.destroy();
+      // If we have a container element, we don't need to remove the children from the scene
+      return;
+    }
+
+    this.children.forEach((child) => {
+      if (child instanceof AbstractFlex) {
+        child.removeFromScene();
+      } else if (child instanceof Phaser.GameObjects.GameObject) {
+        child.destroy();
+      }
+    });
+  }
+
   /**
    * Adding this to notify if someone is trying to add Flex directly into the scene
    */
