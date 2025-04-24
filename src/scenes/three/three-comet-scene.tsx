@@ -445,6 +445,10 @@ export class ThreeCometScene extends AbstractScene {
    */
   public addBuildingModelToCell(cellId: number, building: Building) {
     console.log("Adding building to cell", building);
+    
+    // play the proper sound effect
+    this.gameScene.soundSystem.play(building.sounds.build);
+
     // Remove any existing building at this cell
     this.removeBuildingModelFromCell(cellId);
 
