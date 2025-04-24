@@ -8,13 +8,10 @@ import { DebugPanel } from "@game/scenes/debug/debug-panel";
 import { AbstractScene } from "..";
 import { SCENES } from "../scenes";
 
-import {
-  COLORS_NAMES,
-  STRING_COLORS_NAMES,
-  TWELVE_HOURS_IN_SECONDS,
-} from "@game/consts";
+import { STRING_COLORS_NAMES, TWELVE_HOURS_IN_SECONDS } from "@game/consts";
 import { assert } from "@game/core/common/assert";
 import { effect, signal } from "@game/core/signals/signals";
+import type { Signal } from "@game/core/signals/types";
 import {
   BUILDINGS,
   getBuildingById,
@@ -24,13 +21,24 @@ import { Building } from "@game/entities/buildings/types";
 import { hasResources, MATERIALS } from "@game/entities/materials/index";
 import { COMET_DUST_MOUSE_MINING, MAX_COMET_SPIN } from "@game/state/consts";
 import { MotionMachine } from "../../core/motion-machine/motion-machine";
+import { FlexRow } from "../../core/ui/FlexRow";
+import type { BuildingAlert } from "../../systems/EffectsSystem";
 import { GameScene } from "../game/game-scene";
+import { BuildingPill } from "./components/building-pill";
 import { Camera } from "./components/camera";
 import { loader, ThreeScene } from "./components/scene";
 import { addFlyingBuilding } from "./elements/flying-building";
 import { createLights } from "./elements/lights";
 import { buildingMaterial, starMaterial } from "./elements/materials";
 import { createSky } from "./elements/sky";
+
+export interface BuildingScreenPosition {
+  baseX: number; // Unscaled base position
+  baseY: number; // Unscaled base position
+  x: number; // Current scaled position
+  y: number; // Current scaled position
+  visible: boolean;
+}
 
 export class ThreeCometScene extends AbstractScene {
   declare bus: Phaser.Events.EventEmitter;
@@ -74,6 +82,12 @@ export class ThreeCometScene extends AbstractScene {
   // Track both the ghost and the current selected building type
   ghostBuilding: THREE.Object3D | null = null;
   currentGhostBuildingId: string | null = null;
+
+  buildingScreenPositions = new Map<number, Signal<BuildingScreenPosition>>();
+  buildingAlerts = new Map<number, Signal<BuildingAlert | null>>();
+
+  // Track active building alerts and their pills
+  private activePills: Map<number, FlexRow> = new Map();
 
   async create() {
     this.bus = this.gamebus.getBus();
@@ -174,7 +188,26 @@ export class ThreeCometScene extends AbstractScene {
     this.gameState.getCometSpin().subscribe((value) => {
       currentCometSpin.set(value);
     });
+
+    // Subscribe to zoom changes
+    this.cameraZoom.subscribe((zoom) => {
+      this.buildingScreenPositions.forEach((screenPosSignal, cellId) => {
+        const mesh = this.buildingMeshes.get(cellId);
+        const existingPill = this.activePills.get(cellId);
+
+        if (!mesh || !existingPill) return;
+
+        this.updateBuildingProjection(mesh, screenPosSignal);
+        existingPill.setPosition(
+          screenPosSignal.get().baseX,
+          screenPosSignal.get().baseY
+        );
+      });
+    });
   }
+
+  tx = signal(0, { label: "tx" });
+  ty = signal(0, { label: "ty" });
 
   private loadCometSystemModel() {
     loader.parse(this.cache.binary.get(RESOURCES["comet-3"]), "", (gltf) => {
@@ -523,6 +556,23 @@ export class ThreeCometScene extends AbstractScene {
     this.buildingMeshes.set(cellId, mesh);
 
     console.log(`Added building ${building.name} to cell ${cellId}`);
+    const screenPosSignal = signal<BuildingScreenPosition>({
+      baseX: 0,
+      baseY: 0,
+      x: 0,
+      y: 0,
+      visible: true,
+    });
+
+    this.buildingScreenPositions.set(cellId, screenPosSignal);
+    this.updateBuildingProjection(mesh, screenPosSignal);
+
+    // Subscribe to alert changes
+    const gameScene = this.scene.get(SCENES.GAME) as GameScene;
+    gameScene.effectsSystem.getAlert(cellId).subscribe((alert) => {
+      this.updateBuildingPill(cellId, alert);
+    });
+
     return mesh;
   }
 
@@ -536,6 +586,14 @@ export class ThreeCometScene extends AbstractScene {
       this.buildingMeshes.delete(cellId);
       console.log(`Removed building from cell ${cellId}`);
     }
+
+    // Clean up pill
+    const existingPill = this.activePills.get(cellId);
+    if (existingPill) {
+      existingPill.removeFromScene();
+      this.activePills.delete(cellId);
+    }
+    this.buildingScreenPositions.delete(cellId);
   }
 
   private mineCometDust(x: number, y: number) {
@@ -710,6 +768,57 @@ export class ThreeCometScene extends AbstractScene {
           }
         });
       }
+    }
+  }
+
+  private updateBuildingProjection(
+    mesh: THREE.Object3D,
+    screenPosSignal: Signal<BuildingScreenPosition>
+  ) {
+    const pos = new THREE.Vector3();
+    mesh.getWorldPosition(pos);
+
+    pos.project(this.threeCamera);
+
+    // Calculate viewport coordinates
+    const viewportWidth = this.game.scale.width * 0.6;
+    const viewportHeight = this.game.scale.height;
+
+    // Store unscaled base position
+    const baseX = (pos.x + 1) * viewportWidth * 0.5 + 250;
+    const baseY = (-pos.y + 1) * viewportHeight * 0.5;
+
+    // Calculate current scaled position
+    const zoom = this.cameraZoom.get();
+
+    screenPosSignal.set({
+      baseX,
+      baseY,
+      x: baseX / zoom,
+      y: baseY / zoom,
+      visible: pos.z < 1,
+    });
+  }
+
+  alertsUpdated = signal(0, { label: "alerts updated" });
+  alertsRemoved = signal(0, { label: "alerts removed" });
+
+  private updateBuildingPill(cellId: number, alert: BuildingAlert | null) {
+    const existingPill = this.activePills.get(cellId);
+
+    if (existingPill) {
+      this.alertsRemoved.update((value) => value + 1);
+      existingPill.removeFromScene();
+      this.activePills.delete(cellId);
+    }
+
+    if (alert) {
+      this.alertsUpdated.update((value) => value + 1);
+      const pill: FlexRow = <BuildingPill alert={alert} />;
+      pill.addToScene(this);
+      pill.setDepth(200);
+      pill.setOrigin(0.5, 0.5);
+      this.activePills.set(cellId, pill);
     }
   }
 

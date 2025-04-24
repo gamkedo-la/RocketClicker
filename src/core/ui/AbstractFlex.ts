@@ -407,7 +407,10 @@ export abstract class AbstractFlex implements FlexElement {
       Math.floor(this.height - this.paddingTop - this.paddingBottom)
     );
 
-    this.outerBounds.setPosition(Math.floor(this.x), Math.floor(this.y));
+    this.outerBounds.setPosition(
+      Math.floor(this.x) - this.origin.x * this.width,
+      Math.floor(this.y) - this.origin.y * this.height
+    );
     this.innerBounds.setPosition(
       Math.floor(this.outerBounds.left + this.paddingLeft),
       Math.floor(this.outerBounds.top + this.paddingTop)
@@ -593,6 +596,30 @@ export abstract class AbstractFlex implements FlexElement {
         child.addToScene(scene);
       } else if (child instanceof Phaser.GameObjects.GameObject) {
         scene.add.existing(child);
+      }
+    });
+  }
+
+  removeFromScene() {
+    if (this.backgroundElement) {
+      if (this.backgroundElement instanceof AbstractFlex) {
+        this.backgroundElement.removeFromScene();
+      } else {
+        this.backgroundElement.destroy();
+      }
+    }
+
+    if (this.containerElement) {
+      this.containerElement.destroy();
+      // If we have a container element, we don't need to remove the children from the scene
+      return;
+    }
+
+    this.children.forEach((child) => {
+      if (child instanceof AbstractFlex) {
+        child.removeFromScene();
+      } else if (child instanceof Phaser.GameObjects.GameObject) {
+        child.destroy();
       }
     });
   }
