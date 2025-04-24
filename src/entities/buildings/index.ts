@@ -90,6 +90,8 @@ export const BUILDINGS: Partial<Building>[] = [
     output: { [MATERIALS.kWh]: 100 },
     sounds: {
       build: RESOURCES["build-generator"],
+      hover: RESOURCES["sfx-click"],
+      destroy: RESOURCES["sfx-put-down"],
     },
   },
   {
@@ -101,6 +103,8 @@ export const BUILDINGS: Partial<Building>[] = [
     output: { [MATERIALS.kWh]: 5000 },
     sounds: {
       build: RESOURCES["build-solarpanel"],
+      hover: RESOURCES["sfx-click"],
+      destroy: RESOURCES["sfx-put-down"],
     },
   },
   {
@@ -112,6 +116,8 @@ export const BUILDINGS: Partial<Building>[] = [
     output: { [MATERIALS.kWh]: 30_000, [MATERIALS.H2O]: 120 },
     sounds: {
       build: RESOURCES["build-fuelcell"],
+      hover: RESOURCES["sfx-click"],
+      destroy: RESOURCES["sfx-put-down"],
     },
   },
   {
@@ -123,6 +129,8 @@ export const BUILDINGS: Partial<Building>[] = [
     output: { [MATERIALS.CometDust]: 2_000 },
     sounds: {
       build: RESOURCES["build-duster"],
+      hover: RESOURCES["sfx-click"],
+      destroy: RESOURCES["sfx-put-down"],
     },
   },
   {
@@ -134,6 +142,8 @@ export const BUILDINGS: Partial<Building>[] = [
     output: { [MATERIALS.Metals]: 1_000 },
     sounds: {
       build: RESOURCES["build-miner"],
+      hover: RESOURCES["sfx-click"],
+      destroy: RESOURCES["sfx-put-down"],
     },
   },
   {
@@ -145,6 +155,8 @@ export const BUILDINGS: Partial<Building>[] = [
     output: { [MATERIALS.PureMetals]: 3_500 },
     sounds: {
       build: RESOURCES["build-chemicalplant"],
+      hover: RESOURCES["sfx-click"],
+      destroy: RESOURCES["sfx-put-down"],
     },
   },
   {
@@ -156,6 +168,8 @@ export const BUILDINGS: Partial<Building>[] = [
     output: { [MATERIALS.H2O]: 7_000 },
     sounds: {
       build: RESOURCES["build-condenser"],
+      hover: RESOURCES["sfx-click"],
+      destroy: RESOURCES["sfx-put-down"],
     },
   },
   {
@@ -167,6 +181,8 @@ export const BUILDINGS: Partial<Building>[] = [
     output: { [MATERIALS.O2]: 750, [MATERIALS.H2]: 1500 },
     sounds: {
       build: RESOURCES["build-electrolysis"],
+      hover: RESOURCES["sfx-click"],
+      destroy: RESOURCES["sfx-put-down"],
     },
   },
   {
@@ -178,6 +194,8 @@ export const BUILDINGS: Partial<Building>[] = [
     output: { [MATERIALS.LH2]: 250 },
     sounds: {
       build: RESOURCES["build-H2compressor"],
+      hover: RESOURCES["sfx-click"],
+      destroy: RESOURCES["sfx-put-down"],
     },
   },
   {
@@ -189,6 +207,8 @@ export const BUILDINGS: Partial<Building>[] = [
     output: { [MATERIALS.LOX]: 200 },
     sounds: {
       build: RESOURCES["build-O2compressor"],
+      hover: RESOURCES["sfx-click"],
+      destroy: RESOURCES["sfx-put-down"],
     },
   },
 ];

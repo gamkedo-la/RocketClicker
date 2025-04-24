@@ -140,6 +140,8 @@ export function BuildingSelector({
       interactive
       onPointerover={() => {
         hoveredBuilding.set(building as Building);
+        // FIXME: a subtle hover sound would be nice here
+        // scene.soundSystem.play(building.sounds.build);    
       }}
       onPointerout={() => {
         // FIXME: when this is set to null, the hover panel immediately removes the text
