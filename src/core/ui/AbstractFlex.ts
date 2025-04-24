@@ -407,7 +407,10 @@ export abstract class AbstractFlex implements FlexElement {
       Math.floor(this.height - this.paddingTop - this.paddingBottom)
     );
 
-    this.outerBounds.setPosition(Math.floor(this.x), Math.floor(this.y));
+    this.outerBounds.setPosition(
+      Math.floor(this.x) - this.origin.x * this.width,
+      Math.floor(this.y) - this.origin.y * this.height
+    );
     this.innerBounds.setPosition(
       Math.floor(this.outerBounds.left + this.paddingLeft),
       Math.floor(this.outerBounds.top + this.paddingTop)
