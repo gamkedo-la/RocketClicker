@@ -34,7 +34,10 @@ export class SignalImpl<T> implements Signal<T> {
   private disposed = false;
   private static currentComputation: SignalImpl<any> | null = null;
   private static computationStack: Set<SignalImpl<any>> = new Set();
-  private static updateStack: Set<SignalImpl<any>> = new Set();
+
+  protected static updateStack: Set<SignalImpl<any>> = new Set();
+  protected static updateDepth = 0;
+  protected static MAX_UPDATE_DEPTH = 100; // Keep depth limit as fallback
 
   constructor(initialValueOrComputeFn: T | (() => T)) {
     if (typeof initialValueOrComputeFn === "function") {
@@ -120,17 +123,46 @@ export class SignalImpl<T> implements Signal<T> {
     this.dependencies.clear();
   }
 
+  protected getDebugInfo(): string {
+    const name = this.displayName || "unnamed signal";
+    const value =
+      typeof this._value === "object"
+        ? JSON.stringify(this._value)
+        : String(this._value);
+    const type = this.computeFn ? "computed" : "signal";
+    return `[${type}:${name}] (current value: ${value})`;
+  }
+
+  protected static getUpdateStackTrace(): string {
+    return Array.from(SignalImpl.updateStack)
+      .map((signal) => signal.getDebugInfo())
+      .join(" → ");
+  }
+
   notify(): void {
     if (this.disposed) {
       return;
     }
 
     if (SignalImpl.updateStack.has(this)) {
-      throw new Error("Circular dependency detected during update");
+      throw new Error(
+        `Circular dependency detected during notify.\nSignal: ${this.getDebugInfo()}\nUpdate Stack: ${SignalImpl.getUpdateStackTrace()}`
+      );
     }
 
+    SignalImpl.updateDepth++;
     SignalImpl.updateStack.add(this);
+
     try {
+      // Depth check
+      if (SignalImpl.updateDepth > SignalImpl.MAX_UPDATE_DEPTH) {
+        throw new Error(
+          `Maximum update depth of ${
+            SignalImpl.MAX_UPDATE_DEPTH
+          } exceeded. Check for unintended recursion in signal updates.\nSignal: ${this.getDebugInfo()}\nUpdate Stack: ${SignalImpl.getUpdateStackTrace()}`
+        );
+      }
+
       // Notify computed signals that depend on this one
       this.dependencies.forEach((signal) => {
         if (!signal.disposed) {
@@ -143,11 +175,15 @@ export class SignalImpl<T> implements Signal<T> {
         try {
           subscriber(this._value);
         } catch (error) {
-          console.error("Error in signal subscriber:", error);
+          console.error(
+            `Error in signal subscriber for ${this.getDebugInfo()}:`,
+            error
+          );
         }
       });
     } finally {
       SignalImpl.updateStack.delete(this);
+      SignalImpl.updateDepth--;
     }
   }
 
