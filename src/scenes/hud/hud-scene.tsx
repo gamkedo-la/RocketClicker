@@ -13,11 +13,13 @@ import { SCENES } from "../scenes";
 import { NineSlice } from "./components/NineSlice";
 import { LeftPanel } from "./left-panel";
 import { RightPanel } from "./right-panel";
+import { SoundManager } from "@game/core/sound/sound-manager";
 
 export class HudScene extends AbstractScene {
   declare bus: Phaser.Events.EventEmitter;
   declare gamebus: PhaserGamebus;
   declare gameState: GameStateManager;
+  declare soundManager: SoundManager;
 
   camera: Phaser.Cameras.Scene2D.Camera;
 
@@ -137,7 +139,11 @@ export class HudScene extends AbstractScene {
         height={height}
         alignContent={ALIGN_ITEMS.STRETCH}
       >
-        <LeftPanel width={sidebarWidth} gameState={this.gameState} />
+        <LeftPanel
+          width={sidebarWidth}
+          gameState={this.gameState}
+          soundManager={this.soundManager}
+        />
         <Spacer />
         <RightPanel
           width={sidebarWidth}

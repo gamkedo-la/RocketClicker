@@ -6,6 +6,7 @@ import PhaserGamebus from "@game/lib/gamebus";
 import { GameStateManager } from "@game/state/game-state";
 
 import { SCENE_CLASSES } from "@game/scenes/scenes";
+import { SoundManager } from "./core/sound/sound-manager";
 
 if (import.meta.env.VITE_DEBUG) {
 }
@@ -52,6 +53,11 @@ const config: Types.Core.GameConfig = {
         key: "GameStateManager",
         plugin: GameStateManager,
         mapping: "gameState",
+      },
+      {
+        key: "SoundManager",
+        plugin: SoundManager,
+        mapping: "soundManager",
       },
     ],
   },

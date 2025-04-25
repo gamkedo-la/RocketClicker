@@ -113,7 +113,7 @@ export const addFlyingBuilding = (
 
     // Play a sound effect if available
     if (building.sounds?.destroy) {
-      scene.gameScene.soundSystem?.play(building.sounds.destroy);
+      scene.soundManager?.play(building.sounds.destroy);
     }
   }
 };

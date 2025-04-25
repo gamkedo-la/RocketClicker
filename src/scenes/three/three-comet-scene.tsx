@@ -31,6 +31,7 @@ import { addFlyingBuilding } from "./elements/flying-building";
 import { createLights } from "./elements/lights";
 import { buildingMaterial, starMaterial } from "./elements/materials";
 import { createSky } from "./elements/sky";
+import { SoundManager } from "@game/core/sound/sound-manager";
 
 export interface BuildingScreenPosition {
   baseX: number; // Unscaled base position
@@ -43,6 +44,7 @@ export interface BuildingScreenPosition {
 export class ThreeCometScene extends AbstractScene {
   declare bus: Phaser.Events.EventEmitter;
   declare gamebus: PhaserGamebus;
+  declare soundManager: SoundManager;
 
   gameScene: GameScene;
 
@@ -479,7 +481,7 @@ export class ThreeCometScene extends AbstractScene {
     console.log("Adding building to cell", building);
 
     // play the proper sound effect
-    this.gameScene.soundSystem.play(building.sounds.build);
+    this.soundManager.play(building.sounds.build);
 
     // Remove any existing building at this cell
     this.removeBuildingModelFromCell(cellId);

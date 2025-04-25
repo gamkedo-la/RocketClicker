@@ -28,9 +28,9 @@ export const addKeyboardSupport = (scene: GameScene) => {
         // @ts-ignore
         scene.gameState.setMouseSelectedBuilding(BUILDINGS[i]);
         // @ts-ignore
-        scene.soundSystem.play(BUILDINGS[i].sounds.build);
+        scene.soundManager.play(BUILDINGS[i].sounds.build);
       } else {
-        scene.soundSystem.play("sfx-gui-deny");
+        scene.soundManager.play("sfx-gui-deny");
       }
     });
   });
@@ -44,7 +44,7 @@ export const addKeyboardSupport = (scene: GameScene) => {
 
   key_escape.on("down", () => {
     scene.gameState.setMouseSelectedBuilding(null);
-    scene.soundSystem.play("sfx-gui-confirm");
+    scene.soundManager.play("sfx-gui-confirm");
   });
 
   key_p.on("down", () => {
@@ -56,11 +56,11 @@ export const addKeyboardSupport = (scene: GameScene) => {
   });
 
   key_m.on("down", () => {
-    scene.soundSystem.setSoundMute(!scene.soundSystem.muted);
+    scene.soundManager.setSoundMute(!scene.soundManager.muted);
   });
 
   key_x.on("down", () => {
     scene.gameState.toggleMouseSelectedBulldoze();
-    scene.soundSystem.play("sfx-gui-confirm");
+    scene.soundManager.play("sfx-gui-confirm");
   });
 };

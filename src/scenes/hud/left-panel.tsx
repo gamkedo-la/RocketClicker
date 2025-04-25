@@ -13,13 +13,15 @@ import { BuildingSelector } from "./components/left/BuildingSelector";
 import { CometSpinMeter } from "./components/left/CometSpinMeter";
 import { NineSlice } from "./components/NineSlice";
 import { BulldozeBuildingButton } from "./components/left/BulldozeBuildingButton";
-
+import { SoundManager } from "@game/core/sound/sound-manager";
 export const LeftPanel = ({
   width,
   gameState,
+  soundManager,
 }: {
   width: number;
   gameState: GameStateManager;
+  soundManager: SoundManager;
 }) => {
   const material_storage =
     gameState.state.get().material_storage[MATERIALS.CometDust];
@@ -130,6 +132,7 @@ export const LeftPanel = ({
                   hoveredBuilding={hoveredBuilding}
                   building={building}
                   gameState={gameState}
+                  soundManager={soundManager}
                 />
               )),
               <BulldozeBuildingButton gameState={gameState} />,

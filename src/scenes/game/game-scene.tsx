@@ -1,19 +1,20 @@
 import PhaserGamebus from "@game/lib/gamebus";
 import { GameStatus } from "@game/state/game-state";
-import SoundSystem from "@game/systems/SoundSystem";
 
 import { ThreeCometScene } from "../three/three-comet-scene";
 
+import CometSpinSystem from "@game/systems/CometSpinSystem";
 import EffectsSystem from "@game/systems/EffectsSystem";
 import MaterialsSystem from "@game/systems/MaterialsSystem";
 import { AbstractScene } from "..";
 import { addKeyboardSupport } from "../hud/keyboard-support";
 import { SCENES } from "../scenes";
-import CometSpinSystem from "@game/systems/CometSpinSystem";
+import { SoundManager } from "@game/core/sound/sound-manager";
 
 export class GameScene extends AbstractScene {
   declare bus: Phaser.Events.EventEmitter;
   declare gamebus: PhaserGamebus;
+  declare soundManager: SoundManager;
 
   camera: Phaser.Cameras.Scene2D.Camera;
   threeCometScene: ThreeCometScene;
@@ -22,7 +23,6 @@ export class GameScene extends AbstractScene {
     super(SCENES.GAME);
   }
 
-  soundSystem!: SoundSystem;
   materialsSystem!: MaterialsSystem;
   effectsSystem!: EffectsSystem;
   cometSpinSystem!: CometSpinSystem;
@@ -54,7 +54,7 @@ export class GameScene extends AbstractScene {
 
   registerSystems() {
     console.log("registering systems");
-    this.soundSystem = new SoundSystem(this);
+
     this.materialsSystem = new MaterialsSystem(this.gameState).create();
     this.effectsSystem = new EffectsSystem(this.gameState).create();
     this.cometSpinSystem = new CometSpinSystem(this.gameState).create();

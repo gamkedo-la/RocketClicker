@@ -17,8 +17,9 @@ import {
   MATERIALS_KEYS,
 } from "@game/entities/materials/index";
 import { GameStateManager } from "@game/state/game-state";
-import { NineSlice } from "../NineSlice";
 import { FlexItem } from "../../../../core/ui/FlexItem";
+import { NineSlice } from "../NineSlice";
+import { SoundManager } from "@game/core/sound/sound-manager";
 
 export const Button = ({
   building,
@@ -125,11 +126,13 @@ export function BuildingSelector({
   id,
   building,
   gameState,
+  soundManager,
   hoveredBuilding,
 }: {
   id: number;
   building: Partial<Building>;
   gameState: GameStateManager;
+  soundManager: SoundManager;
   hoveredBuilding: Signal<Building | null>;
 }): FlexColumn {
   window.currentScene.input.setTopOnly(false);
@@ -141,7 +144,9 @@ export function BuildingSelector({
       onPointerover={() => {
         hoveredBuilding.set(building as Building);
         // FIXME: a subtle hover sound would be nice here
-        // scene.soundSystem.play(building.sounds.build);    
+        if (building?.sounds?.build) {
+          soundManager.play(building.sounds.build);
+        }
       }}
       onPointerout={() => {
         // FIXME: when this is set to null, the hover panel immediately removes the text
