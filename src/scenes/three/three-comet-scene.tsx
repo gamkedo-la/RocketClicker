@@ -294,7 +294,6 @@ export class ThreeCometScene extends AbstractScene {
     board.grid_buildings.forEach((buildingSignal, cellId) => {
       effect(() => {
         const building = buildingSignal.get();
-        console.log("Building changed", building);
         if (building) {
           this.addBuildingModelToCell(cellId, building);
         } else {
@@ -478,7 +477,7 @@ export class ThreeCometScene extends AbstractScene {
    */
   public addBuildingModelToCell(cellId: number, building: Building) {
     console.log("Adding building to cell", building);
-    
+
     // play the proper sound effect
     this.gameScene.soundSystem.play(building.sounds.build);
 

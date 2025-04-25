@@ -104,8 +104,8 @@ export class GameStateManager
     sound_volume: signal(1, {
       label: "Sound volume",
       tweakpaneOptions: {
-         min: 0,
-         max: 1,
+        min: 0,
+        max: 1,
       },
     }),
   });
@@ -312,5 +312,5 @@ export class GameStateManager
   setSoundVolume(volume: number): void {
     const normalizedVolume = Math.max(0, Math.min(1, volume));
     this.state.get().sound_volume.set(normalizedVolume);
-  } 
+  }
 }

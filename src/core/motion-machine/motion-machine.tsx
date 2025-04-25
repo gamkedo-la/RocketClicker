@@ -184,13 +184,6 @@ export class MotionMachine<
       });
     }
 
-    /*console.log("collectAnimationTasks", {
-      current,
-      goal,
-      commonAncestorIndex,
-      tasks,
-    });*/
-
     return tasks;
   }
 
@@ -201,40 +194,24 @@ export class MotionMachine<
       //throw new Error("Cannot set state while not in active state");
     }
 
-    // console.log("\n> setState!", lastEvent);
-
     this.transitionStack = this.collectAnimationTasks(
       this.current.get(),
       state
     );
-
-    /* console.log({
-      transitionStack: this.transitionStack.length,
-      current: this.current.get(),
-      state,
-      lastEvent,
-    });*/
 
     this.targetState = state;
     this.targetEvent = lastEvent;
 
     this.transitionStack.shift()!;
     this.setStateLifecycle("exiting", this.current.get());
-    // console.log("< setState!");
   }
 
   animationsCompleted() {
     // Animations are done! Where should I be going next?
-    // console.log("animationsCompleted", this.transitionStack.length);
-
     if (this.transitionStack.length > 0) {
       const next = this.transitionStack.shift();
-
-      // console.log("next", next);
-
       if (next) {
         if (next.goal) {
-          //          console.log("!!!! goal", next.state);
           super.setState(next.state, this.targetEvent);
           this.targetState = null;
           this.targetEvent = null;
@@ -245,15 +222,11 @@ export class MotionMachine<
       }
     }
 
-    // console.log("done!!");
-
     if (this.stateLifecycle === "entering") {
-      // console.log("entering", this.current.get());
       this.setStateLifecycle("active", this.current.get());
     }
 
     if (this.stateLifecycle === "exiting") {
-      //    console.log("exiting", this.current.get());
       assert(this.targetState, "Next state is not set");
       super.setState(this.targetState, this.targetEvent);
       this.setStateLifecycle("entering", this.targetState);
@@ -274,8 +247,6 @@ export class MotionMachine<
   j = 0;
 
   update(delta: number) {
-    //console.log(`-------## ${this.j++} update`, { delta });
-
     let infiniteLoopProtection = 0;
 
     let anim;
@@ -290,18 +261,10 @@ export class MotionMachine<
         //anim.clock - anim.duration;
         consumed = Math.max(consumed, anim.update(frameBudget));
 
-        /*console.log("anim", {
-          progress: anim.progress,
-          duration: anim.duration,
-          clock: anim.clock,
-        });*/
-
         if (anim.progress >= 1 && anim.duration !== Infinity) {
           this.currentAnimations.splice(i, 1);
         }
       }
-
-      // console.log("update", { consumed, frameBudget, i });
 
       frameBudget -= consumed;
 

@@ -245,9 +245,6 @@ export abstract class AbstractFlex implements FlexElement {
     }
 
     if (this.depth && child.setDepth) {
-      if (this.depth !== 0 || child.depth !== 0) {
-        console.log("setting depth", this.depth, child.depth);
-      }
       child.setDepth(this.depth);
     }
 

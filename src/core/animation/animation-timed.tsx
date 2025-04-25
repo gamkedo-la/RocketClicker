@@ -480,13 +480,6 @@ export class AnimationPlan {
 
     consumed = Math.max(0, Math.min(this.duration - this.clock, dt));
 
-    // console.log("- #a", {
-    //   dt,
-    //   clock: this.clock,
-    //   duration: this.duration,
-    //   consumed,
-    // });
-
     this.clock += dt;
     this.progress = Math.min(this.clock / this.duration, 1);
 
