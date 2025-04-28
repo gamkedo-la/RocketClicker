@@ -1,7 +1,7 @@
 import { computed, mutable, signal } from "@game/core/signals/signals";
 import { MutableSignal, Signal } from "@game/core/signals/types";
-import { MATERIALS } from "@game/entities/materials/index";
 import { Building } from "@game/entities/buildings/types";
+import { MATERIALS } from "@game/entities/materials/index";
 import { MAX_COMET_SPIN } from "./consts";
 
 export const GameStatus = {
@@ -95,9 +95,7 @@ export class GameStateManager
         max: Math.PI,
       },
     }),
-    can_place_building: computed(() => comet_spin_velocity_abs.get() <= 20.0, {
-      label: "Can Place Building",
-    }),
+    can_place_building: computed(() => comet_spin_velocity_abs.get() <= 20.0),
     mouse_selected_building: signal<MouseSelectedBuilding>({ building: null }),
     mouse_selected_bulldoze: signal<boolean>(false),
     hovered_building: signal<Building | null>(null),

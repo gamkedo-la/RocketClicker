@@ -80,8 +80,6 @@ export default class EffectsSystem implements System {
     this.buildingAlerts.delete(cellId);
   }
 
-  alertTicks = signal(0, { label: "alerts ticks" });
-
   update(_time: number, delta: number): void {
     const grid_buildings = this.gameState.state.get()?.board.grid_buildings;
 

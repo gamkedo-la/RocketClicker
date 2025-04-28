@@ -12,6 +12,7 @@ import { STRING_COLORS_NAMES, TWELVE_HOURS_IN_SECONDS } from "@game/consts";
 import { assert } from "@game/core/common/assert";
 import { effect, signal } from "@game/core/signals/signals";
 import type { Signal } from "@game/core/signals/types";
+import { SoundManager } from "@game/core/sound/sound-manager";
 import {
   BUILDINGS,
   getBuildingById,
@@ -31,7 +32,6 @@ import { addFlyingBuilding } from "./elements/flying-building";
 import { createLights } from "./elements/lights";
 import { buildingMaterial, starMaterial } from "./elements/materials";
 import { createSky } from "./elements/sky";
-import { SoundManager } from "@game/core/sound/sound-manager";
 
 export interface BuildingScreenPosition {
   baseX: number; // Unscaled base position
@@ -217,9 +217,6 @@ export class ThreeCometScene extends AbstractScene {
       });
     });
   }
-
-  tx = signal(0, { label: "tx" });
-  ty = signal(0, { label: "ty" });
 
   private loadCometSystemModel() {
     loader.parse(this.cache.binary.get(RESOURCES["comet-3"]), "", (gltf) => {
@@ -814,20 +811,15 @@ export class ThreeCometScene extends AbstractScene {
     });
   }
 
-  alertsUpdated = signal(0, { label: "alerts updated" });
-  alertsRemoved = signal(0, { label: "alerts removed" });
-
   private updateBuildingPill(cellId: number, alert: BuildingAlert | null) {
     const existingPill = this.activePills.get(cellId);
 
     if (existingPill) {
-      this.alertsRemoved.update((value) => value + 1);
       existingPill.removeFromScene();
       this.activePills.delete(cellId);
     }
 
     if (alert) {
-      this.alertsUpdated.update((value) => value + 1);
       const pill: FlexRow = <BuildingPill alert={alert} />;
       pill.addToScene(this);
       pill.setDepth(200);

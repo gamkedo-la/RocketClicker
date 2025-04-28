@@ -3,18 +3,15 @@ import {
   MATERIALS,
   MATERIALS_GENERATION_ORDER,
 } from "@game/entities/materials/index";
-import { GameStateManager } from "@game/state/game-state";
-import { System } from "@game/systems/index";
-import { EFFECTS } from "../entities/buildings";
 import {
   HIGH_SPEED_BUILDING_EFFECT_MAX,
   HIGH_SPEED_BUILDING_EFFECT_MIN,
   SPEED_BUILDING_EFFECT_MAX,
+  SPEED_BUILDING_EFFECT_MIN,
 } from "@game/state/consts";
-import { SPEED_BUILDING_EFFECT_MIN } from "@game/state/consts";
-import { signal } from "@game/core/signals/signals";
-
-const building_tax = signal(0, { label: "building tax" });
+import { GameStateManager } from "@game/state/game-state";
+import { System } from "@game/systems/index";
+import { EFFECTS } from "../entities/buildings";
 
 export default class MaterialsSystem implements System {
   material_storage: Record<keyof typeof MATERIALS, Signal<number>>;

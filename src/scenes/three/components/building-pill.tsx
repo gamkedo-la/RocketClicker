@@ -73,10 +73,7 @@ export function Pill({
   );
 }
 
-const pill = signal(0, { label: "added pills" });
-
 export function BuildingPill({ alert }: { alert: BuildingAlert }): FlexRow {
-  pill.update((value) => value + 1);
   return (
     <Pill type={alert.type} text={alert.message} blinking={alert.blinking} />
   );
