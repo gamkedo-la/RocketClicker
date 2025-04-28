@@ -12,13 +12,14 @@ export default class CometSpinSystem implements System {
   update(_time: number, delta: number): void {
     const spin = this.gameState.getCometSpin().get();
     const spinAbs = Math.abs(spin);
-    if (spinAbs < 5) {
+
+    if (spinAbs < 10) {
       return;
     }
 
     const spinSignal = Math.sign(spin);
     // The spin always wants to go back to 10, and it does it linearly from spin 10 to 100.
-    const spinDrag = (spinAbs - 10) / 90;
+    const spinDrag = (spinAbs - 10) / 45;
     const force = 3 * COMET_SPIN_FORCE * delta * spinDrag;
     const newSpin = spin - force * spinSignal;
 

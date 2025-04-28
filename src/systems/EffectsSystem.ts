@@ -86,11 +86,11 @@ export default class EffectsSystem implements System {
             );
             break;
           case EFFECTS.DAMP:
-            this.gameState
-              .getCometSpin()
-              .update(
-                (spin) => spin * 0.999 * building.current_efficiency.get()
-              );
+            this.gameState.getCometSpin().update((spin) => {
+              const efficiency = building.current_efficiency.get();
+              const sign = Math.sign(spin);
+              return spin - 0.05 * efficiency * sign;
+            });
             break;
           case EFFECTS.SPEED:
             // building tax covers for this now?

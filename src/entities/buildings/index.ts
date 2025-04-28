@@ -77,7 +77,7 @@ export const EFFECTS_EXPLANATIONS = {
   [EFFECTS.HIGH_SPEED]: "Needs high speed so it can start",
   [EFFECTS.SLOW]: "The slower the comet spins, the better",
   [EFFECTS.LIGHT]: "This building needs light to work properly",
-  [EFFECTS.COLD]: "Hiding from the light is better",
+  [EFFECTS.COLD]: "It's better to hide from the light",
 };
 
 export const BUILDINGS: Partial<Building>[] = [
@@ -124,7 +124,7 @@ export const BUILDINGS: Partial<Building>[] = [
     id: "duster",
     name: "Duster",
     effects: [EFFECTS.SPEED],
-    building_cost: { [MATERIALS.CometDust]: 100 },
+    building_cost: { [MATERIALS.CometDust]: 5_000 },
     input: { [MATERIALS.kWh]: 200 },
     output: { [MATERIALS.CometDust]: 2_000 },
     sounds: {

@@ -602,14 +602,17 @@ export class ThreeCometScene extends AbstractScene {
     const cometSpin = this.gameState.getCometSpin().get();
     const spinSignal = Math.sign(cometSpin);
     const forceSignal = Math.sign(distFromCenter);
+
     if (distFromCenter !== 375 && distFromCenter !== -385) {
       // If we are increasing the comet spin, we can only do until spin velocity is 25, with diminshed returns
-      const effectiveness =
+      let effectiveness =
         forceSignal === spinSignal
-          ? cometSpin < 15
+          ? Math.abs(cometSpin) < 15
             ? 1
-            : Math.max(0, 1 - (cometSpin - 15) / 15)
+            : Math.max(0, 1 - (Math.abs(cometSpin) - 15) / 15)
           : 1;
+
+      effectiveness = (effectiveness * Math.abs(distFromCenter)) / 370;
 
       const value = COMET_DUST_MOUSE_MINING * effectiveness;
 
@@ -933,9 +936,9 @@ export class ThreeCometScene extends AbstractScene {
                   this.gameState.state.get()?.material_storage ?? {}
                 )
               ) {
-                this.gameState.addCometSpin((TILES_FORCES[cellId] ?? 0) * 3);
-
                 if (this.gameState.state.get().can_place_building.get()) {
+                  this.gameState.addCometSpin((TILES_FORCES[cellId] ?? 0) * 3);
+
                   this.gameState.addBuildingToCell(
                     cellId,
                     getBuildingById(selectedBuilding.id)
