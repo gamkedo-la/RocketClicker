@@ -6,6 +6,12 @@ import {
 import { GameStateManager } from "@game/state/game-state";
 import { System } from "@game/systems/index";
 import { EFFECTS } from "../entities/buildings";
+import {
+  HIGH_SPEED_BUILDING_EFFECT_MAX,
+  HIGH_SPEED_BUILDING_EFFECT_MIN,
+  SPEED_BUILDING_EFFECT_MAX,
+} from "@game/state/consts";
+import { SPEED_BUILDING_EFFECT_MIN } from "@game/state/consts";
 
 export default class MaterialsSystem implements System {
   material_storage: Record<keyof typeof MATERIALS, Signal<number>>;
@@ -35,7 +41,25 @@ export default class MaterialsSystem implements System {
 
       const spin_velocity =
         this.gameState.state.get()?.comet_spin_velocity_abs.get() ?? 0;
-      const buildings_tax = Math.max(Math.min((spin_velocity - 20) / 20, 1), 0);
+      // The tax is 0 at 20, and 1 at 40
+      const speed_buildings_tax = Math.max(
+        Math.min(
+          (spin_velocity - SPEED_BUILDING_EFFECT_MIN) /
+            (SPEED_BUILDING_EFFECT_MAX - SPEED_BUILDING_EFFECT_MIN),
+          1
+        ),
+        0
+      );
+
+      // The tax is 0 at 60, and 1 at 90
+      const high_speed_buildings_tax = Math.max(
+        Math.min(
+          (spin_velocity - HIGH_SPEED_BUILDING_EFFECT_MIN) /
+            (HIGH_SPEED_BUILDING_EFFECT_MAX - HIGH_SPEED_BUILDING_EFFECT_MIN),
+          1
+        ),
+        0
+      );
 
       MATERIALS_GENERATION_ORDER.forEach((material_order) => {
         grid_buildings.forEach((buildingSignal) => {
@@ -62,11 +86,10 @@ export default class MaterialsSystem implements System {
                 );
 
           // We need to apply the speed effect here because speed and vibration are combined
-          if (
-            building.effects.includes(EFFECTS.SPEED) ||
-            building.effects.includes(EFFECTS.HIGH_SPEED)
-          ) {
-            successRate *= buildings_tax;
+          if (building.effects.includes(EFFECTS.SPEED)) {
+            successRate *= speed_buildings_tax;
+          } else if (building.effects.includes(EFFECTS.HIGH_SPEED)) {
+            successRate *= high_speed_buildings_tax;
           }
 
           Object.entries(building.input).forEach(([input, value]) => {

@@ -1,6 +1,11 @@
 import { signal } from "@game/core/signals/signals";
 import type { Signal } from "@game/core/signals/types";
-import { COMET_SPIN_FORCE, MAX_COMET_SPIN } from "@game/state/consts";
+import {
+  COMET_SPIN_FORCE,
+  HIGH_SPEED_BUILDING_EFFECT_MIN,
+  MAX_COMET_SPIN,
+  SPEED_BUILDING_EFFECT_MIN,
+} from "@game/state/consts";
 import { GameStateManager } from "@game/state/game-state";
 import { System } from ".";
 import { EFFECTS, TILES_FORCES } from "../entities/buildings";
@@ -25,13 +30,15 @@ const TOO_SLOW_ALERT: BuildingAlert = {
 
 const TOO_DARK_ALERT: BuildingAlert = {
   type: "warning",
-  message: "TOO DARK",
+  message: "LOW LIGHT",
   blinking: true,
 };
 
 const TOO_WARM_ALERT: BuildingAlert = {
   type: "warning",
-  message: "TOO LIGHT",
+  message: "TOO BRIGHT",
+  blinking: true,
+};
   blinking: true,
 };
 
@@ -93,7 +100,20 @@ export default class EffectsSystem implements System {
             });
             break;
           case EFFECTS.SPEED:
-            // building tax covers for this now?
+            // building tax covers this effect
+            const spinRate = Math.abs(this.gameState.getCometSpin().get());
+            if (spinRate < SPEED_BUILDING_EFFECT_MIN) {
+              currentAlert = TOO_SLOW_ALERT;
+            }
+            break;
+          case EFFECTS.HIGH_SPEED:
+            // building tax covers this effect
+            const highSpeedSpinRate = Math.abs(
+              this.gameState.getCometSpin().get()
+            );
+            if (highSpeedSpinRate < HIGH_SPEED_BUILDING_EFFECT_MIN) {
+              currentAlert = TOO_SLOW_ALERT;
+            }
             break;
           case EFFECTS.SLOW: {
             const efficiency =
