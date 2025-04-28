@@ -12,6 +12,9 @@ import {
   SPEED_BUILDING_EFFECT_MAX,
 } from "@game/state/consts";
 import { SPEED_BUILDING_EFFECT_MIN } from "@game/state/consts";
+import { signal } from "@game/core/signals/signals";
+
+const building_tax = signal(0, { label: "building tax" });
 
 export default class MaterialsSystem implements System {
   material_storage: Record<keyof typeof MATERIALS, Signal<number>>;
@@ -87,9 +90,15 @@ export default class MaterialsSystem implements System {
 
           // We need to apply the speed effect here because speed and vibration are combined
           if (building.effects.includes(EFFECTS.SPEED)) {
-            successRate *= speed_buildings_tax;
+            successRate = Math.min(
+              building.maximum_success_rate.get(),
+              speed_buildings_tax
+            );
           } else if (building.effects.includes(EFFECTS.HIGH_SPEED)) {
-            successRate *= high_speed_buildings_tax;
+            successRate = Math.min(
+              building.maximum_success_rate.get(),
+              high_speed_buildings_tax
+            );
           }
 
           Object.entries(building.input).forEach(([input, value]) => {

@@ -124,9 +124,9 @@ export const BUILDINGS: Partial<Building>[] = [
     id: "duster",
     name: "Duster",
     effects: [EFFECTS.SPEED],
-    building_cost: { [MATERIALS.CometDust]: 5_000 },
+    building_cost: { [MATERIALS.CometDust]: 2_500 },
     input: { [MATERIALS.kWh]: 200 },
-    output: { [MATERIALS.CometDust]: 2_000 },
+    output: { [MATERIALS.CometDust]: 200 },
     sounds: {
       build: RESOURCES["build-duster"],
       hover: RESOURCES["sfx-click"],
@@ -151,8 +151,8 @@ export const BUILDINGS: Partial<Building>[] = [
     name: "Chemical plant",
     effects: [EFFECTS.SLOW],
     building_cost: { [MATERIALS.Metals]: 2_500 },
-    input: { [MATERIALS.kWh]: 8750, [MATERIALS.Metals]: 35_000 },
-    output: { [MATERIALS.PureMetals]: 3_500 },
+    input: { [MATERIALS.kWh]: 8750, [MATERIALS.Metals]: 1_000 },
+    output: { [MATERIALS.PureMetals]: 1_00 },
     sounds: {
       build: RESOURCES["build-chemicalplant"],
       hover: RESOURCES["sfx-click"],
@@ -165,7 +165,7 @@ export const BUILDINGS: Partial<Building>[] = [
     effects: [EFFECTS.SPEED],
     building_cost: { [MATERIALS.Metals]: 10_000 },
     input: { [MATERIALS.kWh]: 2_000 },
-    output: { [MATERIALS.H2O]: 7_000 },
+    output: { [MATERIALS.H2O]: 7_00 },
     sounds: {
       build: RESOURCES["build-condenser"],
       hover: RESOURCES["sfx-click"],
@@ -190,8 +190,8 @@ export const BUILDINGS: Partial<Building>[] = [
     name: "H2 Compressor",
     effects: [EFFECTS.HIGH_SPEED],
     building_cost: { [MATERIALS.PureMetals]: 10_000 },
-    input: { [MATERIALS.kWh]: 2500, [MATERIALS.H2]: 350 },
-    output: { [MATERIALS.LH2]: 250 },
+    input: { [MATERIALS.kWh]: 2500, [MATERIALS.H2]: 350 * 4 },
+    output: { [MATERIALS.LH2]: 250 * 4 },
     sounds: {
       build: RESOURCES["build-H2compressor"],
       hover: RESOURCES["sfx-click"],
@@ -203,8 +203,8 @@ export const BUILDINGS: Partial<Building>[] = [
     name: "O2 Compressor",
     effects: [EFFECTS.HIGH_SPEED],
     building_cost: { [MATERIALS.PureMetals]: 8_000 },
-    input: { [MATERIALS.kWh]: 200, [MATERIALS.O2]: 300 },
-    output: { [MATERIALS.LOX]: 200 },
+    input: { [MATERIALS.kWh]: 200, [MATERIALS.O2]: 300 * 4 },
+    output: { [MATERIALS.LOX]: 200 * 4 },
     sounds: {
       build: RESOURCES["build-O2compressor"],
       hover: RESOURCES["sfx-click"],

@@ -80,7 +80,7 @@ export class ThreeCometScene extends AbstractScene {
   cameraPositionY = signal(50);
   ambientLightIntensity = signal(1.5);
   spotLightIntensity = signal(0.25);
-
+  directionalLightIntensity = signal(0.5);
   // Track both the ghost and the current selected building type
   ghostBuilding: THREE.Object3D | null = null;
   currentGhostBuildingId: string | null = null;
@@ -118,9 +118,7 @@ export class ThreeCometScene extends AbstractScene {
     const [ambientLight, directionalLight, spotLight] = createLights();
     this.threeScene.add(ambientLight, directionalLight, spotLight);
 
-    const currentCometSpin = signal(0, {
-      label: "cometSpin",
-    });
+    const currentCometSpin = signal(0);
 
     // Subscribe to camera zoom changes
     this.cameraZoom.subscribe((value) => {
@@ -141,6 +139,10 @@ export class ThreeCometScene extends AbstractScene {
 
     this.spotLightIntensity.subscribe((value) => {
       spotLight.intensity = value;
+    });
+
+    this.directionalLightIntensity.subscribe((value) => {
+      directionalLight.intensity = value;
     });
 
     // Create a motion machine to handle smooth transitions
@@ -167,16 +169,24 @@ export class ThreeCometScene extends AbstractScene {
                 <tween
                   signal={this.ambientLightIntensity}
                   to={() =>
-                    1.5 + Math.abs(currentCometSpin.get() / MAX_COMET_SPIN) * 20
+                    1.5 + Math.abs(currentCometSpin.get() / MAX_COMET_SPIN) * 30
                   }
                   duration={1000}
                 />
                 <tween
                   signal={this.spotLightIntensity}
                   to={() =>
-                    0.25 +
+                    0.1 +
                     (1 - Math.abs(currentCometSpin.get() / MAX_COMET_SPIN)) *
-                      4.75
+                      3.75
+                  }
+                  duration={1000}
+                />
+                <tween
+                  signal={this.directionalLightIntensity}
+                  to={() =>
+                    0.5 -
+                    Math.abs(currentCometSpin.get() / MAX_COMET_SPIN) * 0.45
                   }
                   duration={1000}
                 />
@@ -610,7 +620,7 @@ export class ThreeCometScene extends AbstractScene {
           ? Math.abs(cometSpin) < 15
             ? 1
             : Math.max(0, 1 - (Math.abs(cometSpin) - 15) / 15)
-          : 1;
+          : 3;
 
       effectiveness = (effectiveness * Math.abs(distFromCenter)) / 370;
 
