@@ -9,18 +9,27 @@ import { FlexRow } from "../../../core/ui/FlexRow";
 import type { BuildingAlert } from "../../../systems/EffectsSystem";
 
 export function Pill({
-  color,
+  type,
   text,
   blinking = false,
 }: {
-  color: number;
+  type: "warning" | "error" | "positive";
   text: string;
   blinking?: boolean;
 }): FlexRow {
   const opacity = signal(1);
 
   const rect: Phaser.GameObjects.Rectangle = (
-    <rectangle alpha={opacity} fillColor={COLORS_NAMES["fever-dream"]} />
+    <rectangle
+      alpha={opacity}
+      fillColor={
+        type === "warning"
+          ? COLORS_NAMES["vicious-violet"]
+          : type === "positive"
+          ? COLORS_NAMES["vaporwave-blue"]
+          : COLORS_NAMES["strawberry-field"]
+      }
+    />
   );
 
   if (blinking) {
@@ -38,14 +47,27 @@ export function Pill({
     );
   }
 
-  rect.setStrokeStyle(2, color);
+  rect.setStrokeStyle(
+    2,
+    type === "warning"
+      ? COLORS_NAMES["vicious-violet"]
+      : type === "positive"
+      ? COLORS_NAMES["vaporwave-blue"]
+      : COLORS_NAMES["strawberry-field"]
+  );
 
   return (
     <Flex backgroundElement={rect} padding={[2, 4]}>
       <text
         text={text}
         alpha={opacity}
-        style={{ fontSize: 10, color: STRING_COLORS_NAMES["black"] }}
+        style={{
+          fontSize: 10,
+          color:
+            type === "warning"
+              ? STRING_COLORS_NAMES["white"]
+              : STRING_COLORS_NAMES["black"],
+        }}
       />
     </Flex>
   );
@@ -56,14 +78,6 @@ const pill = signal(0, { label: "added pills" });
 export function BuildingPill({ alert }: { alert: BuildingAlert }): FlexRow {
   pill.update((value) => value + 1);
   return (
-    <Pill
-      color={
-        alert.type === "warning"
-          ? COLORS_NAMES["strawberry-field"]
-          : COLORS_NAMES["vaporwave-blue"]
-      }
-      text={alert.message}
-      blinking={alert.blinking}
-    />
+    <Pill type={alert.type} text={alert.message} blinking={alert.blinking} />
   );
 }

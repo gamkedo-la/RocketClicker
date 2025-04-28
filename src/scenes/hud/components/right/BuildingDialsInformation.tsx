@@ -47,13 +47,13 @@ export const BuildingDialsInformation = ({
     <Flex direction={DIRECTION.COLUMN} alignContent={ALIGN_ITEMS.FLEX_START}>
       <text
         text={computed(() => hoveredBuilding.get()?.name || "")}
-        style={{ wordWrap: { width: 70 } }}
+        style={{ fontSize: 12 }}
       />
       <text
         text={computed(() => hoveredBuilding.get()?.effects.join(", ") || "")}
         style={{ fontSize: 12, color: STRING_COLORS_NAMES["strawberry-field"] }}
       />
-      <Spacer grow={0} height={20} />
+      <Spacer grow={0} height={10} />
       <text
         text={"Efficiency"}
         style={{ fontSize: 14, color: STRING_COLORS_NAMES["pleasing-pink"] }}

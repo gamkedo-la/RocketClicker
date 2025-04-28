@@ -717,15 +717,15 @@ export class ThreeCometScene extends AbstractScene {
               node.material = node.material.map((mat) => {
                 const ghostMat = mat.clone();
                 ghostMat.transparent = true;
-                ghostMat.opacity = 0.1;
-                ghostMat.depthWrite = false;
+                ghostMat.opacity = 0.3;
+                ghostMat.depthWrite = true;
                 return ghostMat;
               });
             } else if (node.material) {
               const ghostMat = node.material.clone();
               ghostMat.transparent = true;
-              ghostMat.opacity = 0.1;
-              ghostMat.depthWrite = false;
+              ghostMat.opacity = 0.3;
+              ghostMat.depthWrite = true;
               node.material = ghostMat;
             }
           }
