@@ -19,4 +19,7 @@ export interface Building {
   maximum_success_rate: Signal<number>;
   current_success_rate: Signal<number>;
   current_efficiency: Signal<number>;
+
+  missing_materials: boolean;
+  missing_energy: boolean;
 }

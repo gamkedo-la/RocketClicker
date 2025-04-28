@@ -98,6 +98,12 @@ export default class MaterialsSystem implements System {
               this.material_storage[input as keyof typeof MATERIALS].get();
             // How much of the input material is needed?
             successRate = Math.min(successRate, material / value);
+
+            if (input === MATERIALS.kWh) {
+              building.missing_energy = material === 0;
+            } else {
+              building.missing_materials = material === 0;
+            }
           });
 
           building.current_success_rate.set(successRate);

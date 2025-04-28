@@ -1,17 +1,17 @@
 import { signal } from "@game/core/signals/signals";
 import type { Signal } from "@game/core/signals/types";
 import {
-  COMET_SPIN_FORCE,
   HIGH_SPEED_BUILDING_EFFECT_MIN,
   MAX_COMET_SPIN,
   SPEED_BUILDING_EFFECT_MIN,
+  VIBRATION_EFFECT_FORCE,
 } from "@game/state/consts";
 import { GameStateManager } from "@game/state/game-state";
 import { System } from ".";
 import { EFFECTS, TILES_FORCES } from "../entities/buildings";
 
 export interface BuildingAlert {
-  type: "warning" | "error";
+  type: "positive" | "warning" | "error";
   message: string;
   blinking: boolean;
 }
@@ -39,7 +39,23 @@ const TOO_WARM_ALERT: BuildingAlert = {
   message: "TOO BRIGHT",
   blinking: true,
 };
+
+const MISSING_MATERIALS_ALERT: BuildingAlert = {
+  type: "error",
+  message: "NO MATERIALS",
   blinking: true,
+};
+
+const MISSING_ENERGY_ALERT: BuildingAlert = {
+  type: "error",
+  message: "NO POWER",
+  blinking: true,
+};
+
+const POSITIVE_ALERT: BuildingAlert = {
+  type: "positive",
+  message: "OK",
+  blinking: false,
 };
 
 export default class EffectsSystem implements System {
@@ -87,7 +103,7 @@ export default class EffectsSystem implements System {
             const force = TILES_FORCES[cellId] ?? 0;
             this.gameState.addCometSpin(
               force *
-                COMET_SPIN_FORCE *
+                VIBRATION_EFFECT_FORCE *
                 delta *
                 building.current_efficiency.get()
             );
@@ -147,24 +163,24 @@ export default class EffectsSystem implements System {
         }
       });
 
-      // Check building-specific conditions
-      if (!currentAlert) {
-        switch (building.id) {
-          case "miner": {
-            const spinRate = Math.abs(this.gameState.getCometSpin().get());
-            if (spinRate < 5) {
-              this.alertTicks.set(this.alertTicks.get() + 1);
-              currentAlert = TOO_SLOW_ALERT;
-            }
-            break;
-          }
-        }
+      if (building.missing_materials) {
+        currentAlert = MISSING_MATERIALS_ALERT;
       }
 
-      if (currentAlert && currentAlert.message !== alert.get()?.message) {
-        alert.set(currentAlert);
-      } else if (!currentAlert && alert.get()) {
-        alert.set(null);
+      if (building.missing_energy) {
+        currentAlert = MISSING_ENERGY_ALERT;
+      }
+
+      if (currentAlert) {
+        // No idea how to fix this decently
+        // @ts-ignore
+        if (alert.get()?.message !== currentAlert.message) {
+          alert.set(currentAlert);
+        }
+      } else {
+        if (alert.get() !== null) {
+          alert.set(POSITIVE_ALERT);
+        }
       }
     });
   }
