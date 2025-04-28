@@ -11,6 +11,7 @@ import { ALIGN_ITEMS, DIRECTION, JUSTIFY } from "@game/core/ui/AbstractFlex";
 import { AbstractScene } from "..";
 import { Flex } from "../../core/ui/Flex";
 import { SCENES } from "../scenes";
+import { Spacer } from "../../core/ui/FlexItem";
 
 export class IntroScene extends AbstractScene {
   declare bus: Phaser.Events.EventEmitter;
@@ -43,6 +44,25 @@ export class IntroScene extends AbstractScene {
           text="THE SPINNING COMET ESCAPE"
           style={{ fontSize: 64, color: STRING_COLORS_NAMES["vaporwave-blue"] }}
         />
+        <Spacer grow={0} height={10} />
+
+        <text
+          text="Your rocket landed on a comet and you need to refuel it."
+          style={{ fontSize: 28, color: "white" }}
+        />
+        <text
+          text="Generate energy and materials to generate"
+          style={{ fontSize: 28, color: "white" }}
+        />
+        <text
+          text="the liquid oxygen and hydrogen to return to space."
+          style={{ fontSize: 28, color: "white" }}
+        />
+        <text
+          text="Or try your luck spinning the comet."
+          style={{ fontSize: 28, color: "white" }}
+        />
+        <Spacer grow={0} height={20} />
         {clickText}
       </Flex>
     );
