@@ -448,6 +448,20 @@ export class ThreeCometScene extends AbstractScene {
             if (node instanceof THREE.Mesh) {
               node.castShadow = true;
               node.receiveShadow = true;
+              
+              // FIXME: clone mats so we don't lose them
+              if (Array.isArray(node.material)) {
+                node.material = node.material.map((mat) => { 
+                  mat.clone();
+                  console.log("building part ["+node.name+"] has multi material: ["+mat.name+"] color="+mat.color.toJSON());
+                });
+              } else {
+                node.material = node.material.clone();
+                // FIXME: these are all the same color and not tinted as seen when viewing the mesh in another app.
+                // threejs loader bug? no material rgb and must use a texture perhaps?
+                console.log("building part ["+node.name+"] has one mat named ["+node.material.name+"] with color="+node.material.color.toJSON());
+              }
+
             }
           });
 
@@ -497,12 +511,16 @@ export class ThreeCometScene extends AbstractScene {
     let buildingMesh = this.buildingsModelsCache.get(building.id)!.clone();
 
     // Clone materials recursively for the building mesh
+    // console.log("building traverse:");
     buildingMesh.traverse((node) => {
+      // console.log("building node: "+node.name);
       if (node instanceof THREE.Mesh && node.material) {
         if (Array.isArray(node.material)) {
           node.material = node.material.map((mat) => mat.clone());
         } else {
           node.material = node.material.clone();
+          // FIXME: these are all the same color and not as intended
+          // console.log("building part has one material: "+node.material.name+" color="+node.material.color.toJSON());
         }
       }
     });
