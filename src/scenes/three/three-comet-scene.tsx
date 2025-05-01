@@ -449,7 +449,12 @@ export class ThreeCometScene extends AbstractScene {
               node.castShadow = true;
               node.receiveShadow = true;
               
-              // FIXME: clone mats so we don't lose them
+              /*
+              // FIXME: clone mats so we don't lose them? result - no effect
+              // but this shows that all materials are missing color data
+              // although they look fine when viewed in other 3d apps
+              // bug in threejs loader? possible solution: use textures only
+              // alternately, load the .obj and .mat files, not .glb files?
               if (Array.isArray(node.material)) {
                 node.material = node.material.map((mat) => { 
                   mat.clone();
@@ -461,6 +466,7 @@ export class ThreeCometScene extends AbstractScene {
                 // threejs loader bug? no material rgb and must use a texture perhaps?
                 console.log("building part ["+node.name+"] has one mat named ["+node.material.name+"] with color="+node.material.color.toJSON());
               }
+            */
 
             }
           });
