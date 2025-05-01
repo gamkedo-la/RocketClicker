@@ -1,8 +1,4 @@
-# ProBuilder 5.2.3
-# https://unity3d.com/unity/features/worldbuilding/probuilder
-# 2025-04-02 9:42:28 AM
-
-mtllib ./Miner.mtl
+mtllib Miner.mtl
 o Miner
 
 g Miner

@@ -1,8 +1,4 @@
-# ProBuilder 5.2.3
-# https://unity3d.com/unity/features/worldbuilding/probuilder
-# 2025-04-03 9:39:48 AM
-
-mtllib ./ChemicalPlant.mtl
+mtllib ChemicalPlant.mtl
 o ChemicalPlant
 
 g ChemicalPlant

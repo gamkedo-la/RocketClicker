@@ -1,8 +1,4 @@
-# ProBuilder 5.2.3
-# https://unity3d.com/unity/features/worldbuilding/probuilder
-# 2025-04-03 10:46:18 AM
-
-mtllib ./Duster.mtl
+mtllib Duster.mtl
 o Duster
 
 g Duster

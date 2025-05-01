@@ -1,8 +1,4 @@
-# ProBuilder 5.2.3
-# https://unity3d.com/unity/features/worldbuilding/probuilder
-# 2025-04-02 2:17:49 PM
-
-mtllib ./Electrolysis.mtl
+mtllib Electrolysis.mtl
 o Electrolysis
 
 g Electrolysis
