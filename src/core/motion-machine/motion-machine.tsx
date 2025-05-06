@@ -86,7 +86,7 @@ export const motionMachineIntrinsicElements = ["motionMachine"] as const;
 
 export class MotionMachine<
   S extends StateId,
-  E extends EventId
+  E extends EventId = never
 > extends FiniteStateMachine<S, E> {
   private stateAnimations: Map<S, StateAnimations> = new Map();
 

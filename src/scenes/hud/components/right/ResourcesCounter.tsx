@@ -1,6 +1,6 @@
 import { RESOURCES } from "@game/assets";
 import { STRING_COLORS_NAMES } from "@game/consts";
-import { effect } from "@game/core/signals/signals";
+import { effect, signal } from "@game/core/signals/signals";
 import { Signal } from "@game/core/signals/types";
 import { ALIGN_ITEMS, DIRECTION, JUSTIFY } from "@game/core/ui/AbstractFlex";
 import { Flex } from "@game/core/ui/Flex";
@@ -11,6 +11,7 @@ import {
   MATERIALS_KEYS,
 } from "@game/entities/materials/index";
 import { GameStateManager } from "@game/state/game-state";
+import { MotionMachine } from "../../../../core/motion-machine/motion-machine";
 
 export const Counter = ({
   title,
@@ -21,6 +22,32 @@ export const Counter = ({
   material: string;
   value: Signal<number>;
 }) => {
+  const color = signal(0);
+
+  const mm: MotionMachine<"cold" | "neutral" | "hot"> = (
+    <motionMachine initialState="neutral">
+      <state id="cold">
+        <animation on="enter">
+          <tween signal={color} to={0} duration={50} />
+          <tween signal={color} to={0.5} duration={1000} />
+          <step run={() => mm.setState("neutral")} />
+        </animation>
+      </state>
+      <state id="neutral">
+        <animation on="enter">
+          <tween signal={color} to={0.5} duration={100} />
+        </animation>
+      </state>
+      <state id="hot">
+        <animation on="enter">
+          <tween signal={color} to={1} duration={50} />
+          <tween signal={color} to={0.5} duration={1000} />
+          <step run={() => mm.setState("neutral")} />
+        </animation>
+      </state>
+    </motionMachine>
+  );
+
   const nineSlice = (
     <nineslice
       texture={RESOURCES["emboss-button"]}
@@ -84,14 +111,6 @@ export const Counter = ({
   effect(() => {
     const currentValue = value.get();
 
-    if (currentValue > prevValue) {
-      counterText.setColor(STRING_COLORS_NAMES["vaporwave-blue"]);
-    } else if (currentValue < prevValue) {
-      counterText.setColor(STRING_COLORS_NAMES["fever-dream"]);
-    } else {
-      counterText.setColor(STRING_COLORS_NAMES["white"]);
-    }
-
     if (currentValue !== prevValue) {
       counterText.setText(
         Number(currentValue).toLocaleString([], {
@@ -101,9 +120,38 @@ export const Counter = ({
       );
 
       prevValue = currentValue;
+
+      counterFlex.trashLayout();
+    }
+  });
+
+  value.subscribe((value) => {
+    if (value > prevValue) {
+      mm.setState("hot");
+    } else if (value < prevValue) {
+      mm.setState("cold");
+    } else {
+      mm.setState("neutral");
+    }
+  });
+
+  let r, g, b;
+
+  color.subscribe((color) => {
+    if (color >= 0.5) {
+      r = Phaser.Math.Linear(22, 255, color * 2 - 1);
+      b = Phaser.Math.Linear(225, 255, color * 2 - 1);
+      g = Phaser.Math.Linear(255, 255, color * 2 - 1);
+    } else {
+      r = Phaser.Math.Linear(214, 22, color * 2);
+      b = Phaser.Math.Linear(84, 225, color * 2);
+      g = Phaser.Math.Linear(128, 255, color * 2);
     }
 
-    counterFlex.trashLayout();
+    counterText.setStyle({ color: `rgb(${r},${g},${b})` });
+
+    // STRING_COLORS_NAMES["vaporwave-blue"] == 22, 225, 255
+    // STRING_COLORS_NAMES["fever-dream"] == 214, 84, 128
   });
 
   return flex;
