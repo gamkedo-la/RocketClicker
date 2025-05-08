@@ -527,6 +527,13 @@ export class ThreeCometScene extends AbstractScene {
           node.material = node.material.clone();
           // FIXME: these are all the same color and not as intended
           // console.log("building part has one material: "+node.material.name+" color="+node.material.color.toJSON());
+          
+          // TEST: let's make a new random material in three
+          // this will confirm whether or not the importer/mesh is broken
+          // RESULT: meshes are colored! therefore my .glb files are wonky
+          node.material = new THREE.MeshStandardMaterial();
+          node.material.color.setHex(Math.random() * 0xffffff);
+
         }
       }
     });
