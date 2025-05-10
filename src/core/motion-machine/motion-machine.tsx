@@ -1,8 +1,13 @@
+import { makeArray } from "@game/core/common/arrays";
+import { assert } from "@game/core/common/assert";
+import { isSignal } from "@game/core/signals/signals";
+import { Signal } from "@game/core/signals/types";
+
 import {
   AnimationElement,
   AnimationPlan,
 } from "@game/core/animation/animation-timed";
-import { makeArray } from "@game/core/common/arrays";
+
 import {
   EventId,
   FiniteStateMachine,
@@ -10,9 +15,8 @@ import {
   TransitionConfig,
   TransitionElement,
 } from "@game/core/state-machine/state-machine";
-import { assert } from "../common/assert";
-import { MotionMachineLifecycle } from "./types";
-import { MotionMachineLifecycleEvent } from "./types";
+
+import { MotionMachineLifecycle, MotionMachineLifecycleEvent } from "./types";
 
 declare global {
   namespace JSX {
@@ -50,6 +54,7 @@ export interface MotionMachineElement<
 > {
   initialState?: S;
   initial?: S;
+  manual?: Signal<number> | boolean;
   children?: Array<MotionStateElement<S, E>>;
 }
 
@@ -98,9 +103,15 @@ export class MotionMachine<
   private currentAnimations: AnimationPlan[] = [];
   private transitionStack: MotionMachineAnimationStack<S>[] = [];
 
-  constructor(initialState: S) {
+  constructor(initialState: S, manual?: Signal<number> | boolean) {
     super(initialState);
-    window.currentScene?.addMotionMachine(this);
+    if (!manual) {
+      window.currentScene?.addMotionMachine(this);
+    } else if (isSignal(manual)) {
+      manual.subscribe((value) => {
+        this.setProgress(value);
+      });
+    }
   }
 
   addState(state: MotionStateConfig<S, E>) {
@@ -287,13 +298,43 @@ export class MotionMachine<
       }
     }
   }
+
+  setProgress(progress: number) {
+    if (progress < 0) progress = 0;
+    // We allow progress > 1 to ensure animations complete fully
+    // and values are set to their final state. The anim.update will clamp it.
+
+    for (let i = 0; i < this.currentAnimations.length; i++) {
+      const anim = this.currentAnimations[i];
+      if (anim.duration === Infinity || anim.duration === 0) {
+        // Cannot set progress for infinite or zero-duration animations
+        // For zero duration, update(0) on init or reset already runs them.
+        continue;
+      }
+
+      const targetClock = progress * anim.duration;
+      const dt = targetClock - anim.clock;
+      anim.update(dt);
+
+      if (anim.progress >= 1) {
+        this.currentAnimations.splice(i, 1);
+      }
+    }
+
+    if (this.currentAnimations.length === 0 && progress >= 1) {
+      // Call animationsCompleted only if all animations are done
+      // and progress was set to 1 or more.
+      this.animationsCompleted();
+    }
+  }
 }
 
 export function createMotionMachine<S extends StateId, E extends EventId>(
   props: MotionMachineElement<S, E>
 ): MotionMachine<S, E> {
   const mm = new MotionMachine<S, E>(
-    props.initial || (props.initialState as S)
+    props.initial || (props.initialState as S),
+    props.manual
   );
 
   const children = makeArray(props.children);
@@ -332,6 +373,10 @@ export function createMotionMachine<S extends StateId, E extends EventId>(
   //if (!mm.stateIds.includes(props.initialState as S)) {
   //  throw new Error(`Initial state ${props.initialState} not found`);
   //}
+
+  if (props.manual && isSignal(props.manual)) {
+    mm.setProgress(props.manual.get());
+  }
 
   return mm;
 }
