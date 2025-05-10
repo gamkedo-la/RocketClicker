@@ -262,7 +262,11 @@ export class MotionMachine<
         consumed = Math.max(consumed, anim.update(frameBudget));
 
         if (anim.progress >= 1 && anim.duration !== Infinity) {
-          this.currentAnimations.splice(i, 1);
+          if (anim.loop && this.stateLifecycle === "active") {
+            anim.reset();
+          } else {
+            this.currentAnimations.splice(i, 1);
+          }
         }
       }
 

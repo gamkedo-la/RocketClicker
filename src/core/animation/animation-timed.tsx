@@ -90,6 +90,7 @@ export interface AnimationElement {
   type?: "animation";
   children: AnimationElements[];
   duration?: number;
+  loop?: boolean;
 
   on?: MotionMachineLifecycleEvent;
 }
@@ -242,12 +243,15 @@ export class AnimationPlan {
   progress = 0;
   currentStep = 0;
 
+  loop = false;
+
   on?: MotionMachineLifecycleEvent;
 
   constructor(props: AnimationElement) {
     this.steps = props.children;
     this.duration = props.duration ?? 0;
     this.on = props.on;
+    this.loop = props.loop ?? false;
   }
 
   reset() {
