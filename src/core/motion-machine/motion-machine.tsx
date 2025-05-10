@@ -213,7 +213,6 @@ export class MotionMachine<
     this.targetState = state;
     this.targetEvent = lastEvent;
 
-    this.transitionStack.shift()!;
     this.setStateLifecycle("exiting", this.current.get());
   }
 
@@ -404,12 +403,7 @@ function processState<S extends StateId, E extends EventId>(
     } else if (child instanceof AnimationPlan) {
       if (child.on === "active") {
         animations.active.push(child);
-      }
-
-      // TODO: Validate enter and exit animations (like no infinite duration)
-      //
-
-      if (child.on === "exit") {
+      } else if (child.on === "exit") {
         animations.exit.push(child);
       } else {
         // Default animation is enter
