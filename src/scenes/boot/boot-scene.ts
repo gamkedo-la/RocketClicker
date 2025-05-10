@@ -1,9 +1,8 @@
-import { Scene } from "phaser";
-
-import { SCENES } from "../scenes";
+import { AbstractScene } from "..";
 import { DebugPanel, DebugParameters } from "../debug/debug-panel";
+import { SCENES } from "../scenes";
 
-export class Boot extends Scene {
+export class Boot extends AbstractScene {
   constructor() {
     super(SCENES.BOOT);
   }
@@ -20,6 +19,9 @@ export class Boot extends Scene {
         DebugParameters.fps = this.game.loop.actualFps;
       });
     }
-    this.scene.launch(SCENES.PRELOADER);
+
+    this.scenesManager.boot(this.scene);
   }
+
+  shutdown() {}
 }

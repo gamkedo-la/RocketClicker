@@ -3,12 +3,16 @@ import PhaserGamebus from "@game/lib/gamebus";
 import { GameStateManager } from "@game/state/game-state";
 import { MotionMachine } from "../core/motion-machine/motion-machine";
 import { DebugParameters } from "./debug/debug-panel";
+import { ScenesManager } from "../state/scenes-manager";
+import { SoundManager } from "@game/core/sound/sound-manager";
 
 export abstract class AbstractScene extends Phaser.Scene {
   // Game plugins
   declare gameState: GameStateManager;
   declare bus: Phaser.Events.EventEmitter;
   declare gamebus: PhaserGamebus;
+  declare soundManager: SoundManager;
+  declare scenesManager: ScenesManager;
 
   declare animationEngine: SequenceEngine;
 
@@ -22,7 +26,9 @@ export abstract class AbstractScene extends Phaser.Scene {
 
     this.events.on("preupdate", () => {
       window.currentScene = this;
-      DebugParameters.frameBudget = performance.now();
+      if (import.meta.env.VITE_DEBUG) {
+        DebugParameters.frameBudget = performance.now();
+      }
     });
 
     this.events.on("update", (_time: number, delta: number) => {
@@ -31,14 +37,17 @@ export abstract class AbstractScene extends Phaser.Scene {
       }
     });
 
-    this.events.on("postupdate", () => {
-      DebugParameters.frameBudget =
-        performance.now() - DebugParameters.frameBudget;
-    });
+    if (import.meta.env.VITE_DEBUG) {
+      this.events.on("postupdate", () => {
+        DebugParameters.frameBudget =
+          performance.now() - DebugParameters.frameBudget;
+      });
+    }
 
     this.events.once("shutdown", () => {
-      console.log("shutdown", this.scene.key, this, window.currentScene);
-
+      if (import.meta.env.VITE_DEBUG) {
+        console.log("shutdown", this.scene.key);
+      }
       this.shutdown();
     });
 

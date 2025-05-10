@@ -1,5 +1,3 @@
-import PhaserGamebus from "@game/lib/gamebus";
-
 import { AbstractScene } from "./index";
 import { SCENES } from "./scenes";
 
@@ -11,9 +9,6 @@ import { SCENES } from "./scenes";
  */
 
 export class GameScene extends AbstractScene {
-  declare bus: Phaser.Events.EventEmitter;
-  declare gamebus: PhaserGamebus;
-
   camera: Phaser.Cameras.Scene2D.Camera;
 
   constructor() {

@@ -1,4 +1,3 @@
-import PhaserGamebus from "@game/lib/gamebus";
 import { GameStatus } from "@game/state/game-state";
 
 import {
@@ -10,13 +9,10 @@ import {
 import { ALIGN_ITEMS, DIRECTION, JUSTIFY } from "@game/core/ui/AbstractFlex";
 import { AbstractScene } from "..";
 import { Flex } from "../../core/ui/Flex";
-import { SCENES } from "../scenes";
 import { Spacer } from "../../core/ui/FlexItem";
+import { SCENES } from "../scenes";
 
 export class IntroScene extends AbstractScene {
-  declare bus: Phaser.Events.EventEmitter;
-  declare gamebus: PhaserGamebus;
-
   constructor() {
     super(SCENES.INTRO);
   }
@@ -73,10 +69,7 @@ export class IntroScene extends AbstractScene {
       clickText.setText("Landing rocket...");
       clickText.setColor(STRING_COLORS_NAMES["strawberry-field"]);
       flex.trashLayout();
-
-      setTimeout(() => {
-        this.scene.start(SCENES.GAME);
-      }, 1000);
+      this.scenesManager.transitionTo("start");
     });
   }
 

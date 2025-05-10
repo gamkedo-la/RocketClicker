@@ -3,7 +3,6 @@ import { GAME_WIDTH } from "@game/consts";
 
 import { AbstractScene } from "..";
 import { SCENES, TEST_SCENE } from "../scenes";
-import { SoundManager } from "@game/core/sound/sound-manager";
 
 export const RESOURCES_INDEX = Object.keys(RESOURCES).reduce(
   (acc, key, index) => ({ ...acc, [key]: index }),
@@ -15,8 +14,6 @@ export const RESOURCES_LIST = Object.values(RESOURCES);
 declare var WebFont: any;
 
 export class Preloader extends AbstractScene {
-  declare soundManager: SoundManager;
-
   constructor() {
     super(SCENES.PRELOADER);
   }
@@ -77,7 +74,7 @@ export class Preloader extends AbstractScene {
     this.soundManager.addSound("sfx-rocket-launch");
     this.soundManager.addSound("placeholder-music-loop", { loop: true });
 
-    this.scene.start(SCENES.GAME);
+    this.scenesManager.transitionTo("loaded");
     //this.scene.start(TEST_SCENE);
   }
 

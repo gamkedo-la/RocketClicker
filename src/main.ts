@@ -7,6 +7,7 @@ import { GameStateManager } from "@game/state/game-state";
 
 import { SCENE_CLASSES } from "@game/scenes/scenes";
 import { SoundManager } from "./core/sound/sound-manager";
+import { ScenesManager } from "./state/scenes-manager";
 
 if (import.meta.env.VITE_DEBUG) {
 }
@@ -53,6 +54,11 @@ const config: Types.Core.GameConfig = {
         key: "GameStateManager",
         plugin: GameStateManager,
         mapping: "gameState",
+      },
+      {
+        key: "ScenesManager",
+        plugin: ScenesManager,
+        mapping: "scenesManager",
       },
       {
         key: "SoundManager",
