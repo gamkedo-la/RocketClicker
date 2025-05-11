@@ -32,7 +32,6 @@ export function BuildingPill({
   flex.setOrigin(0.5, 0.5);
 
   type.subscribe((t) => {
-    console.log("[BP] type", t);
     switch (t) {
       case "warning":
         rect.setFillStyle(COLORS_NAMES["vicious-violet"]);
@@ -87,21 +86,16 @@ export function BuildingPill({
     const t = type.get();
 
     if (t === "inactive") {
-      console.log("inactive");
       mm.transition("inactive");
     } else if (b) {
-      console.log("active");
       mm.transition("active");
     } else {
-      console.log("still");
       mm.transition("still");
     }
   });
 
   text.subscribe((t) => {
     textElement.setText(t);
-    console.log("[BP] text", textElement.width);
-    console.log("[BP] flex", flex.x);
     flex.trashLayout(0, 0);
     textElement.setDepth(100);
   });

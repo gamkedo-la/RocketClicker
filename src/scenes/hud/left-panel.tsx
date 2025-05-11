@@ -82,13 +82,11 @@ export const LeftPanel = ({
 
   hoveredBuilding.subscribe((building) => {
     if (building) {
-      console.log("building", building);
       mm.transition("visible");
       if (timeout) {
         clearTimeout(timeout);
       }
     } else {
-      console.log("no building");
       timeout = setTimeout(() => {
         mm.transition("hidden");
       }, 100);
