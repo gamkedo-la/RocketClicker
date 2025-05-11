@@ -140,14 +140,14 @@ export const CometSpinMeter = ({
     <>
       <image texture={RESOURCES["ui-left-panel"]} frame="spin-background#0" />
       <FlexItem
-        attachTo={0}
+        attachTo={2}
         offsetX={"50%"}
         offsetY={70}
         origin={{ x: 0.5, y: 1 }}
       >
         {spinPin}
       </FlexItem>
-      <FlexItem attachTo={0} offsetX={60} offsetY={74}>
+      <FlexItem attachTo={2} offsetX={60} offsetY={74}>
         <container>
           <image
             x={pinX}
@@ -157,7 +157,6 @@ export const CometSpinMeter = ({
           />
         </container>
       </FlexItem>
-      <FlexItem attachTo={0}>{spinCover}</FlexItem>
     </>
   );
 

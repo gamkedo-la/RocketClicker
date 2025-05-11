@@ -19,7 +19,7 @@ export const RightPanel = ({
   gameState: GameStateManager;
   bus: Phaser.Events.EventEmitter;
 }) => (
-  <Flex direction={DIRECTION.COLUMN} width={width} margin={1}>
+  <Flex direction={DIRECTION.COLUMN} width={width}>
     <Flex
       backgroundElement={
         <NineSlice

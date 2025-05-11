@@ -6,7 +6,7 @@ import { BUILDINGS } from "@game/entities/buildings/index";
 import { Building } from "@game/entities/buildings/types";
 import { MATERIALS } from "@game/entities/materials/index";
 import { GameStateManager } from "@game/state/game-state";
-import { FlexItem } from "../../core/ui/FlexItem";
+import { FlexItem, Spacer } from "../../core/ui/FlexItem";
 import { FlexRow } from "../../core/ui/FlexRow";
 import { BuildingDetailsPanel } from "./components/left/BuildingDetailsPanel";
 import { BuildingSelector } from "./components/left/BuildingSelector";
@@ -23,14 +23,6 @@ export const LeftPanel = ({
   gameState: GameStateManager;
   soundManager: SoundManager;
 }) => {
-  const material_storage =
-    gameState.state.get().material_storage[MATERIALS.CometDust];
-
-  /*
-  const button = (
-    <Button material={MATERIALS.StarDust} amount={material_storage} />
-  );*/
-
   const x = signal(150);
   const panelWidth = signal(150);
   const contentAlpha = signal(0);
@@ -96,17 +88,19 @@ export const LeftPanel = ({
   const z: FlexRow = (
     <Flex direction={DIRECTION.COLUMN} width={width}>
       <Flex
-        direction={DIRECTION.COLUMN}
+        direction={DIRECTION.ROW}
         backgroundElement={
           <NineSlice
             texture={RESOURCES["ui-left-panel"]}
             frame="bg-buildings"
           />
         }
-        padding={[10, 9]}
+        padding={[7, 7, 7, 10]}
         width={width}
       >
-        <CometSpinMeter gameState={gameState} />
+        <text text={["COMET", "SPIN", "METER"]} />
+        <Spacer />
+        {...(<CometSpinMeter gameState={gameState} />)}
       </Flex>
       <FlexItem grow={1}>
         <Flex
