@@ -3,7 +3,7 @@ import { assert } from "@game/core/common/assert";
 import { EaseMap } from "@game/core/common/easing";
 import { Signal, SignalValue } from "@game/core/signals/types";
 import { MotionMachineLifecycleEvent } from "../motion-machine/types";
-import { getSignalValue } from "../signals/signals";
+import { getSignalValue, isSignal } from "../signals/signals";
 
 // IDEAS/TODO
 //
@@ -91,6 +91,7 @@ export interface AnimationElement {
   children: AnimationElements[];
   duration?: number;
   loop?: boolean;
+  manual?: Signal<number>;
 
   on?: MotionMachineLifecycleEvent;
 }
@@ -244,6 +245,7 @@ export class AnimationPlan {
   currentStep = 0;
 
   loop = false;
+  manual?: Signal<number>;
 
   on?: MotionMachineLifecycleEvent;
 
@@ -252,6 +254,13 @@ export class AnimationPlan {
     this.duration = props.duration ?? 0;
     this.on = props.on;
     this.loop = props.loop ?? false;
+    this.manual = props.manual;
+
+    if (this.manual && isSignal(this.manual)) {
+      this.manual.subscribe((value) => {
+        this.setProgress(value);
+      });
+    }
   }
 
   reset() {
@@ -480,7 +489,9 @@ export class AnimationPlan {
       this.initializeStepState(this.steps[0]);
     }
 
-    if (this.state === "stopped") return 0;
+    if (this.state === "stopped") {
+      return 0;
+    }
 
     consumed = Math.max(0, Math.min(this.duration - this.clock, dt));
 
@@ -509,6 +520,16 @@ export class AnimationPlan {
     }
 
     return consumed;
+  }
+
+  setProgress(progress: number) {
+    if (progress === 1) {
+      // FIXME: this is a hack to prevent the animation from being stuck at 100%
+      progress = 0.9999999999999999;
+    }
+    const targetClock = progress * this.duration;
+    const dt = targetClock - this.clock;
+    this.update(dt);
   }
 }
 
