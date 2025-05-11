@@ -8,6 +8,7 @@ import {
   JUSTIFY,
   Justify,
 } from "./AbstractFlex";
+import { FlexColumn } from "./FlexColumn";
 
 /**
  * Alignment values for the flex row
@@ -247,17 +248,17 @@ export class FlexRow extends AbstractFlex {
     });
   }
 
-  trashLayout(): void {
+  trashLayout(minWidth?: number, minHeight?: number): void {
     super.trashLayout();
 
-    this.width = this._flexWidth;
-    this.height = this._flexHeight;
+    this.width = minWidth !== undefined ? minWidth : this._flexWidth;
+    this.height = minHeight !== undefined ? minHeight : this._flexHeight;
 
     let axisSizeSum = this.getAxisTotalSizeSum();
 
     this.children.forEach((child) => {
-      if (child instanceof AbstractFlex) {
-        child.trashLayout();
+      if (child instanceof FlexRow || child instanceof FlexColumn) {
+        child.trashLayout(minWidth, minHeight);
       }
 
       this.width = Math.max(
