@@ -287,7 +287,11 @@ export class MotionMachine<
         consumed = Math.max(consumed, anim.update(frameBudget));
 
         if (anim.progress >= 1 && anim.duration !== Infinity) {
-          if (anim.loop && this.stateLifecycle === "active") {
+          if (
+            anim.loop &&
+            this.current.get() === anim.stateId &&
+            !this.scheduledState
+          ) {
             anim.reset();
           } else {
             this.currentAnimations.splice(i, 1);
@@ -298,7 +302,7 @@ export class MotionMachine<
       frameBudget -= consumed;
 
       if (
-        this.stateLifecycle === "active" ||
+        (!this.scheduledState && this.stateLifecycle === "active") ||
         this.currentAnimations.length > 0
       ) {
         return;
@@ -416,6 +420,8 @@ function processState<S extends StateId, E extends EventId>(
     if (child.type === "transition") {
       transitions.push(child as TransitionConfig<S, E>);
     } else if (child instanceof AnimationPlan) {
+      child.stateId = state.id;
+
       if (child.on === "active") {
         animations.active.push(child);
       } else if (child.on === "exit") {

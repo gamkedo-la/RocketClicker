@@ -247,7 +247,9 @@ export class AnimationPlan {
   loop = false;
   manual?: Signal<number>;
 
+  // Motion machine integration
   on?: MotionMachineLifecycleEvent;
+  stateId?: string;
 
   constructor(props: AnimationElement) {
     this.steps = props.children;
