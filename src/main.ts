@@ -1,6 +1,6 @@
 import { Game, Types } from "phaser";
 
-import { GAME_HEIGHT, GAME_WIDTH } from "@game/consts";
+import { COLORS_NAMES, GAME_HEIGHT, GAME_WIDTH } from "@game/consts";
 
 import PhaserGamebus from "@game/lib/gamebus";
 import { GameStateManager } from "@game/state/game-state";
@@ -36,7 +36,7 @@ const config: Types.Core.GameConfig = {
   parent: "game-container",
   canvas: myCustomCanvas,
   context: myCustomContext as any,
-  backgroundColor: "#3c9f9c",
+  backgroundColor: COLORS_NAMES["black"],
   pixelArt: true,
   scale: {
     mode: Phaser.Scale.FIT,
@@ -56,14 +56,15 @@ const config: Types.Core.GameConfig = {
         mapping: "gameState",
       },
       {
-        key: "ScenesManager",
-        plugin: ScenesManager,
-        mapping: "scenesManager",
-      },
-      {
         key: "SoundManager",
         plugin: SoundManager,
         mapping: "soundManager",
+      },
+      // Order matters, scenes manager must be last
+      {
+        key: "ScenesManager",
+        plugin: ScenesManager,
+        mapping: "scenesManager",
       },
     ],
   },

@@ -42,10 +42,6 @@ export interface BuildingScreenPosition {
 }
 
 export class ThreeCometScene extends AbstractScene {
-  declare bus: Phaser.Events.EventEmitter;
-  declare gamebus: PhaserGamebus;
-  declare soundManager: SoundManager;
-
   gameScene: GameScene;
 
   camera: Camera;
@@ -91,9 +87,7 @@ export class ThreeCometScene extends AbstractScene {
   // Track active building alerts and their pills
   private activePills: Map<number, FlexRow> = new Map();
 
-  async create() {
-    this.bus = this.gamebus.getBus();
-
+  create() {
     this.gameScene = this.scene.get(SCENES.GAME) as GameScene;
 
     const camera = new Camera(
@@ -256,6 +250,10 @@ export class ThreeCometScene extends AbstractScene {
       // Load building models
       this.loadBuildingModels();
       this.loadRocketLauncherModel();
+
+      this.gameState.setLoadingState({
+        three_comet: true,
+      });
     });
   }
 
@@ -448,7 +446,7 @@ export class ThreeCometScene extends AbstractScene {
             if (node instanceof THREE.Mesh) {
               node.castShadow = true;
               node.receiveShadow = true;
-              
+
               /*
               // FIXME: clone mats so we don't lose them? result - no effect
               // but this shows that all materials are missing color data
@@ -467,7 +465,6 @@ export class ThreeCometScene extends AbstractScene {
                 console.log("building part ["+node.name+"] has one mat named ["+node.material.name+"] with color="+node.material.color.toJSON());
               }
             */
-
             }
           });
 
@@ -527,13 +524,12 @@ export class ThreeCometScene extends AbstractScene {
           node.material = node.material.clone();
           // FIXME: these are all the same color and not as intended
           // console.log("building part has one material: "+node.material.name+" color="+node.material.color.toJSON());
-          
+
           // TEST: let's make a new random material in three
           // this will confirm whether or not the importer/mesh is broken
           // RESULT: meshes are colored! therefore my .glb files are wonky
           node.material = new THREE.MeshStandardMaterial();
           node.material.color.setHex(Math.random() * 0xffffff);
-
         }
       }
     });

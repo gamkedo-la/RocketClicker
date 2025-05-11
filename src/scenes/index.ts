@@ -22,6 +22,8 @@ export abstract class AbstractScene extends Phaser.Scene {
     // Required to make JSX magic happen
     (window as any).currentScene = this;
 
+    this.bus = this.gamebus.getBus();
+
     this.animationEngine = new SequenceEngine(this);
 
     this.events.on("preupdate", () => {

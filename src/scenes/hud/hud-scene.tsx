@@ -154,6 +154,10 @@ export class HudScene extends AbstractScene {
     );
 
     layout.addToScene();
+
+    this.gameState.setLoadingState({
+      hud: true,
+    });
   }
 
   shutdown() {}

@@ -1,15 +1,28 @@
 import { signal } from "@game/core/signals/signals";
 import { SCENES } from "@game/scenes/scenes";
 import { MotionMachine } from "../core/motion-machine/motion-machine";
+import { GameStateManager } from "./game-state";
 
-export type SceneStates = "loading" | "intro" | "game" | "end";
-export type SceneEvents = "loaded" | "start" | "end";
+export type SceneStates =
+  | "loading"
+  | "intro"
+  | "game-loading"
+  | "game"
+  | "end-game";
+
+export type SceneEvents = "loaded" | "start" | "end-game-loading" | "end-game";
 
 export class ScenesManager extends Phaser.Plugins.BasePlugin {
   scenePlugin: Phaser.Scenes.ScenePlugin;
   scenes: MotionMachine<SceneStates, SceneEvents>;
 
-  transitionSignal = signal(0);
+  transitionSignal = signal(0, {
+    label: "Transition Signal",
+    tweakpaneOptions: {
+      min: 0,
+      max: 1,
+    },
+  });
 
   constructor(pluginManager: Phaser.Plugins.PluginManager) {
     super(pluginManager);
@@ -80,10 +93,23 @@ export class ScenesManager extends Phaser.Plugins.BasePlugin {
         </state>
       </motionMachine>
     );
+
+    const gameStateManager: GameStateManager = this.pluginManager.get(
+      "GameStateManager"
+    ) as GameStateManager;
+
+    gameStateManager?.state.subscribe((state) => {
+      if (
+        state.loading_state.game &&
+        state.loading_state.three_comet &&
+        state.loading_state.hud
+      ) {
+        this.transitionTo("end-game-loading");
+      }
+    });
   }
 
   transitionTo(scene: SceneEvents) {
-    console.log("transitioning to", scene);
     this.scenes.transition(scene);
   }
 

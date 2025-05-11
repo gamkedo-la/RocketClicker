@@ -19,6 +19,11 @@ export interface BoardState {
 }
 
 export interface State {
+  loading_state: {
+    game: boolean;
+    hud: boolean;
+    three_comet: boolean;
+  };
   status: (typeof GameStatus)[keyof typeof GameStatus];
   time: number;
   score: number;
@@ -74,6 +79,11 @@ export class GameStateManager
   implements GameState
 {
   state: MutableSignal<State> = mutable({
+    loading_state: {
+      game: false,
+      hud: false,
+      three_comet: false,
+    },
     status: GameStatus.LOADING,
     time: 0,
     score: 0,
@@ -129,6 +139,16 @@ export class GameStateManager
   setGameStatus(status: (typeof GameStatus)[keyof typeof GameStatus]) {
     this.mutateState((state) => {
       state.status = status;
+      return true;
+    });
+  }
+
+  setLoadingState(loading_state: Partial<State["loading_state"]>) {
+    this.mutateState((state) => {
+      state.loading_state = {
+        ...state.loading_state,
+        ...loading_state,
+      };
       return true;
     });
   }
