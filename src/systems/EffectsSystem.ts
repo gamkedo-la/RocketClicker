@@ -11,9 +11,15 @@ import { System } from ".";
 import { EFFECTS, TILES_FORCES } from "../entities/buildings";
 
 export interface BuildingAlert {
-  type: "positive" | "warning" | "error";
+  type: "inactive" | "positive" | "warning" | "error";
   message: string;
   blinking: boolean;
+}
+
+export interface BuildingAlertSignal {
+  type: Signal<BuildingAlert["type"]>;
+  message: Signal<BuildingAlert["message"]>;
+  blinking: Signal<BuildingAlert["blinking"]>;
 }
 
 const TOO_FAST_ALERT: BuildingAlert = {
@@ -59,25 +65,26 @@ const POSITIVE_ALERT: BuildingAlert = {
 };
 
 export default class EffectsSystem implements System {
-  private buildingAlerts = new Map<number, Signal<BuildingAlert | null>>();
+  private buildingAlertSignals = new Map<number, BuildingAlertSignal>();
 
   constructor(private gameState: GameStateManager) {}
 
   create(): this {
+    this.gameState.state
+      .get()
+      ?.board.grid_buildings.forEach((_, cellId: number) => {
+        this.buildingAlertSignals.set(cellId, {
+          type: signal("inactive"),
+          message: signal(""),
+          blinking: signal(false),
+        });
+      });
+
     return this;
   }
 
-  getAlert(cellId: number): Signal<BuildingAlert | null> {
-    let alert = this.buildingAlerts.get(cellId);
-    if (!alert) {
-      alert = signal(null);
-      this.buildingAlerts.set(cellId, alert);
-    }
-    return alert;
-  }
-
-  removeAlert(cellId: number) {
-    this.buildingAlerts.delete(cellId);
+  getAlert(cellId: number): BuildingAlertSignal {
+    return this.buildingAlertSignals.get(cellId)!;
   }
 
   update(_time: number, delta: number): void {
@@ -88,7 +95,10 @@ export default class EffectsSystem implements System {
       const alert = this.getAlert(cellId);
 
       if (building === null) {
-        alert.set(null);
+        if (alert.type.get() !== "inactive") {
+          alert.type.set("inactive");
+        }
+
         return;
       }
 
@@ -170,20 +180,18 @@ export default class EffectsSystem implements System {
       }
 
       if (currentAlert) {
-        // No idea how to fix this decently
-        // @ts-ignore
-        if (alert.get()?.message !== currentAlert.message) {
-          alert.set(currentAlert);
-        }
+        alert.message.set(currentAlert.message);
+        alert.type.set(currentAlert.type);
+        alert.blinking.set(currentAlert.blinking);
       } else {
-        if (alert.get() !== null) {
-          alert.set(POSITIVE_ALERT);
-        }
+        alert.type.set(POSITIVE_ALERT.type);
+        alert.message.set(POSITIVE_ALERT.message);
+        alert.blinking.set(POSITIVE_ALERT.blinking);
       }
     });
   }
 
   destroy(): void {
-    this.buildingAlerts.clear();
+    this.buildingAlertSignals.clear();
   }
 }

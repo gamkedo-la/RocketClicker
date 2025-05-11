@@ -2,7 +2,6 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 import { RESOURCES } from "@game/assets";
-import PhaserGamebus from "@game/lib/gamebus";
 import { DebugPanel } from "@game/scenes/debug/debug-panel";
 
 import { AbstractScene } from "..";
@@ -10,9 +9,8 @@ import { SCENES } from "../scenes";
 
 import { STRING_COLORS_NAMES, TWELVE_HOURS_IN_SECONDS } from "@game/consts";
 import { assert } from "@game/core/common/assert";
-import { effect, signal } from "@game/core/signals/signals";
+import { signal } from "@game/core/signals/signals";
 import type { Signal } from "@game/core/signals/types";
-import { SoundManager } from "@game/core/sound/sound-manager";
 import {
   BUILDINGS,
   getBuildingById,
@@ -22,8 +20,6 @@ import { Building } from "@game/entities/buildings/types";
 import { hasResources, MATERIALS } from "@game/entities/materials/index";
 import { COMET_DUST_MOUSE_MINING, MAX_COMET_SPIN } from "@game/state/consts";
 import { MotionMachine } from "../../core/motion-machine/motion-machine";
-import { FlexRow } from "../../core/ui/FlexRow";
-import type { BuildingAlert } from "../../systems/EffectsSystem";
 import { GameScene } from "../game/game-scene";
 import { BuildingPill } from "./components/building-pill";
 import { Camera } from "./components/camera";
@@ -32,6 +28,7 @@ import { addFlyingBuilding } from "./elements/flying-building";
 import { createLights } from "./elements/lights";
 import { buildingMaterial, starMaterial } from "./elements/materials";
 import { createSky } from "./elements/sky";
+import { FlexRow } from "../../core/ui/FlexRow";
 
 export interface BuildingScreenPosition {
   baseX: number; // Unscaled base position
@@ -82,10 +79,7 @@ export class ThreeCometScene extends AbstractScene {
   currentGhostBuildingId: string | null = null;
 
   buildingScreenPositions = new Map<number, Signal<BuildingScreenPosition>>();
-  buildingAlerts = new Map<number, Signal<BuildingAlert | null>>();
-
-  // Track active building alerts and their pills
-  private activePills: Map<number, FlexRow> = new Map();
+  buildingPills: Map<number, ReturnType<typeof BuildingPill>> = new Map();
 
   create() {
     this.gameScene = this.scene.get(SCENES.GAME) as GameScene;
@@ -196,15 +190,16 @@ export class ThreeCometScene extends AbstractScene {
     });
 
     // Subscribe to zoom changes
-    this.cameraZoom.subscribe((zoom) => {
+    this.cameraZoom.subscribe((_zoom) => {
       this.buildingScreenPositions.forEach((screenPosSignal, cellId) => {
         const mesh = this.buildingMeshes.get(cellId);
-        const existingPill = this.activePills.get(cellId);
+        const alertSignal = this.gameScene.effectsSystem.getAlert(cellId);
+        const pill = this.buildingPills.get(cellId);
 
-        if (!mesh || !existingPill) return;
+        if (!mesh || !pill || alertSignal.type.get() === "inactive") return;
 
         this.updateBuildingProjection(mesh, screenPosSignal);
-        existingPill.setPosition(
+        pill.setPosition(
           screenPosSignal.get().baseX,
           screenPosSignal.get().baseY
         );
@@ -262,6 +257,16 @@ export class ThreeCometScene extends AbstractScene {
 
     for (let x = 0; x < board.boardWidth; x++) {
       for (let y = 0; y < board.boardHeight; y++) {
+        const cellId = y * board.boardWidth + x;
+
+        const { type, message, blinking } =
+          this.gameScene.effectsSystem.getAlert(cellId);
+        const pill: FlexRow = (
+          <BuildingPill type={type} text={message} blinking={blinking} />
+        );
+        pill.addToScene(this);
+        this.buildingPills.set(cellId, pill);
+
         const terrainMesh = new THREE.Mesh(
           new THREE.BoxGeometry(0.035, 0.0005, 0.035),
           buildingMaterial.clone()
@@ -299,8 +304,7 @@ export class ThreeCometScene extends AbstractScene {
 
     // Set up listeners for building changes
     board.grid_buildings.forEach((buildingSignal, cellId) => {
-      effect(() => {
-        const building = buildingSignal.get();
+      buildingSignal.subscribe((building) => {
         if (building) {
           this.addBuildingModelToCell(cellId, building);
         } else {
@@ -602,11 +606,14 @@ export class ThreeCometScene extends AbstractScene {
     this.buildingScreenPositions.set(cellId, screenPosSignal);
     this.updateBuildingProjection(mesh, screenPosSignal);
 
-    // Subscribe to alert changes
-    const gameScene = this.scene.get(SCENES.GAME) as GameScene;
-    gameScene.effectsSystem.getAlert(cellId).subscribe((alert) => {
-      this.updateBuildingPill(cellId, alert);
-    });
+    this.buildingPills
+      .get(cellId)
+      ?.setPosition(screenPosSignal.get().baseX, screenPosSignal.get().baseY);
+
+    /*let alert = this.gameScene.effectsSystem.getAlert(cellId);
+    alert.type.set("error");
+    alert.message.set("HeEeello");
+    alert.blinking.set(true);*/
 
     return mesh;
   }
@@ -623,11 +630,7 @@ export class ThreeCometScene extends AbstractScene {
     }
 
     // Clean up pill
-    const existingPill = this.activePills.get(cellId);
-    if (existingPill) {
-      existingPill.removeFromScene();
-      this.activePills.delete(cellId);
-    }
+    this.gameScene.effectsSystem.getAlert(cellId).type.set("inactive");
     this.buildingScreenPositions.delete(cellId);
   }
 
@@ -840,23 +843,6 @@ export class ThreeCometScene extends AbstractScene {
       y: baseY / zoom,
       visible: pos.z < 1,
     });
-  }
-
-  private updateBuildingPill(cellId: number, alert: BuildingAlert | null) {
-    const existingPill = this.activePills.get(cellId);
-
-    if (existingPill) {
-      existingPill.removeFromScene();
-      this.activePills.delete(cellId);
-    }
-
-    if (alert) {
-      const pill: FlexRow = <BuildingPill alert={alert} />;
-      pill.addToScene(this);
-      pill.setDepth(200);
-      pill.setOrigin(0.5, 0.5);
-      this.activePills.set(cellId, pill);
-    }
   }
 
   update(_time: number, _delta: number) {
