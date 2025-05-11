@@ -1,4 +1,4 @@
-import { makeArray } from "@game/core/common/arrays";
+import { flattenArray, makeArray } from "@game/core/common/arrays";
 import { assert } from "@game/core/common/assert";
 import { EaseMap } from "@game/core/common/easing";
 import { Signal, SignalValue } from "@game/core/signals/types";
@@ -174,7 +174,7 @@ export const setupAnimationElement = (
 
   // Controls
   assert((props as any).children, "Children are required for controls");
-  const children = makeArray((props as any).children);
+  const children = flattenArray(makeArray((props as any).children));
 
   if (type === "sequence") {
     let duration = 0;
