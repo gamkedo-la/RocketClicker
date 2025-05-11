@@ -715,7 +715,11 @@ export class ThreeCometScene extends AbstractScene {
     if (cellId === 12) return; // Rocket launcher cell
 
     // Remove ghost if no valid placement
-    if (!cellId || !selectedBuilding || this.buildingMeshes.has(cellId)) {
+    if (
+      cellId === null ||
+      !selectedBuilding ||
+      this.buildingMeshes.has(cellId)
+    ) {
       if (this.ghostBuilding) {
         this.comet.remove(this.ghostBuilding);
         this.ghostBuilding = null;
