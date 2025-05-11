@@ -34,7 +34,7 @@ export type ContainerElement =
   PhaserGameObjectProps<Phaser.GameObjects.Container>;
 
 export type TextElement = PhaserGameObjectProps<Phaser.GameObjects.Text> & {
-  text?: SignalValue<string>;
+  text?: SignalValue<string | string[]>;
   style?: SignalValue<Phaser.Types.GameObjects.Text.TextStyle>;
   resolution?: SignalValue<number>;
   wordWrapWidth?: SignalValue<number>;

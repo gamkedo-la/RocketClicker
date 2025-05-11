@@ -104,21 +104,17 @@ export class IntroScene extends AbstractScene {
         <Spacer grow={0} height={10} />
 
         <text
-          text="Your rocket landed on a comet and you need to refuel it."
-          style={{ fontSize: 28, color: "white" }}
+          text={[
+            "Your rocket landed on a small comet and it needs to be refueled",
+            "with liquid oxygen and hydrogen.",
+            "",
+            "Mine the comet to generate energy and materials",
+            "",
+            "*Click on the comet to start mining*",
+          ]}
+          style={{ fontSize: 28, color: "white", align: "center" }}
         />
-        <text
-          text="Generate energy and materials to generate"
-          style={{ fontSize: 28, color: "white" }}
-        />
-        <text
-          text="the liquid oxygen and hydrogen to return to space."
-          style={{ fontSize: 28, color: "white" }}
-        />
-        <text
-          text="Or try your luck spinning the comet."
-          style={{ fontSize: 28, color: "white" }}
-        />
+
         <Spacer grow={0} height={20} />
         {clickText}
       </Flex>
