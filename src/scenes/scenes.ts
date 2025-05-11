@@ -5,10 +5,12 @@ import { IntroScene } from "./game/intro-scene";
 import { HudScene } from "./hud/hud-scene";
 import { ThreeCometScene } from "./three/three-comet-scene";
 import { PauseScene } from "./transition/pause-scene";
+import { TransitionsScene } from "./transition/transitions-scene";
 
 export const SCENES = {
   BOOT: "Boot",
   PRELOADER: "Preloader",
+  TRANSITIONS: "Transitions",
 
   INTRO: "Intro",
   GAME: "Game",
@@ -24,6 +26,8 @@ export type SceneValues = (typeof SCENES)[SceneKeys];
 export const SCENE_CLASSES: Record<SceneKeys, typeof Phaser.Scene> = {
   BOOT: Boot,
   PRELOADER: Preloader,
+  TRANSITIONS: TransitionsScene,
+
   INTRO: IntroScene,
   GAME: GameScene,
   THREE_COMET: ThreeCometScene,

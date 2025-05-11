@@ -31,6 +31,30 @@ export class ScenesManager extends Phaser.Plugins.BasePlugin {
   boot(sceneManager: Phaser.Scenes.ScenePlugin) {
     this.scenePlugin = sceneManager;
 
+    const TransitionSignal = ({
+      duration,
+      direction = "in",
+    }: {
+      duration: number;
+      direction?: "in" | "out";
+    }) => (
+      <>
+        <step
+          run={() => {
+            this.scenePlugin.bringToTop(SCENES.TRANSITIONS);
+          }}
+        />
+        <tween
+          signal={this.transitionSignal}
+          from={direction === "in" ? 0 : 1}
+          to={direction === "in" ? 1 : 0}
+          duration={duration}
+        />
+      </>
+    );
+
+    const TransitionScene = this.scenePlugin.get(SCENES.TRANSITIONS);
+
     this.scenes = (
       <motionMachine initialState="preloader">
         <state id="preloader">
@@ -38,6 +62,16 @@ export class ScenesManager extends Phaser.Plugins.BasePlugin {
             <step
               run={() => {
                 this.scenePlugin.launch(SCENES.PRELOADER);
+                this.scenePlugin.bringToTop(SCENES.PRELOADER);
+                this.scenePlugin.launch(SCENES.TRANSITIONS);
+              }}
+            />
+          </animation>
+          <animation on="exit">
+            <TransitionSignal duration={100} direction="out" />
+            <step
+              run={() => {
+                this.scenePlugin.stop(SCENES.PRELOADER);
               }}
             />
           </animation>
@@ -50,29 +84,14 @@ export class ScenesManager extends Phaser.Plugins.BasePlugin {
                 this.scenePlugin.launch(SCENES.INTRO);
               }}
             />
+            <TransitionSignal duration={1400} />
           </animation>
-          <transition on="start" target="game" />
+          <animation on="exit">
+            <TransitionSignal duration={500} direction="out" />
+          </animation>
+          <transition on="start" target="game-loading" />
         </state>
-        <state id="game">
-          <animation on="enter">
-            <step
-              run={() => {
-                this.scenePlugin.launch(SCENES.TRANSITIONS);
-                this.scenePlugin.bringToTop(SCENES.TRANSITIONS);
-              }}
-            />
-            <tween
-              signal={this.transitionSignal}
-              from={0}
-              to={1}
-              duration={1000}
-            />
-            <step
-              run={() => {
-                this.scenePlugin.stop(SCENES.TRANSITIONS);
-              }}
-            />
-          </animation>
+        <state id="game-loading">
           <animation on="active">
             <step
               run={() => {
@@ -80,13 +99,20 @@ export class ScenesManager extends Phaser.Plugins.BasePlugin {
               }}
             />
           </animation>
-          <transition on="end" target="end" />
+          <transition on="end-game-loading" target="game" />
         </state>
-        <state id="end">
-          <animation on="exit">
+        <state id="game">
+          <animation on="enter">
+            <TransitionSignal duration={1500} />
+          </animation>
+          <transition on="end-game" target="end-game" />
+        </state>
+        <state id="end-game">
+          <animation on="enter">
+            <wait duration={1000} />
             <step
               run={() => {
-                this.scenePlugin.stop(SCENES.THREE_COMET);
+                this.scenePlugin.stop(SCENES.GAME);
               }}
             />
           </animation>
