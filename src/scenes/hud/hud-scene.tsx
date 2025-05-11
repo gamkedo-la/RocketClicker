@@ -70,7 +70,7 @@ export class HudScene extends AbstractScene {
         padding={[0, 20]}
       >
         <text
-          text="PLAYTESTING VERSION 0.1.0"
+          text="PLAYTESTING VERSION v3.0"
           style={{
             color: STRING_COLORS_NAMES["fever-dream"],
             fontSize: 20,
