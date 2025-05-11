@@ -198,11 +198,18 @@ export class MotionMachine<
     return tasks;
   }
 
+  scheduledState: S | null = null;
+  scheduledEvent: E | null = null;
+
+  scheduleStateTransition(state: S, lastEvent: E | null = null) {
+    this.scheduledState = state;
+    this.scheduledEvent = lastEvent;
+  }
+
   setState(state: S, lastEvent: E | null = null) {
-    if (this.stateLifecycle !== "active") {
-      // TODO: At some point this will never happen and it will be an error
-      // The transition should handle enqueuing the state transitions
-      //throw new Error("Cannot set state while not in active state");
+    if (this.currentAnimations.length > 0) {
+      this.scheduleStateTransition(state, lastEvent);
+      return;
     }
 
     this.transitionStack = this.collectAnimationTasks(
@@ -212,6 +219,8 @@ export class MotionMachine<
 
     this.targetState = state;
     this.targetEvent = lastEvent;
+
+    this.transitionStack.shift()!;
 
     this.setStateLifecycle("exiting", this.current.get());
   }
@@ -242,6 +251,12 @@ export class MotionMachine<
       this.setStateLifecycle("entering", this.targetState);
       this.targetState = null;
       this.targetEvent = null;
+    }
+
+    if (this.scheduledState) {
+      this.setState(this.scheduledState, this.scheduledEvent);
+      this.scheduledState = null;
+      this.scheduledEvent = null;
     }
   }
 
