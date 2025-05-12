@@ -2,6 +2,152 @@
   "assetPack": {
     "files": [
       {
+        "type": "binary",
+        "key": "ChemicalPlant",
+        "url": "assets/ChemicalPlant.glb"
+      },
+      {
+        "type": "binary",
+        "key": "Duster",
+        "url": "assets/Duster.glb"
+      },
+      {
+        "type": "binary",
+        "key": "Electrolysis",
+        "url": "assets/Electrolysis.glb"
+      },
+      {
+        "type": "binary",
+        "key": "FuelCell",
+        "url": "assets/FuelCell.glb"
+      },
+      {
+        "type": "binary",
+        "key": "Miner",
+        "url": "assets/Miner.glb"
+      },
+      {
+        "type": "binary",
+        "key": "SolarPanels",
+        "url": "assets/SolarPanels.glb"
+      },
+      {
+        "type": "binary",
+        "key": "comet-1",
+        "url": "assets/comet-1.glb"
+      },
+      {
+        "type": "binary",
+        "key": "comet-2",
+        "url": "assets/comet-2.glb"
+      },
+      {
+        "type": "binary",
+        "key": "comet-3",
+        "url": "assets/comet-3.glb"
+      },
+      {
+        "type": "binary",
+        "key": "compressor",
+        "url": "assets/compressor.glb"
+      },
+      {
+        "type": "binary",
+        "key": "condenser",
+        "url": "assets/condenser.glb"
+      },
+      {
+        "type": "binary",
+        "key": "generator",
+        "url": "assets/generator.glb"
+      },
+      {
+        "type": "binary",
+        "key": "martin",
+        "url": "assets/martin.glb"
+      },
+      {
+        "type": "binary",
+        "key": "rocket-temporary",
+        "url": "assets/rocket-temporary.glb"
+      },
+      {
+        "type": "image",
+        "key": "H2",
+        "url": "assets/H2.png"
+      },
+      {
+        "type": "image",
+        "key": "H2O",
+        "url": "assets/H2O.png"
+      },
+      {
+        "type": "image",
+        "key": "LH2",
+        "url": "assets/LH2.png"
+      },
+      {
+        "type": "image",
+        "key": "LOX",
+        "url": "assets/LOX.png"
+      },
+      {
+        "type": "image",
+        "key": "O2",
+        "url": "assets/O2.png"
+      },
+      {
+        "type": "image",
+        "key": "emboss-button",
+        "url": "assets/emboss-button-albedo.png",
+        "normalMapUrl": "assets/emboss-button-normal.png"
+      },
+      {
+        "type": "image",
+        "key": "intro-title",
+        "url": "assets/intro-title.png"
+      },
+      {
+        "type": "image",
+        "key": "kWh",
+        "url": "assets/kWh.png"
+      },
+      {
+        "type": "image",
+        "key": "metals",
+        "url": "assets/metals.png"
+      },
+      {
+        "type": "image",
+        "key": "mining-cursor",
+        "url": "assets/mining-cursor.png"
+      },
+      {
+        "type": "image",
+        "key": "pure-metals",
+        "url": "assets/pure-metals.png"
+      },
+      {
+        "type": "image",
+        "key": "stardust",
+        "url": "assets/stardust.png"
+      },
+      {
+        "type": "image",
+        "key": "texture",
+        "url": "assets/texture.png"
+      },
+      {
+        "type": "audio",
+        "key": "build-H2compressor",
+        "url": "assets/build-H2compressor.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "build-O2compressor",
+        "url": "assets/build-O2compressor.mp3"
+      },
+      {
         "type": "audio",
         "key": "build-chemicalplant",
         "url": "assets/build-chemicalplant.mp3"
@@ -33,18 +179,8 @@
       },
       {
         "type": "audio",
-        "key": "build-H2compressor",
-        "url": "assets/build-H2compressor.mp3"
-      },
-      {
-        "type": "audio",
         "key": "build-miner",
         "url": "assets/build-miner.mp3"
-      },
-      {
-        "type": "audio",
-        "key": "build-O2compressor",
-        "url": "assets/build-O2compressor.mp3"
       },
       {
         "type": "audio",
@@ -115,142 +251,6 @@
         "type": "audio",
         "key": "sfx-rocket-launch",
         "url": "assets/sfx-rocket-launch.mp3"
-      },
-      {
-        "type": "binary",
-        "key": "ChemicalPlant",
-        "url": "assets/ChemicalPlant.glb"
-      },
-      {
-        "type": "binary",
-        "key": "comet-1",
-        "url": "assets/comet-1.glb"
-      },
-      {
-        "type": "binary",
-        "key": "comet-2",
-        "url": "assets/comet-2.glb"
-      },
-      {
-        "type": "binary",
-        "key": "comet-3",
-        "url": "assets/comet-3.glb"
-      },
-      {
-        "type": "binary",
-        "key": "compressor",
-        "url": "assets/compressor.glb"
-      },
-      {
-        "type": "binary",
-        "key": "condenser",
-        "url": "assets/condenser.glb"
-      },
-      {
-        "type": "binary",
-        "key": "Duster",
-        "url": "assets/Duster.glb"
-      },
-      {
-        "type": "binary",
-        "key": "Electrolysis",
-        "url": "assets/Electrolysis.glb"
-      },
-      {
-        "type": "binary",
-        "key": "FuelCell",
-        "url": "assets/FuelCell.glb"
-      },
-      {
-        "type": "binary",
-        "key": "generator",
-        "url": "assets/generator.glb"
-      },
-      {
-        "type": "binary",
-        "key": "martin",
-        "url": "assets/martin.glb"
-      },
-      {
-        "type": "binary",
-        "key": "Miner",
-        "url": "assets/Miner.glb"
-      },
-      {
-        "type": "binary",
-        "key": "rocket-temporary",
-        "url": "assets/rocket-temporary.glb"
-      },
-      {
-        "type": "binary",
-        "key": "SolarPanels",
-        "url": "assets/SolarPanels.glb"
-      },
-      {
-        "type": "image",
-        "key": "emboss-button",
-        "url": "assets/emboss-button-albedo.png",
-        "normalMapUrl": "assets/emboss-button-normal.png"
-      },
-      {
-        "type": "image",
-        "key": "H2",
-        "url": "assets/H2.png"
-      },
-      {
-        "type": "image",
-        "key": "H2O",
-        "url": "assets/H2O.png"
-      },
-      {
-        "type": "image",
-        "key": "intro-title",
-        "url": "assets/intro-title.png"
-      },
-      {
-        "type": "image",
-        "key": "kWh",
-        "url": "assets/kWh.png"
-      },
-      {
-        "type": "image",
-        "key": "LH2",
-        "url": "assets/LH2.png"
-      },
-      {
-        "type": "image",
-        "key": "LOX",
-        "url": "assets/LOX.png"
-      },
-      {
-        "type": "image",
-        "key": "metals",
-        "url": "assets/metals.png"
-      },
-      {
-        "type": "image",
-        "key": "O2",
-        "url": "assets/O2.png"
-      },
-      {
-        "type": "image",
-        "key": "pure-metals",
-        "url": "assets/pure-metals.png"
-      },
-      {
-        "type": "image",
-        "key": "stardust",
-        "url": "assets/stardust.png"
-      },
-      {
-        "type": "image",
-        "key": "texture",
-        "url": "assets/texture.png"
-      },
-      {
-        "type": "image",
-        "key": "ui-left-panel/ui-left-panel",
-        "url": "assets/ui-left-panel/ui-left-panel.png"
       },
       {
         "type": "font",

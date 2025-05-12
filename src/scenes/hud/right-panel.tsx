@@ -9,6 +9,7 @@ import { NineSlice } from "./components/NineSlice";
 import { BuildingsPanel } from "./components/right/BuildingDialsPanel";
 import { RocketLauncher } from "./components/right/RocketLauncher";
 import { Counter, ResourcesCounter } from "./components/right/ResourcesCounter";
+import { STRING_COLORS_NAMES } from "@game/consts";
 
 export const RightPanel = ({
   width,
@@ -58,7 +59,9 @@ export const RightPanel = ({
       <Flex
         width={width}
         justify={JUSTIFY.CENTER}
+        direction={DIRECTION.COLUMN}
         padding={[10, 9]}
+        margin={5}
         backgroundElement={
           <NineSlice texture={RESOURCES["ui-left-panel"]} frame="bg-panel" />
         }
@@ -72,8 +75,13 @@ export const RightPanel = ({
         <NineSlice texture={RESOURCES["ui-left-panel"]} frame="bg-buildings" />
       }
       padding={[10, 9]}
+      margin={5}
       width={width}
     >
+      <text
+        text="BUILDINGS CONTROL PANEL"
+        style={{ color: STRING_COLORS_NAMES["umbra"] }}
+      />
       <BuildingsPanel gameState={gameState} />
     </Flex>
   </Flex>

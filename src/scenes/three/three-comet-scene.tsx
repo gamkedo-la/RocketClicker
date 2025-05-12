@@ -7,7 +7,11 @@ import { DebugPanel } from "@game/scenes/debug/debug-panel";
 import { AbstractScene } from "..";
 import { SCENES } from "../scenes";
 
-import { STRING_COLORS_NAMES, TWELVE_HOURS_IN_SECONDS } from "@game/consts";
+import {
+  COLORS_NAMES,
+  STRING_COLORS_NAMES,
+  TWELVE_HOURS_IN_SECONDS,
+} from "@game/consts";
 import { assert } from "@game/core/common/assert";
 import { signal } from "@game/core/signals/signals";
 import type { Signal } from "@game/core/signals/types";
@@ -61,6 +65,8 @@ export class ThreeCometScene extends AbstractScene {
   board_size: THREE.Vector3;
 
   groundMeshes: THREE.Mesh[];
+
+  cometDustEmitter: Phaser.GameObjects.Particles.ParticleEmitter;
 
   // Building meshes that are on the comet
   buildingMeshes: Map<number, THREE.Object3D> = new Map();
@@ -205,6 +211,13 @@ export class ThreeCometScene extends AbstractScene {
         );
       });
     });
+
+    this.cometDustEmitter = this.add.particles(0, 0, "comet_dust_particle", {
+      lifespan: 400,
+      speed: { min: 50, max: 100 },
+      gravityY: 300,
+      emitting: false,
+    });
   }
 
   private loadCometSystemModel() {
@@ -220,6 +233,12 @@ export class ThreeCometScene extends AbstractScene {
           this.comet.userData = {
             id: "comet",
           };
+
+          if (this.comet.material instanceof THREE.MeshStandardMaterial) {
+            this.comet.material.color.set(COLORS_NAMES["vaporwave-blue"]);
+            this.comet.material.emissive.set(COLORS_NAMES["elite-teal"]);
+            this.comet.material.emissiveIntensity = 0.2;
+          }
 
           // Add the camera pivot as a child of the comet
           this.comet.add(this.camera.getPivot());
@@ -272,8 +291,7 @@ export class ThreeCometScene extends AbstractScene {
           buildingMaterial.clone()
         );
 
-        terrainMesh.castShadow = true;
-        terrainMesh.receiveShadow = true;
+        terrainMesh.material.color.set(COLORS_NAMES["dark-knight"]);
 
         terrainMesh.position.set(
           -0.055 + (x + y) * 0.025,
@@ -662,26 +680,30 @@ export class ThreeCometScene extends AbstractScene {
       this.gameState.addCometSpin((effectiveness * distFromCenter) / 370);
       this.gameState.changeMaterial(MATERIALS.CometDust, value);
 
-      const text = this.add.text(
-        x + Math.random() * 5 - 10,
-        y,
-        `+${value.toFixed(0)}`,
-        {
-          fontSize: "32px",
-          color,
-          fontStyle: "bold",
-        }
+      const text = this.add.existing(
+        <text
+          x={x + Math.random() * 5 - 5}
+          y={y - 30}
+          text={`+${value.toFixed(0)}`}
+          style={{
+            fontSize: "32px",
+            color,
+            //fontStyle: "bold",
+          }}
+          origin={[0.5, 0.5]}
+        />
       );
-      text.setOrigin(0.5);
 
       this.tweens.add({
         targets: text,
-        y: y - 120,
+        y: y - 135,
         alpha: { from: 1, to: 0 },
         duration: 3000,
         ease: "Cubic.easeOut",
         onComplete: () => text.destroy(),
       });
+
+      this.cometDustEmitter.emitParticle(Math.min(20, value / 2), x, y);
 
       this.gameState.state.get()?.mouse_selected_building.set({
         building: null,
@@ -874,6 +896,8 @@ export class ThreeCometScene extends AbstractScene {
 
       const groundIntersects = raycaster.intersectObjects(this.groundMeshes);
 
+      this.input.setDefaultCursor("pointer");
+
       if (groundIntersects.length > 0) {
         this.hoveredObject?.children[0].children.forEach((child) => {
           // @ts-ignore
@@ -886,6 +910,21 @@ export class ThreeCometScene extends AbstractScene {
           }
           return false;
         })?.object as THREE.Mesh;
+
+        const distFromCenter = Math.min(
+          375,
+          Math.max(-385, Math.floor(pointer.x - 645))
+        );
+
+        if (
+          hoverObject?.userData.id === "comet" &&
+          distFromCenter < 375 &&
+          distFromCenter > -385
+        ) {
+          this.input.setDefaultCursor(
+            `url(assets/${RESOURCES["mining-cursor"]}.png) 16 16, move`
+          );
+        }
 
         if (hoverObject?.userData.id === "terrain") {
           const { grid, cellId } = hoverObject.userData;

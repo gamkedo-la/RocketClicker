@@ -1,5 +1,5 @@
 import { RESOURCES } from "@game/assets";
-import { GAME_WIDTH } from "@game/consts";
+import { COLORS_NAMES, GAME_WIDTH } from "@game/consts";
 
 import { AbstractScene } from "..";
 import { SCENES, TEST_SCENE } from "../scenes";
@@ -42,10 +42,14 @@ export class Preloader extends AbstractScene {
 
   create() {
     const graphics = this.add.graphics();
-    graphics.fillStyle(0x927e6a);
-    graphics.fillStyle(0xefd8a1);
-    graphics.fillCircle(1, 1, 2);
-    graphics.generateTexture("wind_particle", 2, 2);
+    graphics.fillStyle(COLORS_NAMES["dark-knight"]);
+    graphics.fillPoint(1, 0);
+    graphics.fillPoint(0, 1);
+    graphics.fillPoint(2, 1);
+    graphics.fillPoint(1, 2);
+    graphics.fillStyle(COLORS_NAMES["vaporwave-blue"]);
+    graphics.fillPoint(1, 1);
+    graphics.generateTexture("comet_dust_particle", 3, 3);
     graphics.destroy();
 
     // the preloader has already downloaded the .mp3
@@ -75,6 +79,7 @@ export class Preloader extends AbstractScene {
     this.soundManager.addSound("placeholder-music-loop", { loop: true });
 
     this.scenesManager.transitionTo("loaded");
+    //this.scene.start(SCENES.GAME);
     //this.scene.start(TEST_SCENE);
   }
 
