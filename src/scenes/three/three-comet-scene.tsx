@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { LineMaterial } from "three/examples/jsm/lines/LineMaterial.js";
 
 import { RESOURCES } from "@game/assets";
 import { DebugPanel } from "@game/scenes/debug/debug-panel";
@@ -7,14 +8,12 @@ import { DebugPanel } from "@game/scenes/debug/debug-panel";
 import { AbstractScene } from "..";
 import { SCENES } from "../scenes";
 
-import {
-  COLORS_NAMES,
-  STRING_COLORS_NAMES,
-  TWELVE_HOURS_IN_SECONDS,
-} from "@game/consts";
+import { COLORS_NAMES, STRING_COLORS_NAMES } from "@game/consts";
 import { assert } from "@game/core/common/assert";
+import { MotionMachine } from "@game/core/motion-machine/motion-machine";
 import { signal } from "@game/core/signals/signals";
 import type { Signal } from "@game/core/signals/types";
+import { FlexRow } from "@game/core/ui/FlexRow";
 import {
   BUILDINGS,
   getBuildingById,
@@ -23,16 +22,20 @@ import {
 import { Building } from "@game/entities/buildings/types";
 import { hasResources, MATERIALS } from "@game/entities/materials/index";
 import { COMET_DUST_MOUSE_MINING, MAX_COMET_SPIN } from "@game/state/consts";
-import { MotionMachine } from "../../core/motion-machine/motion-machine";
+
 import { GameScene } from "../game/game-scene";
+
+import { Line2 } from "three/examples/jsm/lines/Line2.js";
+import { LineGeometry } from "three/examples/jsm/lines/LineGeometry.js";
 import { BuildingPill } from "./components/building-pill";
 import { Camera } from "./components/camera";
 import { loader, ThreeScene } from "./components/scene";
 import { addFlyingBuilding } from "./elements/flying-building";
 import { createLights } from "./elements/lights";
 import { buildingMaterial, starMaterial } from "./elements/materials";
+import { Particles } from "./elements/particles";
 import { createSky } from "./elements/sky";
-import { FlexRow } from "../../core/ui/FlexRow";
+import { SmokeParticles } from "./elements/smoke-particles";
 
 export interface BuildingScreenPosition {
   baseX: number; // Unscaled base position
@@ -55,6 +58,9 @@ export class ThreeCometScene extends AbstractScene {
   threeScene: THREE.Scene;
   threeCamera: THREE.OrthographicCamera;
 
+  threeCameraX = 0;
+  threeCameraY = 0;
+
   comet: THREE.Mesh;
   rocket: THREE.Mesh;
 
@@ -65,6 +71,9 @@ export class ThreeCometScene extends AbstractScene {
   board_size: THREE.Vector3;
 
   groundMeshes: THREE.Mesh[];
+
+  particles: Particles;
+  smokeEffect: SmokeParticles;
 
   cometDustEmitter: Phaser.GameObjects.Particles.ParticleEmitter;
 
@@ -101,6 +110,9 @@ export class ThreeCometScene extends AbstractScene {
     this.threeScene = scene.threeScene;
     this.threeCamera = camera.camera;
 
+    this.threeCameraX = this.threeCamera.position.x;
+    this.threeCameraY = this.threeCamera.position.y;
+
     this.groundMeshes = [];
 
     this.loadCometSystemModel();
@@ -124,6 +136,7 @@ export class ThreeCometScene extends AbstractScene {
     this.cameraPositionY.subscribe((value) => {
       this.camera.camera.position.y = value;
       this.camera.camera.updateProjectionMatrix();
+      this.threeCameraY = this.threeCamera.position.y;
     });
 
     // Subscribe to light intensity changes
@@ -143,49 +156,45 @@ export class ThreeCometScene extends AbstractScene {
     const mm: MotionMachine<"idle", "idle"> = (
       <motionMachine initialState="idle">
         <state id="idle">
-          <animation on="active">
-            <repeat times={TWELVE_HOURS_IN_SECONDS}>
-              <parallel>
-                <tween
-                  signal={this.cameraZoom}
-                  to={() =>
-                    11 + 4 * Math.abs(currentCometSpin.get() / MAX_COMET_SPIN)
-                  }
-                  duration={1000}
-                />
-                <tween
-                  signal={this.cameraPositionY}
-                  to={() =>
-                    50 - Math.abs(currentCometSpin.get() / MAX_COMET_SPIN) / 25
-                  }
-                  duration={1000}
-                />
-                <tween
-                  signal={this.ambientLightIntensity}
-                  to={() =>
-                    1.5 + Math.abs(currentCometSpin.get() / MAX_COMET_SPIN) * 30
-                  }
-                  duration={1000}
-                />
-                <tween
-                  signal={this.spotLightIntensity}
-                  to={() =>
-                    0.1 +
-                    (1 - Math.abs(currentCometSpin.get() / MAX_COMET_SPIN)) *
-                      3.75
-                  }
-                  duration={1000}
-                />
-                <tween
-                  signal={this.directionalLightIntensity}
-                  to={() =>
-                    0.5 -
-                    Math.abs(currentCometSpin.get() / MAX_COMET_SPIN) * 0.45
-                  }
-                  duration={1000}
-                />
-              </parallel>
-            </repeat>
+          <animation on="active" loop>
+            <parallel>
+              <tween
+                signal={this.cameraZoom}
+                to={() =>
+                  11 + 4 * Math.abs(currentCometSpin.get() / MAX_COMET_SPIN)
+                }
+                duration={1000}
+              />
+              <tween
+                signal={this.cameraPositionY}
+                to={() =>
+                  50 - Math.abs(currentCometSpin.get() / MAX_COMET_SPIN) / 25
+                }
+                duration={1000}
+              />
+              <tween
+                signal={this.ambientLightIntensity}
+                to={() =>
+                  1.5 + Math.abs(currentCometSpin.get() / MAX_COMET_SPIN) * 30
+                }
+                duration={1000}
+              />
+              <tween
+                signal={this.spotLightIntensity}
+                to={() =>
+                  0.1 +
+                  (1 - Math.abs(currentCometSpin.get() / MAX_COMET_SPIN)) * 3.75
+                }
+                duration={1000}
+              />
+              <tween
+                signal={this.directionalLightIntensity}
+                to={() =>
+                  0.5 - Math.abs(currentCometSpin.get() / MAX_COMET_SPIN) * 0.45
+                }
+                duration={1000}
+              />
+            </parallel>
           </animation>
         </state>
       </motionMachine>
@@ -206,8 +215,8 @@ export class ThreeCometScene extends AbstractScene {
 
         this.updateBuildingProjection(mesh, screenPosSignal);
         pill.setPosition(
-          screenPosSignal.get().baseX,
-          screenPosSignal.get().baseY
+          Math.round(screenPosSignal.get().baseX),
+          Math.round(screenPosSignal.get().baseY)
         );
       });
     });
@@ -218,6 +227,8 @@ export class ThreeCometScene extends AbstractScene {
       gravityY: 300,
       emitting: false,
     });
+
+    this.particles = new Particles(this);
   }
 
   private loadCometSystemModel() {
@@ -332,6 +343,8 @@ export class ThreeCometScene extends AbstractScene {
     });
   }
 
+  dashedLineMaterial: LineMaterial[];
+
   private loadRocketLauncherModel() {
     loader.parse(
       this.cache.binary.get(RESOURCES["rocket-temporary"]),
@@ -367,6 +380,70 @@ export class ThreeCometScene extends AbstractScene {
         mesh.position.copy(position);
         mesh.position.y -= 0.008;
 
+        // make empty object for the lines
+        const lines = new THREE.Object3D();
+        mesh.add(lines);
+
+        this.dashedLineMaterial = [];
+
+        const colors = [
+          COLORS_NAMES["vaporwave-blue"],
+          COLORS_NAMES["vicious-violet"],
+          COLORS_NAMES["white"],
+          COLORS_NAMES["fever-dream"],
+          COLORS_NAMES["chutney"],
+        ];
+
+        for (let i = 0; i < 10; i++) {
+          const lineMaterial = new LineMaterial({
+            //color: 0xffaa00,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            dashed: true,
+            dashSize: Math.random() * 10,
+            gapSize: Math.random() * 1 + 7.5,
+            linewidth: 20,
+          });
+          this.dashedLineMaterial.push(lineMaterial);
+        }
+        for (let i = 0; i < 100; i++) {
+          const lineGeometry = new LineGeometry();
+          const points = [];
+          const point = new THREE.Vector3(
+            mesh.position.x + Math.random() * 4 - 2,
+            mesh.position.y,
+            mesh.position.z - 1
+          );
+          const direction = new THREE.Vector3();
+
+          for (let i = 0; i < 30; i++) {
+            direction.x = 0.1 * i * (Math.random() - 0.5);
+            direction.y = -1;
+            direction.z = 0.1 * i * (Math.random() - 0.5);
+            //direction.normalize().multiplyScalar(10);
+
+            point.add(direction);
+            points.push(point.x, point.y, point.z);
+          }
+
+          lineGeometry.setPositions(points);
+
+          // add a line to the rocket
+          const line = new Line2(
+            lineGeometry,
+            this.dashedLineMaterial[
+              Math.floor(Math.random() * this.dashedLineMaterial.length)
+            ]
+          );
+          line.computeLineDistances();
+
+          lines.add(line);
+        }
+
+        const smokeEmitterObject = new THREE.Object3D();
+        this.comet.add(smokeEmitterObject);
+        smokeEmitterObject.position.set(0.045, 0.04, -0.05); // Example position relative to comet
+        this.smokeEffect = new SmokeParticles(this, smokeEmitterObject);
+
         // Add to the scene and track it
         this.comet.add(mesh);
         this.rocket = mesh.children[0].children[1] as THREE.Mesh;
@@ -388,10 +465,12 @@ export class ThreeCometScene extends AbstractScene {
 
         rocketPosY.subscribe((value) => {
           this.rocket.position.y += value;
+          lines.position.y += value;
         });
 
         rocketRotY2.subscribe((value) => {
           this.rocket.position.y = value;
+          lines.position.y = value;
         });
 
         towerRotX.subscribe((value) => {
@@ -406,7 +485,17 @@ export class ThreeCometScene extends AbstractScene {
             <state id="entering">
               <animation>
                 <tween to={1} duration={2000} signal={rocketRotY2} />
-                <step run={() => machine.transition("intro_done")} />
+                <step
+                  run={() => {
+                    this.smokeEffect.emitBurst(
+                      new THREE.Vector3(0, 0, 0),
+                      1000,
+                      0.09,
+                      1.0
+                    );
+                    machine.transition("intro_done");
+                  }}
+                />
               </animation>
               <transition on="intro_done" target="idle" />
             </state>
@@ -415,6 +504,16 @@ export class ThreeCometScene extends AbstractScene {
             </state>
             <state id="launching">
               <animation>
+                <step
+                  run={() => {
+                    this.smokeEffect.emitBurst(
+                      new THREE.Vector3(0, 0, 0),
+                      1000,
+                      0.09,
+                      1.0
+                    );
+                  }}
+                />
                 <parallel>
                   <tween
                     from={0}
@@ -612,6 +711,18 @@ export class ThreeCometScene extends AbstractScene {
     const position = this.getCellPosition(cellId);
     mesh.position.copy(position);
     mesh.position.y -= 0.008;
+
+    this.smokeEffect.emitBurst(
+      new THREE.Vector3(
+        position.x - 0.048,
+        position.y - 0.05,
+        position.z + 0.05
+      ),
+      50,
+      0.02,
+      1.0,
+      0.3
+    );
 
     // Add to the scene and track it
     this.comet.add(mesh);
@@ -872,7 +983,16 @@ export class ThreeCometScene extends AbstractScene {
     });
   }
 
-  update(_time: number, _delta: number) {
+  update(time: number, delta: number) {
+    if (this.dashedLineMaterial) {
+      //this.dashedLineMaterial.dashSize = 0.1 + Math.sin(time * 0.001) * 0.1;
+      //this.dashedLineMaterial.gapSize = 1 + Math.sin(time * 0.001) * 0.5;
+      //this.dashedLineMaterial.linewidth = 0.01 + Math.sin(time * 0.001) * 0.01;
+      this.dashedLineMaterial.forEach((mat, index) => {
+        mat.dashOffset = -time * 0.09 - index * 0.3;
+      });
+    }
+
     const pointer = this.input.activePointer;
     if (pointer.isDown) {
       this.pointerDownFrames++;
@@ -1023,9 +1143,19 @@ export class ThreeCometScene extends AbstractScene {
     if (this.comet) {
       // Calculate current position relative to pivot
       const position = this.comet.position.clone();
+      const cometSpin = this.gameState.getCometSpin().get();
+      const cometAbsSpin =
+        Math.max(0, Math.abs(cometSpin) - 50) / MAX_COMET_SPIN;
 
+      // camera shake
+      const shake =
+        (Math.cos(time * 0.033) + Math.sin(time * 0.017)) *
+        0.0005 *
+        cometAbsSpin;
+      this.threeCamera.position.x = this.threeCameraX + shake;
+      this.threeCamera.position.y = this.threeCameraY + shake;
       // Rotate position around Z axis
-      const rotationSpeed = this.gameState.getCometSpin().get() * 0.0005;
+      const rotationSpeed = cometSpin * 0.0005;
       position.applyAxisAngle(this.zAxis, rotationSpeed);
 
       // Add pivot back to get new world position
@@ -1035,6 +1165,9 @@ export class ThreeCometScene extends AbstractScene {
       this.comet.rotateZ(rotationSpeed);
 
       this.gameState.setCometAngle(this.comet.rotation.z);
+
+      this.particles.update(time, delta);
+      this.smokeEffect.update(time, delta);
     }
   }
 
