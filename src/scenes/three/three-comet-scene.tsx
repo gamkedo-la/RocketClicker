@@ -291,7 +291,7 @@ export class ThreeCometScene extends AbstractScene {
           buildingMaterial.clone()
         );
 
-        terrainMesh.material.color.set(COLORS_NAMES["dark-knight"]);
+        terrainMesh.material.color.set(COLORS_NAMES["meteorite"]);
 
         terrainMesh.position.set(
           -0.055 + (x + y) * 0.025,
@@ -343,12 +343,11 @@ export class ThreeCometScene extends AbstractScene {
           if (node instanceof THREE.Mesh) {
             if (node instanceof THREE.Mesh) {
               node.castShadow = true;
-              node.receiveShadow = true;
             }
           }
 
           // Scale and rotate the model as needed
-          gltf.scene.scale.set(0.0033, 0.0033, 0.0033);
+          gltf.scene.scale.set(0.0033, 0.0028, 0.0033);
           //gltf.scene.position.set(0, -0.1, 0);
           gltf.scene.rotateY(Math.PI / 4);
         });
@@ -375,7 +374,7 @@ export class ThreeCometScene extends AbstractScene {
         const tower = mesh.children[0].children[0] as THREE.Mesh;
 
         const rocketRotY = signal(0);
-        const rocketRotY2 = signal(20);
+        const rocketRotY2 = signal(50);
         const rocketPosY = signal(0);
 
         const towerRotX = signal(0);
@@ -551,7 +550,13 @@ export class ThreeCometScene extends AbstractScene {
           // this will confirm whether or not the importer/mesh is broken
           // RESULT: meshes are colored! therefore my .glb files are wonky
           node.material = new THREE.MeshStandardMaterial();
-          node.material.color.setHex(Math.random() * 0xffffff);
+          node.material.color.setHex(
+            COLORS_NAMES[
+              Object.keys(COLORS_NAMES)[
+                Math.floor(Math.random() * Object.keys(COLORS_NAMES).length)
+              ] as keyof typeof COLORS_NAMES
+            ]
+          );
         }
       }
     });

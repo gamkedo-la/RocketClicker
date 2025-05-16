@@ -48,6 +48,9 @@ export class ThreeScene {
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
+    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    this.renderer.toneMappingExposure = 2;
+
     const composer = new EffectComposer(this.renderer);
 
     //const effect1 = new ShaderPass(DotScreenShader);
@@ -62,12 +65,12 @@ export class ThreeScene {
 
     // composer.addPass( new RenderPass( scene, camera ) )
 
-    const r = new RenderPixelatedPass(1.5, this.threeScene, this.camera);
+    const r = new RenderPixelatedPass(1, this.threeScene, this.camera);
     r.depthEdgeStrength = 100;
     r.normalEdgeStrength = 3;
     composer.addPass(r);
 
-    let bloomPass = new UnrealBloomPass(screenResolution, 0.4, 0.1, 0.9);
+    let bloomPass = new UnrealBloomPass(screenResolution, 0.4, 0.1, 0.1);
     composer.addPass(bloomPass);
 
     const view: Phaser.GameObjects.Extern & { render: () => void } =
