@@ -120,7 +120,7 @@ export default class EffectsSystem implements System {
             this.gameState.getCometSpin().update((spin) => {
               const efficiency = building.current_efficiency.get();
               const sign = Math.sign(spin);
-              return spin - 0.05 * efficiency * sign;
+              return spin - 0.01 * efficiency * sign;
             });
             break;
           case EFFECTS.SPEED:
