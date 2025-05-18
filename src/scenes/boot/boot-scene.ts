@@ -20,7 +20,8 @@ export class Boot extends AbstractScene {
       });
     }
 
-    this.scenesManager.boot(this.scene);
+    this.soundManager.boot(this.gameState);
+    this.scenesManager.boot(this.scene, this.soundManager);
   }
 
   shutdown() {}

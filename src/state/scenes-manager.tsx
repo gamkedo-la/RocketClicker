@@ -2,6 +2,7 @@ import { signal } from "@game/core/signals/signals";
 import { SCENES } from "@game/scenes/scenes";
 import { MotionMachine } from "../core/motion-machine/motion-machine";
 import { GameStateManager } from "./game-state";
+import { SoundManager } from "@game/core/sound/sound-manager";
 
 export type SceneStates =
   | "loading"
@@ -15,7 +16,7 @@ export type SceneEvents = "loaded" | "start" | "end-game-loading" | "end-game";
 export class ScenesManager extends Phaser.Plugins.BasePlugin {
   scenePlugin: Phaser.Scenes.ScenePlugin;
   scenes: MotionMachine<SceneStates, SceneEvents>;
-
+  soundManager: SoundManager;
   transitionSignal = signal(0, {
     label: "Transition Signal",
     tweakpaneOptions: {
@@ -28,8 +29,9 @@ export class ScenesManager extends Phaser.Plugins.BasePlugin {
     super(pluginManager);
   }
 
-  boot(sceneManager: Phaser.Scenes.ScenePlugin) {
+  boot(sceneManager: Phaser.Scenes.ScenePlugin, soundManager: SoundManager) {
     this.scenePlugin = sceneManager;
+    this.soundManager = soundManager;
 
     const TransitionSignal = ({
       duration,
@@ -54,6 +56,18 @@ export class ScenesManager extends Phaser.Plugins.BasePlugin {
     );
 
     const TransitionScene = this.scenePlugin.get(SCENES.TRANSITIONS);
+
+    const intro_music_volume = signal(0);
+    const game_music_volume = signal(0);
+
+    const registerVolumeListeners = () => {
+      intro_music_volume.subscribe((vol) => {
+        this.soundManager.getSound("placeholder-music-loop").setVolume(vol);
+      });
+      game_music_volume.subscribe((vol) => {
+        this.soundManager.getSound("music_loop_TheViewFromHere").setVolume(vol);
+      });
+    };
 
     this.scenes = (
       <motionMachine initialState="preloader">
@@ -82,9 +96,22 @@ export class ScenesManager extends Phaser.Plugins.BasePlugin {
             <step
               run={() => {
                 this.scenePlugin.launch(SCENES.INTRO);
+                registerVolumeListeners();
+                this.soundManager.play("placeholder-music-loop", {
+                  volume: 0,
+                  loop: true,
+                });
               }}
             />
-            <TransitionSignal duration={1400} />
+            <parallel>
+              <tween
+                signal={intro_music_volume}
+                from={0}
+                to={1}
+                duration={4000}
+              />
+              <TransitionSignal duration={4000} />
+            </parallel>
           </animation>
           <animation on="exit">
             <TransitionSignal duration={500} direction="out" />
@@ -93,9 +120,20 @@ export class ScenesManager extends Phaser.Plugins.BasePlugin {
         </state>
         <state id="game-loading">
           <animation on="active">
+            <tween
+              signal={intro_music_volume}
+              from={1}
+              to={0}
+              duration={1000}
+            />
             <step
               run={() => {
                 this.scenePlugin.launch(SCENES.GAME);
+              }}
+            />
+            <step
+              run={() => {
+                this.soundManager.stop("placeholder-music-loop");
               }}
             />
           </animation>
@@ -104,6 +142,18 @@ export class ScenesManager extends Phaser.Plugins.BasePlugin {
         <state id="game">
           <animation on="enter">
             <TransitionSignal duration={1500} />
+            <step
+              run={() => {
+                this.soundManager.play("music_loop_TheViewFromHere", {
+                  volume: 0,
+                  seek: 31.8,
+                  loop: true,
+                });
+              }}
+            />
+          </animation>
+          <animation on="active">
+            <tween signal={game_music_volume} from={0} to={1} duration={2000} />
           </animation>
           <transition on="end-game" target="end-game" />
         </state>

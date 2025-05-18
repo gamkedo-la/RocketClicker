@@ -3,6 +3,7 @@ import { COLORS_NAMES, GAME_WIDTH } from "@game/consts";
 
 import { AbstractScene } from "..";
 import { SCENES, TEST_SCENE } from "../scenes";
+import { MUSIC, SFX } from "@game/core/sound/sound-manager";
 
 export const RESOURCES_INDEX = Object.keys(RESOURCES).reduce(
   (acc, key, index) => ({ ...acc, [key]: index }),
@@ -52,31 +53,20 @@ export class Preloader extends AbstractScene {
     graphics.generateTexture("comet_dust_particle", 3, 3);
     graphics.destroy();
 
-    // the preloader has already downloaded the .mp3
-    // FIXME: iterate all non-graphic RESOURCES[]
-    this.soundManager.addSound("build-chemicalplant");
-    this.soundManager.addSound("build-condenser");
-    this.soundManager.addSound("build-duster");
-    this.soundManager.addSound("build-electrolysis");
-    this.soundManager.addSound("build-fuelcell");
-    this.soundManager.addSound("build-generator");
-    this.soundManager.addSound("build-H2compressor");
-    this.soundManager.addSound("build-miner");
-    this.soundManager.addSound("build-O2compressor");
-    this.soundManager.addSound("build-solarpanel");
+    // TODO: We still need to declare sounds on SFX
+    SFX.forEach((sfx) => {
+      this.soundManager.addSound(sfx);
+    });
+
+    MUSIC.forEach((music) => {
+      this.soundManager.addSound(music);
+    });
+
+    // Apparently I need to add a random sound to fail to load and then
+    // I know all the sounds above were correctly added
     this.soundManager.addSound("sfx-alert");
-    this.soundManager.addSound("sfx-click");
-    this.soundManager.addSound("sfx-electricity");
-    this.soundManager.addSound("sfx-gas-burst");
-    this.soundManager.addSound("sfx-gui-clip");
-    this.soundManager.addSound("sfx-gui-confirm");
-    this.soundManager.addSound("sfx-gui-deny");
-    this.soundManager.addSound("sfx-gui-window-opens");
-    this.soundManager.addSound("sfx-mine-stardust");
-    this.soundManager.addSound("sfx-pick-up");
-    this.soundManager.addSound("sfx-put-down");
-    this.soundManager.addSound("sfx-rocket-launch");
-    this.soundManager.addSound("placeholder-music-loop", { loop: true });
+    // I also can't set volumes without the above added sounds
+    this.soundManager.setupVolumeListeners();
 
     this.scenesManager.transitionTo("loaded");
     //this.scene.start(SCENES.GAME);

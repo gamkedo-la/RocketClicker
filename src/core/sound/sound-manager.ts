@@ -1,6 +1,36 @@
+import { GameStateManager } from "@game/state/game-state";
+
+export const SFX = [
+  "build-chemicalplant",
+  "build-condenser",
+  "build-duster",
+  "build-electrolysis",
+  "build-fuelcell",
+  "build-generator",
+  "build-H2compressor",
+  "build-miner",
+  "build-O2compressor",
+  "build-solarpanel",
+  "sfx-alert",
+  "sfx-click",
+  "sfx-electricity",
+  "sfx-gas-burst",
+  "sfx-gui-clip",
+  "sfx-gui-confirm",
+  "sfx-gui-deny",
+  "sfx-gui-window-opens",
+  "sfx-mine-stardust",
+  "sfx-pick-up",
+  "sfx-put-down",
+  "sfx-rocket-launch",
+];
+
+export const MUSIC = ["music_loop_TheViewFromHere", "placeholder-music-loop"];
+
 export class SoundManager extends Phaser.Plugins.BasePlugin {
-  DEBUG_SOUNDS = false;
-  muted = false;
+  gameState: GameStateManager;
+
+  DEBUG_SOUNDS = true;
 
   constructor(pluginManager: Phaser.Plugins.PluginManager) {
     super(pluginManager);
@@ -12,6 +42,20 @@ export class SoundManager extends Phaser.Plugins.BasePlugin {
     }
   }
 
+  boot(gameState: GameStateManager) {
+    this.gameState = gameState;
+  }
+
+  setupVolumeListeners() {
+    this.gameState.state.get().sound_volume.subscribe((vol) => {
+      this.setSfxVolume(vol);
+    });
+
+    this.gameState.state.get().music_volume.subscribe((vol) => {
+      this.setMusicVolume(vol);
+    });
+  }
+
   addSound(key: string, config?: Phaser.Types.Sound.SoundConfig) {
     if (this.DEBUG_SOUNDS) {
       console.log("addSound", key, config);
@@ -19,30 +63,44 @@ export class SoundManager extends Phaser.Plugins.BasePlugin {
     this.game.sound.add(key, config);
   }
 
+  getSound(key: string): Phaser.Sound.WebAudioSound {
+    return this.game.sound.get(key) as Phaser.Sound.WebAudioSound;
+  }
+
   // takes a string key as seens in RESOURCES[]
   // fixme: volume etc
-  play(soundName = "") {
+  play(soundName = "", config?: Phaser.Types.Sound.SoundConfig) {
     if (this.DEBUG_SOUNDS) console.log("playing sound: " + soundName);
-
-    if (this.muted) return;
 
     let snd = this.game.sound.get(soundName);
 
     if (snd) {
-      snd.play();
+      snd.play(config);
     } else {
       console.error("missing sound: " + soundName);
     }
   }
 
-  // mute or unmute all sounds
-  setSoundMute(muted = false) {
-    if (this.DEBUG_SOUNDS) console.log("sound is muted: " + muted);
-    this.muted = muted;
+  stop(soundName = "") {
+    if (this.DEBUG_SOUNDS) console.log("stopping sound: " + soundName);
+
+    let snd = this.game.sound.get(soundName);
+    if (snd) {
+      snd.stop();
+    } else {
+      console.error("missing sound: " + soundName);
+    }
   }
 
-  // global volume for all sounds
-  setSoundVolume(vol = 1) {
-    this.game.sound.volume = vol;
+  setSfxVolume(vol = 1) {
+    SFX.forEach((sfx) => {
+      this.getSound(sfx).setVolume(vol);
+    });
+  }
+
+  setMusicVolume(vol = 1) {
+    MUSIC.forEach((music) => {
+      this.getSound(music).setVolume(vol);
+    });
   }
 }
