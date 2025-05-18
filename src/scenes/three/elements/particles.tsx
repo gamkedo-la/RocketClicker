@@ -103,18 +103,15 @@ export class Particles {
       this.linesContainer.add(line);
     }
 
-    // TODO: move to comet scene
-    setTimeout(() => {
-      if (this.linesContainer) {
-        this.scene.comet.add(this.linesContainer);
-      }
-    }, 800);
-
     this.direction = Math.random() * 2 - 1;
 
     this.scene.gameState.getCometSpin().subscribe((spin) => {
       this.direction = spin / MAX_COMET_SPIN;
     });
+  }
+
+  addToScene(scene: THREE.Object3D) {
+    scene.add(this.linesContainer);
   }
 
   direction: number = 0;

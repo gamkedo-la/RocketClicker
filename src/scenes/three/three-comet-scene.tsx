@@ -276,6 +276,8 @@ export class ThreeCometScene extends AbstractScene {
       this.loadBuildingModels();
       this.loadRocketLauncherModel();
 
+      this.particles.addToScene(this.comet);
+
       this.gameState.setLoadingState({
         three_comet: true,
       });
