@@ -75,8 +75,8 @@
         {
           "filename": "bg-panel#0.0",
           "frame": {
-            "x": 1,
-            "y": 191,
+            "x": 179,
+            "y": 1,
             "w": 41,
             "h": 31
           },
@@ -96,8 +96,8 @@
         {
           "filename": "bg-panel#0.1",
           "frame": {
-            "x": 42,
-            "y": 191,
+            "x": 220,
+            "y": 1,
             "w": 7,
             "h": 31
           },
@@ -117,8 +117,8 @@
         {
           "filename": "bg-panel#0.2",
           "frame": {
-            "x": 49,
-            "y": 191,
+            "x": 227,
+            "y": 1,
             "w": 39,
             "h": 31
           },
@@ -138,8 +138,8 @@
         {
           "filename": "bg-panel#0.3",
           "frame": {
-            "x": 1,
-            "y": 222,
+            "x": 179,
+            "y": 32,
             "w": 41,
             "h": 3
           },
@@ -159,8 +159,8 @@
         {
           "filename": "bg-panel#0.4",
           "frame": {
-            "x": 42,
-            "y": 222,
+            "x": 220,
+            "y": 32,
             "w": 7,
             "h": 3
           },
@@ -180,8 +180,8 @@
         {
           "filename": "bg-panel#0.5",
           "frame": {
-            "x": 49,
-            "y": 222,
+            "x": 227,
+            "y": 32,
             "w": 39,
             "h": 3
           },
@@ -201,8 +201,8 @@
         {
           "filename": "bg-panel#0.6",
           "frame": {
-            "x": 1,
-            "y": 225,
+            "x": 179,
+            "y": 35,
             "w": 41,
             "h": 18
           },
@@ -222,8 +222,8 @@
         {
           "filename": "bg-panel#0.7",
           "frame": {
-            "x": 42,
-            "y": 225,
+            "x": 220,
+            "y": 35,
             "w": 7,
             "h": 18
           },
@@ -243,8 +243,8 @@
         {
           "filename": "bg-panel#0.8",
           "frame": {
-            "x": 49,
-            "y": 225,
+            "x": 227,
+            "y": 35,
             "w": 39,
             "h": 18
           },
@@ -264,7 +264,7 @@
         {
           "filename": "screen-frame#0.0",
           "frame": {
-            "x": 90,
+            "x": 1,
             "y": 191,
             "w": 40,
             "h": 28
@@ -285,7 +285,7 @@
         {
           "filename": "screen-frame#0.1",
           "frame": {
-            "x": 130,
+            "x": 41,
             "y": 191,
             "w": 3,
             "h": 28
@@ -306,7 +306,7 @@
         {
           "filename": "screen-frame#0.2",
           "frame": {
-            "x": 133,
+            "x": 44,
             "y": 191,
             "w": 41,
             "h": 28
@@ -327,7 +327,7 @@
         {
           "filename": "screen-frame#0.3",
           "frame": {
-            "x": 90,
+            "x": 1,
             "y": 219,
             "w": 40,
             "h": 2
@@ -348,7 +348,7 @@
         {
           "filename": "screen-frame#0.4",
           "frame": {
-            "x": 130,
+            "x": 41,
             "y": 219,
             "w": 3,
             "h": 2
@@ -369,7 +369,7 @@
         {
           "filename": "screen-frame#0.5",
           "frame": {
-            "x": 133,
+            "x": 44,
             "y": 219,
             "w": 41,
             "h": 2
@@ -390,7 +390,7 @@
         {
           "filename": "screen-frame#0.6",
           "frame": {
-            "x": 90,
+            "x": 1,
             "y": 221,
             "w": 40,
             "h": 17
@@ -411,7 +411,7 @@
         {
           "filename": "screen-frame#0.7",
           "frame": {
-            "x": 130,
+            "x": 41,
             "y": 221,
             "w": 3,
             "h": 17
@@ -432,7 +432,7 @@
         {
           "filename": "screen-frame#0.8",
           "frame": {
-            "x": 133,
+            "x": 44,
             "y": 221,
             "w": 41,
             "h": 17
@@ -453,7 +453,7 @@
         {
           "filename": "button-building#0",
           "frame": {
-            "x": 176,
+            "x": 87,
             "y": 191,
             "w": 33,
             "h": 43
@@ -474,7 +474,7 @@
         {
           "filename": "button-building#1",
           "frame": {
-            "x": 211,
+            "x": 122,
             "y": 191,
             "w": 33,
             "h": 43
@@ -495,8 +495,8 @@
         {
           "filename": "button-building#2",
           "frame": {
-            "x": 199,
-            "y": 96,
+            "x": 157,
+            "y": 191,
             "w": 33,
             "h": 43
           },
@@ -516,8 +516,8 @@
         {
           "filename": "bg-dial-button-breakable#0",
           "frame": {
-            "x": 234,
-            "y": 96,
+            "x": 192,
+            "y": 191,
             "w": 25,
             "h": 39
           },
@@ -537,8 +537,8 @@
         {
           "filename": "button-building-smaller#0",
           "frame": {
-            "x": 179,
-            "y": 1,
+            "x": 219,
+            "y": 191,
             "w": 33,
             "h": 36
           },
@@ -558,8 +558,8 @@
         {
           "filename": "button-building-smaller#1",
           "frame": {
-            "x": 214,
-            "y": 1,
+            "x": 199,
+            "y": 96,
             "w": 33,
             "h": 36
           },
@@ -579,8 +579,8 @@
         {
           "filename": "button-building-smaller#2",
           "frame": {
-            "x": 179,
-            "y": 39,
+            "x": 234,
+            "y": 96,
             "w": 33,
             "h": 36
           },
@@ -600,8 +600,8 @@
         {
           "filename": "bg-dial-button#0",
           "frame": {
-            "x": 214,
-            "y": 39,
+            "x": 179,
+            "y": 55,
             "w": 25,
             "h": 35
           },
@@ -621,8 +621,8 @@
         {
           "filename": "bg-buildings#0.0",
           "frame": {
-            "x": 1,
-            "y": 245,
+            "x": 206,
+            "y": 55,
             "w": 26,
             "h": 18
           },
@@ -642,8 +642,8 @@
         {
           "filename": "bg-buildings#0.1",
           "frame": {
-            "x": 27,
-            "y": 245,
+            "x": 232,
+            "y": 55,
             "w": 3,
             "h": 18
           },
@@ -663,8 +663,8 @@
         {
           "filename": "bg-buildings#0.2",
           "frame": {
-            "x": 30,
-            "y": 245,
+            "x": 235,
+            "y": 55,
             "w": 28,
             "h": 18
           },
@@ -684,8 +684,8 @@
         {
           "filename": "bg-buildings#0.3",
           "frame": {
-            "x": 1,
-            "y": 263,
+            "x": 206,
+            "y": 73,
             "w": 26,
             "h": 4
           },
@@ -705,8 +705,8 @@
         {
           "filename": "bg-buildings#0.4",
           "frame": {
-            "x": 27,
-            "y": 263,
+            "x": 232,
+            "y": 73,
             "w": 3,
             "h": 4
           },
@@ -726,8 +726,8 @@
         {
           "filename": "bg-buildings#0.5",
           "frame": {
-            "x": 30,
-            "y": 263,
+            "x": 235,
+            "y": 73,
             "w": 28,
             "h": 4
           },
@@ -747,8 +747,8 @@
         {
           "filename": "bg-buildings#0.6",
           "frame": {
-            "x": 1,
-            "y": 267,
+            "x": 206,
+            "y": 77,
             "w": 26,
             "h": 11
           },
@@ -768,8 +768,8 @@
         {
           "filename": "bg-buildings#0.7",
           "frame": {
-            "x": 27,
-            "y": 267,
+            "x": 232,
+            "y": 77,
             "w": 3,
             "h": 11
           },
@@ -789,8 +789,8 @@
         {
           "filename": "bg-buildings#0.8",
           "frame": {
-            "x": 30,
-            "y": 267,
+            "x": 235,
+            "y": 77,
             "w": 28,
             "h": 11
           },
@@ -810,8 +810,8 @@
         {
           "filename": "bg-rocket-goal#0.0",
           "frame": {
-            "x": 60,
-            "y": 245,
+            "x": 199,
+            "y": 134,
             "w": 27,
             "h": 6
           },
@@ -831,8 +831,8 @@
         {
           "filename": "bg-rocket-goal#0.1",
           "frame": {
-            "x": 87,
-            "y": 245,
+            "x": 226,
+            "y": 134,
             "w": 3,
             "h": 6
           },
@@ -852,8 +852,8 @@
         {
           "filename": "bg-rocket-goal#0.2",
           "frame": {
-            "x": 90,
-            "y": 245,
+            "x": 229,
+            "y": 134,
             "w": 30,
             "h": 6
           },
@@ -873,8 +873,8 @@
         {
           "filename": "bg-rocket-goal#0.3",
           "frame": {
-            "x": 60,
-            "y": 251,
+            "x": 199,
+            "y": 140,
             "w": 27,
             "h": 2
           },
@@ -894,8 +894,8 @@
         {
           "filename": "bg-rocket-goal#0.4",
           "frame": {
-            "x": 87,
-            "y": 251,
+            "x": 226,
+            "y": 140,
             "w": 3,
             "h": 2
           },
@@ -915,8 +915,8 @@
         {
           "filename": "bg-rocket-goal#0.5",
           "frame": {
-            "x": 90,
-            "y": 251,
+            "x": 229,
+            "y": 140,
             "w": 30,
             "h": 2
           },
@@ -936,8 +936,8 @@
         {
           "filename": "bg-rocket-goal#0.6",
           "frame": {
-            "x": 60,
-            "y": 253,
+            "x": 199,
+            "y": 142,
             "w": 27,
             "h": 24
           },
@@ -957,8 +957,8 @@
         {
           "filename": "bg-rocket-goal#0.7",
           "frame": {
-            "x": 87,
-            "y": 253,
+            "x": 226,
+            "y": 142,
             "w": 3,
             "h": 24
           },
@@ -978,8 +978,8 @@
         {
           "filename": "bg-rocket-goal#0.8",
           "frame": {
-            "x": 90,
-            "y": 253,
+            "x": 229,
+            "y": 142,
             "w": 30,
             "h": 24
           },
@@ -999,8 +999,8 @@
         {
           "filename": "bg-floating-screen#0.0",
           "frame": {
-            "x": 122,
-            "y": 245,
+            "x": 1,
+            "y": 240,
             "w": 24,
             "h": 13
           },
@@ -1020,8 +1020,8 @@
         {
           "filename": "bg-floating-screen#0.1",
           "frame": {
-            "x": 146,
-            "y": 245,
+            "x": 25,
+            "y": 240,
             "w": 4,
             "h": 13
           },
@@ -1041,8 +1041,8 @@
         {
           "filename": "bg-floating-screen#0.2",
           "frame": {
-            "x": 150,
-            "y": 245,
+            "x": 29,
+            "y": 240,
             "w": 28,
             "h": 13
           },
@@ -1062,8 +1062,8 @@
         {
           "filename": "bg-floating-screen#0.3",
           "frame": {
-            "x": 122,
-            "y": 258,
+            "x": 1,
+            "y": 253,
             "w": 24,
             "h": 5
           },
@@ -1083,8 +1083,8 @@
         {
           "filename": "bg-floating-screen#0.4",
           "frame": {
-            "x": 146,
-            "y": 258,
+            "x": 25,
+            "y": 253,
             "w": 4,
             "h": 5
           },
@@ -1104,8 +1104,8 @@
         {
           "filename": "bg-floating-screen#0.5",
           "frame": {
-            "x": 150,
-            "y": 258,
+            "x": 29,
+            "y": 253,
             "w": 28,
             "h": 5
           },
@@ -1125,8 +1125,8 @@
         {
           "filename": "bg-floating-screen#0.6",
           "frame": {
-            "x": 122,
-            "y": 263,
+            "x": 1,
+            "y": 258,
             "w": 24,
             "h": 13
           },
@@ -1146,8 +1146,8 @@
         {
           "filename": "bg-floating-screen#0.7",
           "frame": {
-            "x": 146,
-            "y": 263,
+            "x": 25,
+            "y": 258,
             "w": 4,
             "h": 13
           },
@@ -1167,8 +1167,8 @@
         {
           "filename": "bg-floating-screen#0.8",
           "frame": {
-            "x": 150,
-            "y": 263,
+            "x": 29,
+            "y": 258,
             "w": 28,
             "h": 13
           },
@@ -1188,8 +1188,8 @@
         {
           "filename": "bg-floating-screen-accessory#0",
           "frame": {
-            "x": 180,
-            "y": 245,
+            "x": 59,
+            "y": 240,
             "w": 27,
             "h": 31
           },
@@ -1207,10 +1207,136 @@
           }
         },
         {
+          "filename": "music-button#0",
+          "frame": {
+            "x": 88,
+            "y": 240,
+            "w": 25,
+            "h": 25
+          },
+          "rotated": false,
+          "trimmed": true,
+          "spriteSourceSize": {
+            "x": 0,
+            "y": 0,
+            "w": 25,
+            "h": 25
+          },
+          "sourceSize": {
+            "w": 25,
+            "h": 25
+          }
+        },
+        {
+          "filename": "music-button#1",
+          "frame": {
+            "x": 115,
+            "y": 240,
+            "w": 25,
+            "h": 25
+          },
+          "rotated": false,
+          "trimmed": true,
+          "spriteSourceSize": {
+            "x": 0,
+            "y": 0,
+            "w": 25,
+            "h": 25
+          },
+          "sourceSize": {
+            "w": 25,
+            "h": 25
+          }
+        },
+        {
+          "filename": "music-button#2",
+          "frame": {
+            "x": 142,
+            "y": 240,
+            "w": 25,
+            "h": 25
+          },
+          "rotated": false,
+          "trimmed": true,
+          "spriteSourceSize": {
+            "x": 0,
+            "y": 0,
+            "w": 25,
+            "h": 25
+          },
+          "sourceSize": {
+            "w": 25,
+            "h": 25
+          }
+        },
+        {
+          "filename": "sound-button#0",
+          "frame": {
+            "x": 169,
+            "y": 240,
+            "w": 25,
+            "h": 25
+          },
+          "rotated": false,
+          "trimmed": true,
+          "spriteSourceSize": {
+            "x": 0,
+            "y": 0,
+            "w": 25,
+            "h": 25
+          },
+          "sourceSize": {
+            "w": 25,
+            "h": 25
+          }
+        },
+        {
+          "filename": "sound-button#1",
+          "frame": {
+            "x": 196,
+            "y": 240,
+            "w": 25,
+            "h": 25
+          },
+          "rotated": false,
+          "trimmed": true,
+          "spriteSourceSize": {
+            "x": 0,
+            "y": 0,
+            "w": 25,
+            "h": 25
+          },
+          "sourceSize": {
+            "w": 25,
+            "h": 25
+          }
+        },
+        {
+          "filename": "sound-button#2",
+          "frame": {
+            "x": 223,
+            "y": 240,
+            "w": 25,
+            "h": 25
+          },
+          "rotated": false,
+          "trimmed": true,
+          "spriteSourceSize": {
+            "x": 0,
+            "y": 0,
+            "w": 25,
+            "h": 25
+          },
+          "sourceSize": {
+            "w": 25,
+            "h": 25
+          }
+        },
+        {
           "filename": "dial-bg-button-breakable#0",
           "frame": {
-            "x": 209,
-            "y": 245,
+            "x": 250,
+            "y": 240,
             "w": 19,
             "h": 20
           },
@@ -1230,8 +1356,8 @@
         {
           "filename": "dial-button#0",
           "frame": {
-            "x": 230,
-            "y": 245,
+            "x": 265,
+            "y": 55,
             "w": 3,
             "h": 19
           },
@@ -1251,8 +1377,8 @@
         {
           "filename": "dial-button-breakable#0",
           "frame": {
-            "x": 235,
-            "y": 245,
+            "x": 270,
+            "y": 55,
             "w": 3,
             "h": 19
           },
@@ -1272,8 +1398,8 @@
         {
           "filename": "button-ring#0",
           "frame": {
-            "x": 240,
-            "y": 245,
+            "x": 254,
+            "y": 191,
             "w": 17,
             "h": 17
           },
@@ -1293,8 +1419,8 @@
         {
           "filename": "button-ring#1",
           "frame": {
-            "x": 241,
-            "y": 39,
+            "x": 254,
+            "y": 210,
             "w": 11,
             "h": 11
           },
@@ -1314,8 +1440,8 @@
         {
           "filename": "button-ring#2",
           "frame": {
-            "x": 246,
-            "y": 191,
+            "x": 179,
+            "y": 168,
             "w": 15,
             "h": 15
           },
@@ -1335,8 +1461,8 @@
         {
           "filename": "button-ring#3",
           "frame": {
-            "x": 246,
-            "y": 210,
+            "x": 198,
+            "y": 168,
             "w": 17,
             "h": 17
           },
@@ -1356,8 +1482,8 @@
         {
           "filename": "title-bg-buildings#0.0",
           "frame": {
-            "x": 199,
-            "y": 141,
+            "x": 217,
+            "y": 168,
             "w": 3,
             "h": 6
           },
@@ -1377,8 +1503,8 @@
         {
           "filename": "title-bg-buildings#0.1",
           "frame": {
-            "x": 202,
-            "y": 141,
+            "x": 220,
+            "y": 168,
             "w": 43,
             "h": 6
           },
@@ -1398,8 +1524,8 @@
         {
           "filename": "title-bg-buildings#0.2",
           "frame": {
-            "x": 245,
-            "y": 141,
+            "x": 263,
+            "y": 168,
             "w": 5,
             "h": 6
           },
@@ -1419,8 +1545,8 @@
         {
           "filename": "title-bg-buildings#0.3",
           "frame": {
-            "x": 199,
-            "y": 147,
+            "x": 217,
+            "y": 174,
             "w": 3,
             "h": 3
           },
@@ -1440,8 +1566,8 @@
         {
           "filename": "title-bg-buildings#0.4",
           "frame": {
-            "x": 202,
-            "y": 147,
+            "x": 220,
+            "y": 174,
             "w": 43,
             "h": 3
           },
@@ -1461,8 +1587,8 @@
         {
           "filename": "title-bg-buildings#0.5",
           "frame": {
-            "x": 245,
-            "y": 147,
+            "x": 263,
+            "y": 174,
             "w": 5,
             "h": 3
           },
@@ -1482,8 +1608,8 @@
         {
           "filename": "title-bg-buildings#0.6",
           "frame": {
-            "x": 199,
-            "y": 150,
+            "x": 217,
+            "y": 177,
             "w": 3,
             "h": 5
           },
@@ -1503,8 +1629,8 @@
         {
           "filename": "title-bg-buildings#0.7",
           "frame": {
-            "x": 202,
-            "y": 150,
+            "x": 220,
+            "y": 177,
             "w": 43,
             "h": 5
           },
@@ -1524,8 +1650,8 @@
         {
           "filename": "title-bg-buildings#0.8",
           "frame": {
-            "x": 245,
-            "y": 150,
+            "x": 263,
+            "y": 177,
             "w": 5,
             "h": 5
           },
@@ -1545,8 +1671,8 @@
         {
           "filename": "spin-temp-pin#0",
           "frame": {
-            "x": 252,
-            "y": 141,
+            "x": 268,
+            "y": 1,
             "w": 5,
             "h": 13
           },
@@ -1566,8 +1692,8 @@
         {
           "filename": "button-building-status#0",
           "frame": {
-            "x": 209,
-            "y": 267,
+            "x": 1,
+            "y": 273,
             "w": 31,
             "h": 7
           },
@@ -1587,8 +1713,8 @@
         {
           "filename": "button-building-status#1",
           "frame": {
-            "x": 199,
-            "y": 157,
+            "x": 34,
+            "y": 273,
             "w": 31,
             "h": 7
           },
@@ -1608,8 +1734,8 @@
         {
           "filename": "button-building-status#2",
           "frame": {
-            "x": 232,
-            "y": 157,
+            "x": 67,
+            "y": 273,
             "w": 31,
             "h": 7
           },
@@ -1629,8 +1755,8 @@
         {
           "filename": "button-building-status#3",
           "frame": {
-            "x": 179,
-            "y": 168,
+            "x": 100,
+            "y": 273,
             "w": 31,
             "h": 7
           },
@@ -1650,8 +1776,8 @@
         {
           "filename": "building-arrow#0",
           "frame": {
-            "x": 212,
-            "y": 168,
+            "x": 133,
+            "y": 273,
             "w": 5,
             "h": 6
           },

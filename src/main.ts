@@ -55,12 +55,12 @@ const config: Types.Core.GameConfig = {
         plugin: GameStateManager,
         mapping: "gameState",
       },
+      // Order matters, these should be initialized after gameState
       {
         key: "SoundManager",
         plugin: SoundManager,
         mapping: "soundManager",
       },
-      // Order matters, scenes manager must be last
       {
         key: "ScenesManager",
         plugin: ScenesManager,

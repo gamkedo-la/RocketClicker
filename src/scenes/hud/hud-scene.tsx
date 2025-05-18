@@ -1,5 +1,5 @@
 import { RESOURCES } from "@game/assets";
-import { ALIGN_ITEMS, DIRECTION, JUSTIFY } from "@game/core/ui/AbstractFlex";
+import { ALIGN_ITEMS, DIRECTION } from "@game/core/ui/AbstractFlex";
 import { Flex } from "@game/core/ui/Flex";
 import { FlexItem, Spacer } from "@game/core/ui/FlexItem";
 import { FlexRow } from "@game/core/ui/FlexRow";
@@ -7,13 +7,14 @@ import PhaserGamebus from "@game/lib/gamebus";
 
 import { COLORS_NAMES, STRING_COLORS_NAMES } from "@game/consts";
 import { computed, effect, signal } from "@game/core/signals/signals";
+import { SoundManager } from "@game/core/sound/sound-manager";
 import { GameStateManager, GameStatus } from "@game/state/game-state";
 import { AbstractScene } from "../index";
 import { SCENES } from "../scenes";
 import { NineSlice } from "./components/NineSlice";
+import { SoundButtons } from "./components/sound-buttons";
 import { LeftPanel } from "./left-panel";
 import { RightPanel } from "./right-panel";
-import { SoundManager } from "@game/core/sound/sound-manager";
 
 export class HudScene extends AbstractScene {
   declare bus: Phaser.Events.EventEmitter;
@@ -69,6 +70,7 @@ export class HudScene extends AbstractScene {
         backgroundElement={<rectangle fillColor={COLORS_NAMES["black"]} />}
         padding={[0, 20]}
       >
+        <SoundButtons scene={this} />
         <text
           text="PLAYTESTING VERSION v3.0"
           style={{
@@ -92,7 +94,7 @@ export class HudScene extends AbstractScene {
             fontSize: 16,
           }}
         />
-        <Spacer width={250} grow={0} />
+        <Spacer width={180} grow={0} />
         {timer_text}
         <Spacer width={275} grow={0} />
         {rocket_text}
