@@ -487,22 +487,30 @@ export class ThreeCometScene extends AbstractScene {
             <state id="entering">
               <animation>
                 <tween
-                  to={1}
-                  duration={2000}
+                  to={3}
+                  duration={7000}
                   signal={rocketRotY2}
                   ease="Circ.easeOut"
                 />
-                <step
-                  run={() => {
-                    this.smokeEffect.emitBurst(
-                      new THREE.Vector3(0, 0, 0),
-                      1000,
-                      0.09,
-                      1.0
-                    );
-                    machine.transition("intro_done");
-                  }}
-                />
+                <parallel>
+                  <tween
+                    to={1}
+                    duration={1000}
+                    signal={rocketRotY2}
+                    ease="Bounce.easeOut"
+                  />
+                  <step
+                    run={() => {
+                      this.smokeEffect.emitBurst(
+                        new THREE.Vector3(0, 0, 0),
+                        1000,
+                        0.09,
+                        1.0
+                      );
+                      machine.transition("intro_done");
+                    }}
+                  />
+                </parallel>
               </animation>
               <transition on="intro_done" target="idle" />
             </state>

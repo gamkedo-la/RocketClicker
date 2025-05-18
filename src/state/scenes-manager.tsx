@@ -107,7 +107,7 @@ export class ScenesManager extends Phaser.Plugins.BasePlugin {
               <tween
                 signal={intro_music_volume}
                 from={0}
-                to={1}
+                to={0.8}
                 duration={4000}
               />
               <TransitionSignal duration={4000} />
@@ -120,11 +120,21 @@ export class ScenesManager extends Phaser.Plugins.BasePlugin {
         </state>
         <state id="game-loading">
           <animation on="active">
+            <step
+              run={() => {
+                this.soundManager.play("music_loop_TheViewFromHere", {
+                  volume: 0,
+                  seek: 23.4,
+                  loop: true,
+                });
+              }}
+            />
+            <tween signal={intro_music_volume} to={0} duration={1000} />
             <tween
-              signal={intro_music_volume}
-              from={1}
-              to={0}
-              duration={1000}
+              signal={game_music_volume}
+              from={0}
+              to={0.8}
+              duration={4900}
             />
             <step
               run={() => {
@@ -142,18 +152,6 @@ export class ScenesManager extends Phaser.Plugins.BasePlugin {
         <state id="game">
           <animation on="enter">
             <TransitionSignal duration={1500} />
-            <step
-              run={() => {
-                this.soundManager.play("music_loop_TheViewFromHere", {
-                  volume: 0,
-                  seek: 31.8,
-                  loop: true,
-                });
-              }}
-            />
-          </animation>
-          <animation on="active">
-            <tween signal={game_music_volume} from={0} to={1} duration={2000} />
           </animation>
           <transition on="end-game" target="end-game" />
         </state>
