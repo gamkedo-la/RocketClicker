@@ -114,6 +114,11 @@
       },
       {
         "type": "image",
+        "key": "logo",
+        "url": "assets/logo.png"
+      },
+      {
+        "type": "image",
         "key": "metals",
         "url": "assets/metals.png"
       },
@@ -186,6 +191,16 @@
         "type": "audio",
         "key": "build-solarpanel",
         "url": "assets/build-solarpanel.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "music_loop_TheViewFromHere",
+        "url": "assets/music_loop_TheViewFromHere.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "music_loop_TheViewFromHere",
+        "url": "assets/music_loop_TheViewFromHere.ogg"
       },
       {
         "type": "audio",
