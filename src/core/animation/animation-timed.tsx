@@ -142,6 +142,7 @@ export interface TweenElement<T> {
   to: SignalValue<T> | (() => T);
   duration?: number;
   ease?: (typeof EaseMap)[number];
+  easeFn?: (v: number) => number;
   initialValue?: SignalValue<T>;
 }
 
@@ -157,7 +158,13 @@ export const setupAnimationElement = (
 ) => {
   // Steps
   if (type === "tween") {
-    return { ...props, type: "tween" };
+    return {
+      ...props,
+      type: "tween",
+      easeFn: Phaser.Tweens.Builders.GetEaseFunction(
+        (props as TweenElement<any>).ease ?? "Linear"
+      ),
+    };
   }
 
   if (type === "wait") {
@@ -354,7 +361,7 @@ export class AnimationPlan {
             getSignalValue(step.initialValue),
             // FIXME: this is a hack to get a function working, but it's far from ideal (move it outisde of the step)
             typeof step.to === "function" ? step.to() : getSignalValue(step.to),
-            localProgress
+            step.easeFn!(localProgress)
           )
         );
         break;

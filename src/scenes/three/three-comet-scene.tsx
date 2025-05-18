@@ -451,7 +451,7 @@ export class ThreeCometScene extends AbstractScene {
         const tower = mesh.children[0].children[0] as THREE.Mesh;
 
         const rocketRotY = signal(0);
-        const rocketRotY2 = signal(50);
+        const rocketRotY2 = signal(100);
         const rocketPosY = signal(0);
 
         const towerRotX = signal(0);
@@ -484,7 +484,12 @@ export class ThreeCometScene extends AbstractScene {
           <motionMachine initialState="entering">
             <state id="entering">
               <animation>
-                <tween to={1} duration={2000} signal={rocketRotY2} />
+                <tween
+                  to={1}
+                  duration={2000}
+                  signal={rocketRotY2}
+                  ease="Circ.easeOut"
+                />
                 <step
                   run={() => {
                     this.smokeEffect.emitBurst(
@@ -520,6 +525,7 @@ export class ThreeCometScene extends AbstractScene {
                     to={0.4}
                     duration={10000}
                     signal={rocketPosY}
+                    ease="Quad.easeIn"
                   />
                   <tween
                     from={0}
