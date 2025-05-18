@@ -47,6 +47,10 @@ export class SoundManager extends Phaser.Plugins.BasePlugin {
   }
 
   setupVolumeListeners() {
+    // modify
+    this.getSound("sfx-gui-window-opens").setDetune(1200);
+    this.getSound("sfx-gui-window-opens").setRate(1.2);
+
     this.gameState.state.get().sound_volume.subscribe((vol) => {
       this.setSfxVolume(vol);
     });

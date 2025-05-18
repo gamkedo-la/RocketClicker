@@ -836,6 +836,10 @@ export class ThreeCometScene extends AbstractScene {
       });
 
       this.cometDustEmitter.emitParticle(Math.min(20, value / 2), x, y);
+      this.soundManager.play(RESOURCES["sfx-pick-up"], {
+        detune: Math.random() * 200 - 100,
+        volume: 0.5 + (0.5 * value) / 100,
+      });
 
       this.gameState.state.get()?.mouse_selected_building.set({
         building: null,

@@ -24,9 +24,11 @@ import { SoundManager } from "@game/core/sound/sound-manager";
 export const Button = ({
   building,
   gameState,
+  soundManager,
 }: {
   building: Building;
   gameState: GameStateManager;
+  soundManager: SoundManager;
 }) => {
   let active = computed(() =>
     hasResources(building, gameState.state.get().material_storage)
@@ -77,7 +79,12 @@ export const Button = ({
       onPointerout={() => {
         state.transition("mouseleave");
       }}
-      onPointerdown={() => state.transition("mousedown")}
+      onPointerdown={() => {
+        state.transition("mousedown");
+        if (building?.sounds?.build) {
+          soundManager.play(building.sounds.build);
+        }
+      }}
       onPointerup={() => state.transition("mouseup")}
     />
   );
@@ -143,10 +150,7 @@ export function BuildingSelector({
       interactive
       onPointerover={() => {
         hoveredBuilding.set(building as Building);
-        // FIXME: a subtle hover sound would be nice here
-        if (building?.sounds?.build) {
-          soundManager.play(building.sounds.build);
-        }
+        soundManager.play(RESOURCES["sfx-gui-window-opens"]);
       }}
       onPointerout={() => {
         // FIXME: when this is set to null, the hover panel immediately removes the text
@@ -245,7 +249,11 @@ export function BuildingSelector({
           />
         </Flex>
       </FlexItem>
-      <Button building={building as Building} gameState={gameState} />
+      <Button
+        building={building as Building}
+        gameState={gameState}
+        soundManager={soundManager}
+      />
     </Flex>
   );
 
