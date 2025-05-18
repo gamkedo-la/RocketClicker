@@ -54,6 +54,12 @@ export class SoundManager extends Phaser.Plugins.BasePlugin {
     this.gameState.state.get().music_volume.subscribe((vol) => {
       this.setMusicVolume(vol);
     });
+
+    const music = this.getSound("music_loop_TheViewFromHere");
+
+    this.gameState.state.get().comet_spin_velocity_abs.subscribe((rate) => {
+      music.rate = 1 + (rate / 100) * 0.4;
+    });
   }
 
   addSound(key: string, config?: Phaser.Types.Sound.SoundConfig) {
