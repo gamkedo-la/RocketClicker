@@ -6,6 +6,7 @@ import { AbstractScene } from "..";
 import { Flex } from "../../core/ui/Flex";
 import { Spacer } from "../../core/ui/FlexItem";
 import { SCENES } from "../scenes";
+import { RESOURCES } from "@game/assets";
 
 // Same as the three scene sky fragment shader
 const skyFragmentShader = `
@@ -97,10 +98,7 @@ export class IntroScene extends AbstractScene {
         margin={10}
         backgroundElement={background}
       >
-        <text
-          text="THE SPINNING COMET ESCAPE"
-          style={{ fontSize: 64, color: STRING_COLORS_NAMES["vaporwave-blue"] }}
-        />
+        <image texture={RESOURCES["logo"]} width={430} height={430} />
         <Spacer grow={0} height={10} />
 
         <text
@@ -108,9 +106,7 @@ export class IntroScene extends AbstractScene {
             "Your rocket landed on a small comet and it needs to be refueled",
             "with liquid oxygen and hydrogen.",
             "",
-            "Mine the comet to generate energy and materials",
-            "",
-            "*Click on the comet to start mining*",
+            "Mine the comet to generate energy and materials.",
           ]}
           style={{ fontSize: 28, color: "white", align: "center" }}
         />
