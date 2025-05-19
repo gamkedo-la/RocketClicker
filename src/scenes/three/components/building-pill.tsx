@@ -10,10 +10,12 @@ export function BuildingPill({
   type,
   text,
   blinking,
+  bus,
 }: {
   type: Signal<BuildingAlert["type"]>;
   text: Signal<BuildingAlert["message"]>;
   blinking?: Signal<BuildingAlert["blinking"]>;
+  bus: Phaser.Events.EventEmitter;
 }): FlexRow {
   const opacity = signal(0);
 
@@ -52,8 +54,8 @@ export function BuildingPill({
   });
 
   const mm: MotionMachine<
-    "active" | "inactive" | "still",
-    "active" | "inactive" | "still"
+    "active" | "inactive" | "still" | "dead",
+    "active" | "inactive" | "still" | "dead"
   > = (
     <motionMachine initial="inactive">
       <state id="active">
@@ -63,6 +65,7 @@ export function BuildingPill({
         </animation>
         <transition on="still" target="still" />
         <transition on="inactive" target="inactive" />
+        <transition on="dead" target="dead" />
       </state>
       <state id="still">
         <animation on="enter">
@@ -70,6 +73,7 @@ export function BuildingPill({
         </animation>
         <transition on="active" target="active" />
         <transition on="inactive" target="inactive" />
+        <transition on="dead" target="dead" />
       </state>
       <state id="inactive">
         <animation on="enter">
@@ -77,9 +81,19 @@ export function BuildingPill({
         </animation>
         <transition on="active" target="active" />
         <transition on="still" target="still" />
+        <transition on="dead" target="dead" />
+      </state>
+      <state id="dead">
+        <animation on="enter">
+          <tween signal={opacity} to={0} duration={500} />
+        </animation>
       </state>
     </motionMachine>
   );
+
+  bus.on("send_rocket", () => {
+    mm.transition("dead");
+  });
 
   effect(() => {
     const b = blinking?.get();

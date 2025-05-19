@@ -11,7 +11,12 @@ export type SceneStates =
   | "game"
   | "end-game";
 
-export type SceneEvents = "loaded" | "start" | "end-game-loading" | "end-game";
+export type SceneEvents =
+  | "loaded"
+  | "start"
+  | "end-game-loading"
+  | "end-game"
+  | "game-credits";
 
 export class ScenesManager extends Phaser.Plugins.BasePlugin {
   scenePlugin: Phaser.Scenes.ScenePlugin;
@@ -19,6 +24,14 @@ export class ScenesManager extends Phaser.Plugins.BasePlugin {
   soundManager: SoundManager;
   transitionSignal = signal(0, {
     label: "Transition Signal",
+    tweakpaneOptions: {
+      min: 0,
+      max: 1,
+    },
+  });
+
+  endGameSignal = signal(0, {
+    label: "End Game Signal",
     tweakpaneOptions: {
       min: 0,
       max: 1,
@@ -157,10 +170,27 @@ export class ScenesManager extends Phaser.Plugins.BasePlugin {
         </state>
         <state id="end-game">
           <animation on="enter">
-            <wait duration={1000} />
+            <wait duration={4000} />
             <step
               run={() => {
-                this.scenePlugin.stop(SCENES.GAME);
+                this.scenePlugin.bringToTop(SCENES.TRANSITIONS);
+              }}
+            />
+            <tween
+              signal={this.endGameSignal}
+              from={0}
+              to={1}
+              duration={3000}
+            />
+          </animation>
+          <transition on="game-credits" target="game-credits" />
+        </state>
+        <state id="game-credits">
+          <animation on="enter">
+            <step
+              run={() => {
+                this.scenePlugin.launch(SCENES.GAME_CREDITS);
+                this.scenePlugin.bringToTop(SCENES.GAME_CREDITS);
               }}
             />
           </animation>
@@ -189,5 +219,9 @@ export class ScenesManager extends Phaser.Plugins.BasePlugin {
 
   getTransitionSignal() {
     return this.transitionSignal;
+  }
+
+  getEndGameSignal() {
+    return this.endGameSignal;
   }
 }

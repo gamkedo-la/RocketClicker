@@ -89,6 +89,8 @@ export class ThreeCometScene extends AbstractScene {
   ambientLightIntensity = signal(1.5);
   spotLightIntensity = signal(0.25);
   directionalLightIntensity = signal(0.5);
+
+  cameraWork: MotionMachine<"idle" | "active", "idle" | "active">;
   // Track both the ghost and the current selected building type
   ghostBuilding: THREE.Object3D | null = null;
   currentGhostBuildingId: string | null = null;
@@ -153,9 +155,13 @@ export class ThreeCometScene extends AbstractScene {
     });
 
     // Create a motion machine to handle smooth transitions
-    const mm: MotionMachine<"idle", "idle"> = (
-      <motionMachine initialState="idle">
+    this.cameraWork = (
+      <motionMachine initialState="active">
         <state id="idle">
+          <transition on="active" target="active" />
+        </state>
+        <state id="active">
+          <transition on="idle" target="idle" />
           <animation on="active" loop>
             <parallel>
               <tween
@@ -294,7 +300,12 @@ export class ThreeCometScene extends AbstractScene {
         const { type, message, blinking } =
           this.gameScene.effectsSystem.getAlert(cellId);
         const pill: FlexRow = (
-          <BuildingPill type={type} text={message} blinking={blinking} />
+          <BuildingPill
+            type={type}
+            text={message}
+            blinking={blinking}
+            bus={this.bus}
+          />
         );
         pill.addToScene(this);
         this.buildingPills.set(cellId, pill);
@@ -461,6 +472,8 @@ export class ThreeCometScene extends AbstractScene {
         const y = new THREE.Vector3(0, 1, 0);
         const x = new THREE.Vector3(1, 0, 0);
 
+        const cameraShake = signal(0);
+
         rocketRotY.subscribe((value) => {
           this.rocket.setRotationFromAxisAngle(y, value);
         });
@@ -477,6 +490,13 @@ export class ThreeCometScene extends AbstractScene {
 
         towerRotX.subscribe((value) => {
           tower.setRotationFromAxisAngle(x, value);
+        });
+
+        cameraShake.subscribe((value) => {
+          const shake =
+            (Math.cos(value * 0.033) + Math.sin(value * 0.017)) * 0.0005;
+          this.threeCamera.position.x = this.threeCameraX + shake;
+          this.threeCamera.position.y = this.threeCameraY + shake;
         });
 
         const machine: MotionMachine<
@@ -521,6 +541,32 @@ export class ThreeCometScene extends AbstractScene {
               <animation>
                 <step
                   run={() => {
+                    this.scenesManager.transitionTo("end-game");
+                    this.cameraWork.transition("idle");
+                    this.smokeEffect.emitBurst(
+                      new THREE.Vector3(0, 0, 0),
+                      1000,
+                      0.03,
+                      1.0
+                    );
+                  }}
+                />
+                <parallel>
+                  <tween
+                    to={0.1}
+                    duration={10000}
+                    signal={this.gameState.getCometSpin()}
+                  />
+                  <tween
+                    from={0}
+                    to={Math.PI / 2}
+                    duration={4000}
+                    signal={towerRotX}
+                  />
+                </parallel>
+                <tween to={2000} duration={500} signal={cameraShake} />
+                <step
+                  run={() => {
                     this.smokeEffect.emitBurst(
                       new THREE.Vector3(0, 0, 0),
                       1000,
@@ -531,19 +577,30 @@ export class ThreeCometScene extends AbstractScene {
                 />
                 <parallel>
                   <tween
+                    to={7000}
+                    duration={1500}
+                    signal={cameraShake}
+                    ease="Quad.easeOut"
+                  />
+                  <tween
+                    to={50.3}
+                    duration={8000}
+                    signal={this.cameraPositionY}
+                    ease="Quad.easeInOut"
+                  />
+                  <tween
                     from={0}
-                    to={0.4}
+                    to={0.7}
                     duration={10000}
                     signal={rocketPosY}
                     ease="Quad.easeIn"
                   />
-                  <tween
-                    from={0}
-                    to={Math.PI / 2}
-                    duration={4000}
-                    signal={towerRotX}
-                  />
                 </parallel>
+                <step
+                  run={() => {
+                    this.scenesManager.transitionTo("game-credits");
+                  }}
+                />
               </animation>
             </state>
           </motionMachine>
