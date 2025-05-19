@@ -66,6 +66,10 @@ export const RightPanel = ({
           <NineSlice texture={RESOURCES["ui-left-panel"]} frame="bg-panel" />
         }
       >
+        <text
+          text="RESOURCES"
+          style={{ color: STRING_COLORS_NAMES["castro"] }}
+        />
         <ResourcesCounter gameState={gameState} />
       </Flex>
     </FlexItem>
