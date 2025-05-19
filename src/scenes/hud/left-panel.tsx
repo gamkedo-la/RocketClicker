@@ -14,6 +14,7 @@ import { CometSpinMeter } from "./components/left/CometSpinMeter";
 import { NineSlice } from "./components/NineSlice";
 import { BulldozeBuildingButton } from "./components/left/BulldozeBuildingButton";
 import { SoundManager } from "@game/core/sound/sound-manager";
+import { MotionMachine } from "../../core/motion-machine/motion-machine";
 export const LeftPanel = ({
   width,
   gameState,
@@ -32,7 +33,7 @@ export const LeftPanel = ({
 
   const hoveredBuilding = signal<Building | null>(null);
 
-  const mm = (
+  const mm: MotionMachine<"hidden" | "visible", "hidden" | "visible"> = (
     <motionMachine initial="hidden">
       <state id="hidden">
         <animation>
@@ -80,7 +81,7 @@ export const LeftPanel = ({
       }
     } else {
       timeout = setTimeout(() => {
-        mm.transition("hidden");
+        mm.setState("hidden");
       }, 100);
     }
   });
