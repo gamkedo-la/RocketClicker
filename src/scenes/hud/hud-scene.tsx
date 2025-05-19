@@ -135,7 +135,7 @@ export class HudScene extends AbstractScene {
 
     const layout: FlexRow = (
       <Flex
-        padding={[44, 4, 12, 12]}
+        padding={[44, 10, 12, 12]}
         margin={0}
         width={width}
         height={height}

@@ -43,7 +43,7 @@ export class ThreeScene {
     this.renderer.setPixelRatio(1);
     this.renderer.setSize(width, height);
 
-    this.renderer.setViewport(250, 0, width * 0.61, height);
+    this.renderer.setViewport(265, 0, 753, height);
 
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;

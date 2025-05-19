@@ -89,7 +89,7 @@ export const Counter = ({
 
   const counterFlex: FlexRow = (
     <Flex
-      width={110}
+      width={90}
       padding={[6, 8]}
       backgroundElement={nineSlice}
       justify={JUSTIFY.FLEX_END}
