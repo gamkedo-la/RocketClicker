@@ -1,5 +1,6 @@
 import { Boot } from "./boot/boot-scene";
 import { Preloader } from "./boot/preloader-scene";
+import { GameCreditsScene } from "./game/game-credits";
 import { GameScene } from "./game/game-scene";
 import { IntroScene } from "./game/intro-scene";
 import { HudScene } from "./hud/hud-scene";
@@ -14,6 +15,7 @@ export const SCENES = {
 
   INTRO: "Intro",
   GAME: "Game",
+  GAME_CREDITS: "GameCredits",
 
   THREE_COMET: "ThreeComet",
   HUD: "Hud",
@@ -30,6 +32,8 @@ export const SCENE_CLASSES: Record<SceneKeys, typeof Phaser.Scene> = {
 
   INTRO: IntroScene,
   GAME: GameScene,
+  GAME_CREDITS: GameCreditsScene,
+
   THREE_COMET: ThreeCometScene,
   HUD: HudScene,
   UI_PAUSE: PauseScene,
