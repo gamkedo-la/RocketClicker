@@ -36,6 +36,7 @@ import { buildingMaterial, starMaterial } from "./elements/materials";
 import { Particles } from "./elements/particles";
 import { createSky } from "./elements/sky";
 import { SmokeParticles } from "./elements/smoke-particles";
+import { GameStatus } from "@game/state/game-state";
 
 export interface BuildingScreenPosition {
   baseX: number; // Unscaled base position
@@ -1158,7 +1159,10 @@ export class ThreeCometScene extends AbstractScene {
           this.updateGhostBuilding(null, null);
         }
 
-        if (this.pointerJustDown) {
+        if (
+          this.pointerJustDown &&
+          this.gameState.state.get().status !== GameStatus.ROCKET_LAUNCHED
+        ) {
           if (hoverObject?.userData.id === "comet") {
             this.mineCometDust(pointer.x, pointer.y);
           }
