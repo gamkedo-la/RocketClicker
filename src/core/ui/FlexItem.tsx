@@ -91,11 +91,31 @@ export const Spacer = ({
   height?: number;
   width?: number;
 }): FlexElement => {
-  return {
-    flexGrow: grow,
-    width: width,
-    height: height,
-    setX: () => {},
-    setY: () => {},
-  } as unknown as FlexElement;
+  return new (class Spacer {
+    flexGrow = grow;
+    _flexWidth = width;
+    _flexHeight = height;
+    width = width;
+    height = height;
+    x = 0;
+    y = 0;
+
+    setX(x: number) {
+      this.x = x;
+    }
+
+    setY(y: number) {
+      this.y = y;
+    }
+
+    setWidth(width: number) {
+      this.width = width;
+      this._flexWidth = width;
+    }
+
+    setHeight(height: number) {
+      this.height = height;
+      this._flexHeight = height;
+    }
+  })() as unknown as FlexElement;
 };
