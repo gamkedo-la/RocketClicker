@@ -52,10 +52,10 @@ export const RocketLauncher = ({
       interactive
       onPointerdown={() => {
         if (active.get()) {
+          gameState.setGameStatus(GameStatus.ROCKET_LAUNCHED);
           state.transition("mousedown");
           console.log("send rocket");
           bus.emit("send_rocket", null);
-          gameState.setGameStatus(GameStatus.ROCKET_LAUNCHED);
         }
       }}
       onPointerover={() => {
