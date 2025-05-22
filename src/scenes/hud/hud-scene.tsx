@@ -63,17 +63,26 @@ export class HudScene extends AbstractScene {
       />
     );
 
-    let timer_spacer = <Spacer width={255} grow={0} />;
+    let timer_spacer = <Spacer width={280} grow={0} />;
 
     const topBar: FlexRow = (
       <Flex
         width={width}
-        height={32}
+        height={33}
         backgroundElement={<rectangle fillColor={COLORS_NAMES["black"]} />}
-        padding={[0, 20]}
+        padding={[0, 10]}
       >
         <SoundButtons scene={this} />
-        <Spacer width={10} grow={0} />
+        <text
+          text="THE SPINNING COMET ESCAPE"
+          style={{
+            color: STRING_COLORS_NAMES["fever-dream"],
+            fontSize: 20,
+          }}
+        />
+        <Spacer width={5} grow={0} />
+        <rectangle fillColor={COLORS_NAMES["white"]} width={10} height={10} />
+        <Spacer width={5} grow={0} />
         <text
           text={computed(
             () =>
@@ -87,7 +96,7 @@ export class HudScene extends AbstractScene {
             fontSize: 16,
           }}
         />
-        <Spacer width={390} grow={0} />
+        <Spacer width={180} grow={0} />
         {timer_text}
         {timer_spacer}
         {rocket_text}
@@ -100,7 +109,7 @@ export class HudScene extends AbstractScene {
         timer_text.setColor("#aaff00");
         rocket_text.setColor("#ffaa00");
         rocket_text.setText("Rocket launched!");
-        timer_spacer.setWidth(400);
+        timer_spacer.setWidth(515);
         topBar.layout();
       }
     });
@@ -130,7 +139,7 @@ export class HudScene extends AbstractScene {
 
     const layout: FlexRow = (
       <Flex
-        padding={[44, 10, 12, 12]}
+        padding={[42, 9, 12, 8]}
         margin={0}
         width={width}
         height={height}

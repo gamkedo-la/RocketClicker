@@ -113,7 +113,7 @@ export const BulldozeBuildingButton = ({
     <Flex
       alignContent={ALIGN_ITEMS.STRETCH}
       justify={JUSTIFY.CENTER}
-      padding={6}
+      padding={4}
       margin={2}
     >
       <Flex padding={[4, 3]} justify={JUSTIFY.CENTER} width={110}>

@@ -174,6 +174,7 @@ export class ScenesManager extends Phaser.Plugins.BasePlugin {
             <step
               run={() => {
                 this.scenePlugin.bringToTop(SCENES.TRANSITIONS);
+                this.scenePlugin.get(SCENES.TRANSITIONS).putEndSceneCover();
               }}
             />
             <tween

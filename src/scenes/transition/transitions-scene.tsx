@@ -2,6 +2,8 @@ import { COLORS_NAMES, GAME_HEIGHT, GAME_WIDTH } from "@game/consts";
 import { signal } from "@game/core/signals/signals";
 import { AbstractScene } from "../index";
 import { SCENES } from "../scenes";
+import { NineSlice } from "../debug/test-scene";
+import { RESOURCES } from "@game/assets";
 
 export class TransitionsScene extends AbstractScene {
   constructor() {
@@ -28,36 +30,36 @@ export class TransitionsScene extends AbstractScene {
         <tween signal={p} from={1} to={0} duration={1000} />
       </animation>
     );
+  }
 
+  putEndSceneCover() {
     const p2 = signal(0);
 
-    const final_r: Phaser.GameObjects.Rectangle = this.add.existing(
-      <rectangle
-        x={10}
+    (
+      <NineSlice
+        texture={RESOURCES["ui-left-panel"]}
+        frame="bg-buildings"
+        x={8}
         y={42}
-        width={253}
+        width={261}
         height={GAME_HEIGHT - 51}
-        fillColor={COLORS_NAMES["dark-void"]}
-        origin={[0, 0]}
+        tint={COLORS_NAMES["dark-void"]}
         alpha={p2}
       />
-    );
+    ).addToScene(this);
 
-    final_r.setBlendMode(Phaser.BlendModes.MULTIPLY);
-
-    const final_r2: Phaser.GameObjects.Rectangle = this.add.existing(
-      <rectangle
-        x={1019}
+    (
+      <NineSlice
+        texture={RESOURCES["ui-left-panel"]}
+        frame="bg-buildings"
+        x={1007}
         y={42}
-        width={253}
+        width={264}
         height={GAME_HEIGHT - 51}
-        fillColor={COLORS_NAMES["dark-void"]}
-        origin={[0, 0]}
+        tint={COLORS_NAMES["dark-void"]}
         alpha={p2}
       />
-    );
-
-    final_r2.setBlendMode(Phaser.BlendModes.DARKEN);
+    ).addToScene(this);
 
     const m2 = (
       <animation manual={this.scenesManager.getEndGameSignal()}>

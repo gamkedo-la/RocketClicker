@@ -78,7 +78,7 @@ export const SoundButtons = ({ scene }: { scene: AbstractScene }) => {
   );
 
   return (
-    <Flex padding={[4, 10, 0, 0]} margin={5}>
+    <Flex padding={[0, 10, 0, 0]} margin={5}>
       {musicButton}
       {soundButton}
     </Flex>

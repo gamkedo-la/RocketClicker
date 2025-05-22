@@ -87,7 +87,14 @@ export const LeftPanel = ({
   });
 
   const z: FlexRow = (
-    <Flex direction={DIRECTION.COLUMN} width={width}>
+    <Flex
+      backgroundElement={
+        <NineSlice texture={RESOURCES["ui-left-panel"]} frame="bg-buildings" />
+      }
+      padding={5}
+      direction={DIRECTION.COLUMN}
+      width={width}
+    >
       <Flex
         direction={DIRECTION.ROW}
         backgroundElement={

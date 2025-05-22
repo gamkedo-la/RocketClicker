@@ -20,7 +20,14 @@ export const RightPanel = ({
   gameState: GameStateManager;
   bus: Phaser.Events.EventEmitter;
 }) => (
-  <Flex direction={DIRECTION.COLUMN} width={width}>
+  <Flex
+    backgroundElement={
+      <NineSlice texture={RESOURCES["ui-left-panel"]} frame="bg-buildings" />
+    }
+    padding={[7, 7, 5, 7]}
+    direction={DIRECTION.COLUMN}
+    width={width}
+  >
     <Flex
       backgroundElement={
         <NineSlice
