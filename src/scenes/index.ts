@@ -50,6 +50,10 @@ export abstract class AbstractScene extends Phaser.Scene {
       if (import.meta.env.VITE_DEBUG) {
         console.log("shutdown", this.scene.key);
       }
+      this.events.off("preupdate");
+      this.events.off("update");
+      this.events.off("postupdate");
+
       this.shutdown();
     });
 
@@ -58,6 +62,12 @@ export abstract class AbstractScene extends Phaser.Scene {
 
   addMotionMachine(motionMachine: MotionMachine<any, any>) {
     this.motionMachines.push(motionMachine);
+  }
+
+  removeMotionMachine(motionMachine: MotionMachine<any, any>) {
+    this.motionMachines = this.motionMachines.filter(
+      (m) => m !== motionMachine
+    );
   }
 
   /**
