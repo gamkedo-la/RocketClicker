@@ -7,6 +7,7 @@ import { Flex } from "../../core/ui/Flex";
 import { Spacer } from "../../core/ui/FlexItem";
 import { SCENES } from "../scenes";
 import { RESOURCES } from "@game/assets";
+import { NineSlice } from "../hud/components/NineSlice";
 
 // Same as the three scene sky fragment shader
 const skyFragmentShader = `
@@ -84,8 +85,18 @@ export class IntroScene extends AbstractScene {
 
     this.gameState.setGameStatus(GameStatus.LOADING);
 
-    const clickText = (
-      <text text="Press to start" style={{ fontSize: 48, color: "white" }} />
+    const startButton = (
+      <text
+        text="Start game"
+        style={{ fontSize: 36, color: STRING_COLORS_NAMES["dark-void"] }}
+      />
+    );
+
+    const creditsButton = (
+      <text
+        text="Credits"
+        style={{ fontSize: 36, color: STRING_COLORS_NAMES["dark-void"] }}
+      />
     );
 
     const flex = (
@@ -99,31 +110,86 @@ export class IntroScene extends AbstractScene {
         backgroundElement={background}
       >
         <image texture={RESOURCES["logo"]} width={430} height={430} />
-        <Spacer grow={0} height={10} />
 
+        <Spacer grow={0} height={10} />
         <text
           text={[
-            "Your rocket landed on a small comet and it needs to be refueled",
-            "with liquid oxygen and hydrogen.",
-            "",
+            "Your rocket landed on a small comet and it needs to be refueled.",
             "Mine the comet to generate energy and materials.",
           ]}
           style={{ fontSize: 28, color: "white", align: "center" }}
         />
+        <Spacer grow={0} height={15} />
+        <Flex
+          x={50}
+          y={75}
+          width={30}
+          height={50}
+          padding={[10, 20]}
+          containerElement={
+            <container
+              interactive
+              onPointerdown={() => {
+                this.scene.pause(SCENES.INTRO);
+                this.scenesManager.transitionTo("start");
+              }}
+              onPointerover={() => {
+                startButton.setColor(STRING_COLORS_NAMES["white"]);
+                this.input.setDefaultCursor("pointer");
+              }}
+              onPointerout={() => {
+                startButton.setColor(STRING_COLORS_NAMES["dark-void"]);
+                this.input.setDefaultCursor("default");
+              }}
+            ></container>
+          }
+          backgroundElement={
+            <NineSlice
+              texture={RESOURCES["ui-left-panel"]}
+              frame="bg-buildings"
+            />
+          }
+        >
+          {startButton}
+        </Flex>
 
-        <Spacer grow={0} height={20} />
-        {clickText}
+        <Flex
+          x={50}
+          y={75}
+          width={30}
+          height={50}
+          padding={[10, 20]}
+          containerElement={
+            <container
+              interactive
+              onPointerdown={() => {
+                this.scene.pause(SCENES.INTRO);
+                this.scene.launch(SCENES.GAME_CREDITS);
+                this.scene.bringToTop(SCENES.GAME_CREDITS);
+              }}
+              onPointerover={() => {
+                creditsButton.setColor(STRING_COLORS_NAMES["white"]);
+                this.input.setDefaultCursor("pointer");
+              }}
+              onPointerout={() => {
+                creditsButton.setColor(STRING_COLORS_NAMES["dark-void"]);
+                this.input.setDefaultCursor("default");
+              }}
+            ></container>
+          }
+          backgroundElement={
+            <NineSlice
+              texture={RESOURCES["ui-left-panel"]}
+              frame="bg-buildings"
+            />
+          }
+        >
+          {creditsButton}
+        </Flex>
       </Flex>
     );
 
     flex.addToScene();
-
-    this.input.once("pointerdown", () => {
-      clickText.setText("Landing rocket...");
-      clickText.setColor(STRING_COLORS_NAMES["strawberry-field"]);
-      flex.trashLayout();
-      this.scenesManager.transitionTo("start");
-    });
   }
 
   shutdown() {}
