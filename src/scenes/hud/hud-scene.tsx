@@ -63,7 +63,9 @@ export class HudScene extends AbstractScene {
       />
     );
 
-    const topBar = (
+    let timer_spacer = <Spacer width={255} grow={0} />;
+
+    const topBar: FlexRow = (
       <Flex
         width={width}
         height={32}
@@ -71,16 +73,7 @@ export class HudScene extends AbstractScene {
         padding={[0, 20]}
       >
         <SoundButtons scene={this} />
-        <text
-          text="PLAYTESTING VERSION v3.0"
-          style={{
-            color: STRING_COLORS_NAMES["fever-dream"],
-            fontSize: 20,
-          }}
-        />
-        <Spacer width={5} grow={0} />
-        <rectangle fillColor={COLORS_NAMES["white"]} width={10} height={10} />
-        <Spacer width={5} grow={0} />
+        <Spacer width={10} grow={0} />
         <text
           text={computed(
             () =>
@@ -94,9 +87,9 @@ export class HudScene extends AbstractScene {
             fontSize: 16,
           }}
         />
-        <Spacer width={180} grow={0} />
+        <Spacer width={390} grow={0} />
         {timer_text}
-        <Spacer width={275} grow={0} />
+        {timer_spacer}
         {rocket_text}
       </Flex>
     );
@@ -107,6 +100,8 @@ export class HudScene extends AbstractScene {
         timer_text.setColor("#aaff00");
         rocket_text.setColor("#ffaa00");
         rocket_text.setText("Rocket launched!");
+        timer_spacer.setWidth(400);
+        topBar.layout();
       }
     });
 
