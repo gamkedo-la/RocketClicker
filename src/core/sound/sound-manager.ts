@@ -1,3 +1,4 @@
+import { RESOURCES } from "@game/assets";
 import { GameStateManager } from "@game/state/game-state";
 
 export const SFX = [
@@ -23,6 +24,8 @@ export const SFX = [
   "sfx-pick-up",
   "sfx-put-down",
   "sfx-rocket-launch",
+  RESOURCES["rocket-land"],
+  RESOURCES["rocket-launch"],
 ];
 
 export const MUSIC = ["music_loop_TheViewFromHere", "placeholder-music-loop"];

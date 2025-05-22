@@ -194,6 +194,16 @@
       },
       {
         "type": "audio",
+        "key": "drill-grinding",
+        "url": "assets/drill-grinding.ogg"
+      },
+      {
+        "type": "audio",
+        "key": "drill-impact",
+        "url": "assets/drill-impact.ogg"
+      },
+      {
+        "type": "audio",
         "key": "music_loop_TheViewFromHere",
         "url": "assets/music_loop_TheViewFromHere.mp3"
       },
@@ -206,6 +216,16 @@
         "type": "audio",
         "key": "placeholder-music-loop",
         "url": "assets/placeholder-music-loop.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "rocket-land",
+        "url": "assets/rocket-land.ogg"
+      },
+      {
+        "type": "audio",
+        "key": "rocket-launch",
+        "url": "assets/rocket-launch.ogg"
       },
       {
         "type": "audio",

@@ -507,12 +507,21 @@ export class ThreeCometScene extends AbstractScene {
           <motionMachine initialState="entering">
             <state id="entering">
               <animation>
-                <tween
-                  to={3}
-                  duration={7000}
-                  signal={rocketRotY2}
-                  ease="Circ.easeOut"
-                />
+                <parallel>
+                  <tween
+                    to={3}
+                    duration={7000}
+                    signal={rocketRotY2}
+                    ease="Circ.easeOut"
+                  />
+                  <step
+                    run={() => {
+                      this.soundManager.play(RESOURCES["rocket-land"], {
+                        volume: 2,
+                      });
+                    }}
+                  />
+                </parallel>
                 <parallel>
                   <tween
                     to={1}
@@ -595,6 +604,13 @@ export class ThreeCometScene extends AbstractScene {
                     duration={10000}
                     signal={rocketPosY}
                     ease="Quad.easeIn"
+                  />
+                  <step
+                    run={() => {
+                      this.soundManager.play(RESOURCES["rocket-launch"], {
+                        volume: 2,
+                      });
+                    }}
                   />
                 </parallel>
                 <step
