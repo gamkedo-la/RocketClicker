@@ -2,7 +2,7 @@ import { COLORS_NAMES, GAME_HEIGHT, GAME_WIDTH } from "@game/consts";
 import { signal } from "@game/core/signals/signals";
 import { AbstractScene } from "../index";
 import { SCENES } from "../scenes";
-import { NineSlice } from "../debug/test-scene";
+import { NineSlice } from "../hud/components/NineSlice";
 import { RESOURCES } from "@game/assets";
 
 export class TransitionsScene extends AbstractScene {
