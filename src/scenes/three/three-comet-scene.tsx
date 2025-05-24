@@ -175,7 +175,7 @@ export class ThreeCometScene extends AbstractScene {
               <tween
                 signal={this.cameraPositionY}
                 to={() =>
-                  50 - Math.abs(currentCometSpin.get() / MAX_COMET_SPIN) / 25
+                  50 - Math.abs(currentCometSpin.get() / MAX_COMET_SPIN) / 17
                 }
                 duration={1000}
               />
@@ -252,10 +252,11 @@ export class ThreeCometScene extends AbstractScene {
             id: "comet",
           };
 
+          this.comet.geometry.scale(0.63, 0.87, 0.87);
+
           if (this.comet.material instanceof THREE.MeshStandardMaterial) {
-            this.comet.material.color.set(COLORS_NAMES["vaporwave-blue"]);
-            this.comet.material.emissive.set(COLORS_NAMES["elite-teal"]);
-            this.comet.material.emissiveIntensity = 0.2;
+            this.comet.material.color.set(COLORS_NAMES["chutney"]);
+            this.comet.material.emissiveIntensity = 1;
           }
 
           // Add the camera pivot as a child of the comet
@@ -320,7 +321,7 @@ export class ThreeCometScene extends AbstractScene {
 
         terrainMesh.position.set(
           -0.055 + (x + y) * 0.025,
-          0.039,
+          0.0388,
           -0.05 + (x - y) * 0.025
         );
 
