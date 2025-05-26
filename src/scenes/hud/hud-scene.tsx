@@ -58,12 +58,23 @@ export class HudScene extends AbstractScene {
 
     const rocket_text = (
       <text
-        text={`You need 140,000 LH2 and 30,000 LOX to launch the rocket`}
-        style={{ align: "center", fontSize: 16 }}
+        text={`Click on the terrain to start mining comet dust`}
+        style={{
+          align: "center",
+          fontSize: 18,
+          backgroundColor: STRING_COLORS_NAMES["strawberry-field"],
+          padding: {
+            top: 5,
+            bottom: 5,
+            left: 10,
+            right: 10,
+          },
+        }}
       />
     );
 
-    let timer_spacer = <Spacer width={280} grow={0} />;
+    let started = false;
+    let timer_spacer = <Spacer width={260} grow={0} />;
 
     const topBar: FlexRow = (
       <Flex
@@ -96,12 +107,26 @@ export class HudScene extends AbstractScene {
             fontSize: 16,
           }}
         />
-        <Spacer width={180} grow={0} />
+        <Spacer width={150} grow={0} />
         {timer_text}
         {timer_spacer}
         {rocket_text}
       </Flex>
     );
+
+    this.gameState.state.get().material_storage.CometDust.subscribe((fuel) => {
+      if (fuel > 250 && !started) {
+        started = true;
+        rocket_text.setText(
+          "You need 140,000 LH2 and 30,000 LOX to launch the rocket"
+        );
+        rocket_text.setBackgroundColor(null);
+        timer_spacer.setWidth(280);
+        rocket_text.setFontSize(16);
+        rocket_text.setPadding(0);
+        topBar.layout();
+      }
+    });
 
     effect(() => {
       if (this.gameState.state.get().status === GameStatus.ROCKET_LAUNCHED) {
