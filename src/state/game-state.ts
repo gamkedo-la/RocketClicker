@@ -38,6 +38,7 @@ export interface State {
   hovered_building: Signal<Building | null>;
   sound_volume: Signal<number>;
   music_volume: Signal<number>;
+  motion_enabled: Signal<number>;
 }
 
 export interface MouseSelectedBuilding {
@@ -118,6 +119,7 @@ export class GameStateManager
       },
     }),
     music_volume: signal(1),
+    motion_enabled: signal(1),
   });
 
   constructor(pluginManager: Phaser.Plugins.PluginManager) {

@@ -1253,7 +1253,10 @@ export class ThreeCometScene extends AbstractScene {
       this.threeCamera.position.x = this.threeCameraX + shake;
       this.threeCamera.position.y = this.threeCameraY + shake;
       // Rotate position around Z axis
-      const rotationSpeed = cometSpin * 0.0005;
+      //const rotationSpeed = cometSpin * 0.0005;
+      const rotationSpeed =
+        cometSpin *
+        (0.00005 + 0.00045 * this.gameState.state.get().motion_enabled.get());
       position.applyAxisAngle(this.zAxis, rotationSpeed);
 
       // Add pivot back to get new world position

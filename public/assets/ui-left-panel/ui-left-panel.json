@@ -1333,10 +1333,73 @@
           }
         },
         {
-          "filename": "dial-bg-button-breakable#0",
+          "filename": "motion-button#0",
           "frame": {
             "x": 250,
             "y": 240,
+            "w": 25,
+            "h": 25
+          },
+          "rotated": false,
+          "trimmed": true,
+          "spriteSourceSize": {
+            "x": 0,
+            "y": 0,
+            "w": 25,
+            "h": 25
+          },
+          "sourceSize": {
+            "w": 25,
+            "h": 25
+          }
+        },
+        {
+          "filename": "motion-button#1",
+          "frame": {
+            "x": 1,
+            "y": 273,
+            "w": 25,
+            "h": 25
+          },
+          "rotated": false,
+          "trimmed": true,
+          "spriteSourceSize": {
+            "x": 0,
+            "y": 0,
+            "w": 25,
+            "h": 25
+          },
+          "sourceSize": {
+            "w": 25,
+            "h": 25
+          }
+        },
+        {
+          "filename": "motion-button#2",
+          "frame": {
+            "x": 28,
+            "y": 273,
+            "w": 25,
+            "h": 25
+          },
+          "rotated": false,
+          "trimmed": true,
+          "spriteSourceSize": {
+            "x": 0,
+            "y": 0,
+            "w": 25,
+            "h": 25
+          },
+          "sourceSize": {
+            "w": 25,
+            "h": 25
+          }
+        },
+        {
+          "filename": "dial-bg-button-breakable#0",
+          "frame": {
+            "x": 55,
+            "y": 273,
             "w": 19,
             "h": 20
           },
@@ -1356,8 +1419,8 @@
         {
           "filename": "dial-button#0",
           "frame": {
-            "x": 265,
-            "y": 55,
+            "x": 76,
+            "y": 273,
             "w": 3,
             "h": 19
           },
@@ -1377,8 +1440,8 @@
         {
           "filename": "dial-button-breakable#0",
           "frame": {
-            "x": 270,
-            "y": 55,
+            "x": 81,
+            "y": 273,
             "w": 3,
             "h": 19
           },
@@ -1398,8 +1461,8 @@
         {
           "filename": "button-ring#0",
           "frame": {
-            "x": 254,
-            "y": 191,
+            "x": 86,
+            "y": 273,
             "w": 17,
             "h": 17
           },
@@ -1419,8 +1482,8 @@
         {
           "filename": "button-ring#1",
           "frame": {
-            "x": 254,
-            "y": 210,
+            "x": 105,
+            "y": 273,
             "w": 11,
             "h": 11
           },
@@ -1440,8 +1503,8 @@
         {
           "filename": "button-ring#2",
           "frame": {
-            "x": 179,
-            "y": 168,
+            "x": 124,
+            "y": 273,
             "w": 15,
             "h": 15
           },
@@ -1461,8 +1524,8 @@
         {
           "filename": "button-ring#3",
           "frame": {
-            "x": 198,
-            "y": 168,
+            "x": 143,
+            "y": 273,
             "w": 17,
             "h": 17
           },
@@ -1482,8 +1545,8 @@
         {
           "filename": "title-bg-buildings#0.0",
           "frame": {
-            "x": 217,
-            "y": 168,
+            "x": 162,
+            "y": 273,
             "w": 3,
             "h": 6
           },
@@ -1503,8 +1566,8 @@
         {
           "filename": "title-bg-buildings#0.1",
           "frame": {
-            "x": 220,
-            "y": 168,
+            "x": 165,
+            "y": 273,
             "w": 43,
             "h": 6
           },
@@ -1524,8 +1587,8 @@
         {
           "filename": "title-bg-buildings#0.2",
           "frame": {
-            "x": 263,
-            "y": 168,
+            "x": 208,
+            "y": 273,
             "w": 5,
             "h": 6
           },
@@ -1545,8 +1608,8 @@
         {
           "filename": "title-bg-buildings#0.3",
           "frame": {
-            "x": 217,
-            "y": 174,
+            "x": 162,
+            "y": 279,
             "w": 3,
             "h": 3
           },
@@ -1566,8 +1629,8 @@
         {
           "filename": "title-bg-buildings#0.4",
           "frame": {
-            "x": 220,
-            "y": 174,
+            "x": 165,
+            "y": 279,
             "w": 43,
             "h": 3
           },
@@ -1587,8 +1650,8 @@
         {
           "filename": "title-bg-buildings#0.5",
           "frame": {
-            "x": 263,
-            "y": 174,
+            "x": 208,
+            "y": 279,
             "w": 5,
             "h": 3
           },
@@ -1608,8 +1671,8 @@
         {
           "filename": "title-bg-buildings#0.6",
           "frame": {
-            "x": 217,
-            "y": 177,
+            "x": 162,
+            "y": 282,
             "w": 3,
             "h": 5
           },
@@ -1629,8 +1692,8 @@
         {
           "filename": "title-bg-buildings#0.7",
           "frame": {
-            "x": 220,
-            "y": 177,
+            "x": 165,
+            "y": 282,
             "w": 43,
             "h": 5
           },
@@ -1650,8 +1713,8 @@
         {
           "filename": "title-bg-buildings#0.8",
           "frame": {
-            "x": 263,
-            "y": 177,
+            "x": 208,
+            "y": 282,
             "w": 5,
             "h": 5
           },
@@ -1671,8 +1734,8 @@
         {
           "filename": "spin-temp-pin#0",
           "frame": {
-            "x": 268,
-            "y": 1,
+            "x": 215,
+            "y": 273,
             "w": 5,
             "h": 13
           },
@@ -1692,7 +1755,7 @@
         {
           "filename": "button-building-status#0",
           "frame": {
-            "x": 1,
+            "x": 222,
             "y": 273,
             "w": 31,
             "h": 7
@@ -1713,8 +1776,8 @@
         {
           "filename": "button-building-status#1",
           "frame": {
-            "x": 34,
-            "y": 273,
+            "x": 179,
+            "y": 168,
             "w": 31,
             "h": 7
           },
@@ -1734,8 +1797,8 @@
         {
           "filename": "button-building-status#2",
           "frame": {
-            "x": 67,
-            "y": 273,
+            "x": 212,
+            "y": 168,
             "w": 31,
             "h": 7
           },
@@ -1755,8 +1818,8 @@
         {
           "filename": "button-building-status#3",
           "frame": {
-            "x": 100,
-            "y": 273,
+            "x": 245,
+            "y": 168,
             "w": 31,
             "h": 7
           },
@@ -1776,7 +1839,7 @@
         {
           "filename": "building-arrow#0",
           "frame": {
-            "x": 133,
+            "x": 255,
             "y": 273,
             "w": 5,
             "h": 6
